@@ -32,97 +32,51 @@ import {
 import MainHeader from "../../components/headers/MainHeader";
 import http from "../../../helper/http";
 import {
-  createVariant,
-  updateVariant,
-  deleteVariant,
-  listSizes,
-  listColors,
-  listTypes,
-} from "../../../store/actions/variant";
+  createWord,
+  updateWord,
+  deleteWord,
+} from "../../../store/actions/trademark";
 import APP_CONST from "../../../helper/constant";
 
-class MugVariant extends React.Component {
+class BannedWordList extends React.Component {
   constructor(props) {
     super(props);
-    this.colorstring = "";
-    this.sizestring = "";
-    this.typestring = "";
-    this.columns = ["id", "name", "size", "color", "type"];
+    this.columns = ["id", "name"];
     this.state = {
-      sizes: [],
-      colors: [],
-      types: [],
       entities: {
         data: [],
         current_page: 1,
         last_page: 1,
-        per_page: 25,
+        per_page: 20,
         total: 1,
       },
       first_page: 1,
       current_page: 1,
-      sorted_column: this.columns[1],
+      sorted_column: this.columns[0],
       offset: 5,
       order: "asc",
       searchKey: "",
-      modalMug: {
+      modalWord: {
         id: 0,
         name: "",
-        gender: "",
-        color: "",
-        size: "",
-        type: "",
+        type: "banned",
       },
+      message: "",
       responseErrors: "",
       errors: {},
       isModal: false,
       isDeleteModal: false,
     };
     this.validator = new ReeValidate({
-      name: "required",
+      name: "required|min:2",
     });
-    this.props.listTypes({ type: "mugs" });
-    this.props.listColors({ type: "mugs" });
-    this.props.listSizes({ type: "mugs" });
   }
-
   componentDidMount() {
     this.setState({ current_page: this.state.entities.current_page }, () => {
       this.fetchEntities();
     });
   }
   componentWillReceiveProps(nextProps) {
-    const { modalMug } = this.state;
-    if (nextProps.sizes) {
-      if (
-        nextProps.sizes.length > 0 &&
-        this.state.sizes.length != nextProps.sizes.length
-      ) {
-        this.setState({ sizes: nextProps.sizes }, function () {
-          modalMug["size"] = this.state.sizes[0].key;
-        });
-      }
-    }
-    if (nextProps.colors) {
-      if (
-        nextProps.colors.length > 0 &&
-        this.state.colors.length != nextProps.colors.length
-      ) {
-        this.setState({ colors: nextProps.colors }, function () {
-          modalMug["color"] = this.state.colors[0].key;
-        });
-      }
-    }
-    if (nextProps.types) {
-      if (
-        nextProps.types.length > 0 &&
-        this.state.types.length != nextProps.types.length
-      ) {
-        this.setState({ types: nextProps.types }, function () {
-          modalMug["type"] = this.state.types[0].key;
-        });
-      }
-    }
     if (nextProps.message) {
       this.showNotification(nextProps.message);
       this.setState(
@@ -138,7 +92,7 @@ class MugVariant extends React.Component {
     }
     if (
       nextProps.responseErrors &&
-      nextProps.responseErrors !== this.state.responseErrors
+      nextProps.responseErrors != this.state.responseErrors
     ) {
       this.setState({
         responseErrors: nextProps.responseErrors,
@@ -160,11 +114,11 @@ class MugVariant extends React.Component {
 
   handleEdit(id) {
     const { data } = this.state.entities;
-    const mug = data.find((obj) => {
-      return obj.id === id;
+    const word = data.find((obj) => {
+      return obj.id == id;
     });
     this.setState({
-      modalMug: { ...mug },
+      modalWord: { ...word },
       isModal: true,
       responseErrors: "",
       errors: {},
@@ -173,18 +127,18 @@ class MugVariant extends React.Component {
 
   handleDelete(id) {
     const { data } = this.state.entities;
-    const mug = data.find((obj) => {
-      return obj.id === id;
+    const word = data.find((obj) => {
+      return obj.id == id;
     });
     this.setState({
-      modalMug: { ...mug },
+      modalWord: { ...word },
       isDeleteModal: true,
       responseErrors: "",
     });
   }
 
   fetchEntities() {
-    let fetchUrl = `${APP_CONST.API_URL}/mugvariant/list/?page=${this.state.current_page}&column=${this.state.sorted_column}&order=${this.state.order}&per_page=${this.state.entities.per_page}&search_key=${this.state.searchKey}`;
+    let fetchUrl = `${APP_CONST.API_URL}/trademark/word/list/?type=banned&page=${this.state.current_page}&column=${this.state.sorted_column}&order=${this.state.order}&per_page=${this.state.entities.per_page}&search_key=${this.state.searchKey}`;
     http
       .get(fetchUrl)
       .then((response) => {
@@ -196,12 +150,13 @@ class MugVariant extends React.Component {
             data: [],
             current_page: 1,
             last_page: 1,
-            per_page: 25,
+            per_page: 20,
             total: 1,
           },
         });
       });
   }
+
   changePage(pageNumber) {
     this.setState({ current_page: pageNumber }, () => {
       this.fetchEntities();
@@ -243,7 +198,7 @@ class MugVariant extends React.Component {
       icon = <i className="fa fa-sort-alpha-up"></i>;
     }
     let columns = this.columns.map((column) => {
-      if (column === "id") {
+      if (column == "id") {
         return (
           <th
             scope="col"
@@ -254,26 +209,14 @@ class MugVariant extends React.Component {
             {"No"}
           </th>
         );
-      } else if (column === "name") {
-        return (
-          <th
-            scope="col"
-            className="text-center"
-            style={{ width: "20%" }}
-            key={column}
-            onClick={() => this.sortByColumn(column)}
-          >
-            {this.columnHead(column)}
-            {column === this.state.sorted_column && icon}
-          </th>
-        );
       } else {
         return (
           <th
             scope="col"
             className="text-center"
-            style={{ width: "20%" }}
+            style={{ width: "75%" }}
             key={column}
+            onClick={() => this.sortByColumn(column)}
           >
             {this.columnHead(column)}
             {column === this.state.sorted_column && icon}
@@ -286,7 +229,7 @@ class MugVariant extends React.Component {
         scope="col"
         className="text-center"
         key="action"
-        style={{ width: "15%" }}
+        style={{ width: "20%" }}
       >
         Action
       </th>
@@ -301,55 +244,24 @@ class MugVariant extends React.Component {
         return (
           <tr key={data.id}>
             {Object.keys(data).map((key) => {
-              if (key === "id")
+              if (key == "id")
                 return (
                   <td className="text-center" key={key}>
                     {index + 1}
                   </td>
                 );
-              else if (key === "color") {
-                return this.state.colors.map((item) => {
-                  if (data[key] === item.key)
-                    return (
-                      <td className="text-center" key={key}>
-                        {item.name}
-                      </td>
-                    );
-                });
-              } else if (key === "size") {
-                return this.state.sizes.map((item) => {
-                  if (data[key] === item.key)
-                    return (
-                      <td className="text-center" key={key}>
-                        {item.name}
-                      </td>
-                    );
-                });
-              } else if (key === "type") {
-                // console.log(this.state.types);
-                return this.state.types.map((item) => {
-                  // console.log(item.key);
-                  if (data[key] === item.key) {
-                    return (
-                      <td className="text-center" key={key}>
-                        {item.name}
-                      </td>
-                    );
-                  }
-                });
-              } else if (key === "name") {
+              else if (key != "type")
                 return (
                   <td className="text-center" key={key}>
                     {data[key]}
                   </td>
                 );
-              }
             })}
             <td className="td-action">
               <Row>
                 <Col md={12} xl={12}>
                   <Button
-                    className="btn-tbl-mugvariant-edit"
+                    className="btn-tbl-categorylist-edit"
                     size="sm"
                     color="primary"
                     data-dz-remove
@@ -363,7 +275,7 @@ class MugVariant extends React.Component {
                     <span className="btn-inner--text">EDIT</span>
                   </Button>
                   <Button
-                    className="btn-tbl-mugvariant-delete"
+                    className="btn-tbl-categorylist-delete"
                     size="sm"
                     color="warning"
                     data-dz-remove
@@ -395,7 +307,6 @@ class MugVariant extends React.Component {
       );
     }
   }
-  fhan;
 
   sortByColumn(column) {
     if (column === this.state.sorted_column) {
@@ -440,61 +351,24 @@ class MugVariant extends React.Component {
     });
   }
 
-  createMug() {
+  createWord() {
     this.setState({
       isModal: true,
+      modalWord: {
+        id: 0,
+        name: "",
+        type: "banned",
+      },
       responseErrors: "",
       errors: {},
     });
-    const { modalMug } = this.state;
-    this.colorstring = this.state.colors[0]["name"];
-    this.sizestring = this.state.sizes[0]["name"];
-    this.typestring = this.state.types[0]["name"];
-    modalMug["id"] = 0;
-    modalMug["name"] = this.colorstring + " " + this.typestring;
-    modalMug["color"] = this.state.colors[0]["key"];
-    modalMug["type"] = this.state.types[0]["key"];
-    modalMug["id"] = 0;
-    this.setState({ modalMug });
   }
-  handleChangeSelect = (e) => {
-    const { name, value } = e.target;
-    const { modalMug } = this.state;
-    this.state.colors.map((item) => {
-      if (item.key == modalMug["color"]) this.colorstring = item.name;
-    });
-    this.state.sizes.map((item) => {
-      if (item.key == modalMug["size"]) this.sizestring = item.name;
-    });
-    this.state.types.map((item) => {
-      if (item.key == modalMug["type"]) this.typestring = item.name;
-    });
-    if (name === "color") {
-      this.state.colors.map((item) => {
-        if (item.key === value) this.colorstring = item.name;
-      });
-    }
-    if (name === "size") {
-      this.state.sizes.map((item) => {
-        if (item.key === value) this.sizestring = item.name;
-      });
-    }
-    if (name === "type") {
-      this.state.types.map((item) => {
-        if (item.key === value) this.typestring = item.name;
-      });
-    }
-    var namestring = this.colorstring + " " + this.typestring;
-    modalMug[name] = value;
-    modalMug["name"] = namestring;
-    this.setState({ modalMug });
-  };
 
   handleChange = (e) => {
     const { name, value } = e.target;
-    const { modalMug } = this.state;
-    modalMug[name] = value;
-    this.setState({ modalMug });
+    const { modalWord } = this.state;
+    modalWord[name] = value;
+    this.setState({ modalWord });
 
     const { errors } = this.state;
     if (name in errors) {
@@ -524,52 +398,32 @@ class MugVariant extends React.Component {
       }
     });
   };
+
   handleSubmitDelete = (e) => {
     e.preventDefault();
-    const { modalMug } = this.state;
-    const { id } = modalMug;
-    this.props.deleteVariant(id);
+    const { modalWord } = this.state;
+    const { id } = modalWord;
+    this.props.deleteWord(id);
   };
+
   handleSubmit = (e) => {
     e.preventDefault();
-    const { modalMug } = this.state;
-    this.validator.validateAll(modalMug).then((success) => {
+    const { modalWord } = this.state;
+    this.validator.validateAll(modalWord).then((success) => {
       if (success) {
-        if (modalMug.id === 0) {
-          const {
+        if (modalWord.id === 0) {
+          const { name, type } = modalWord;
+          this.props.createWord({
             name,
-            gender = "",
-            color,
-            size,
             type,
-            master_type = "mugs",
-          } = modalMug;
-          this.props.createVariant({
-            name,
-            gender,
-            color,
-            size,
-            type,
-            master_type,
           });
         } else {
-          const {
+          const { id, name, type } = modalWord;
+          console.log(type);
+          this.props.updateWord({
             id,
-            gender = "",
             name,
-            color,
-            size,
             type,
-            master_type = "mugs",
-          } = modalMug;
-          this.props.updateVariant({
-            id,
-            gender,
-            name,
-            color,
-            type,
-            size,
-            master_type,
           });
         }
       }
@@ -600,7 +454,7 @@ class MugVariant extends React.Component {
       errors,
       isModal,
       isDeleteModal,
-      modalMug,
+      modalWord,
       responseErrors,
     } = this.state;
     return (
@@ -608,20 +462,38 @@ class MugVariant extends React.Component {
         <div className="rna-wrapper">
           <NotificationAlert ref="notificationAlert" />
         </div>
-        <MainHeader name="Mug Variant" parentName="Variant" />
-        <Container className="mt--6 mug-variant-container" fluid>
+        <MainHeader name="Banned Keywords" parentName="Trademark" />
+        <Container className="mt--6 category-list-container" fluid>
           <Card style={{ minHeight: "700px" }}>
             <CardBody>
               <Row>
+                <Col md={8}>
+                  <h4 className="display-4 ml-3">Banned Keywords</h4>
+                  <p className="mb-0 ml-3">
+                    <i
+                      className="fas fa-exclamation-triangle"
+                      style={{ color: "#cece14" }}
+                    ></i>
+                    &nbsp; This is a list of keywords that are known that we
+                    cannot use.&nbsp;
+                    <b>
+                      Any keywords listed below will not be allowed in any
+                      product titles, the system will not search further for any
+                      trademark infringments.
+                    </b>
+                  </p>
+                </Col>
+              </Row>
+              <Row>
                 <Col>
                   <Button
-                    className="btn-createmug"
+                    className="btn-createcategory"
                     color="primary"
                     onClick={() => {
-                      this.createMug();
+                      this.createWord();
                     }}
                   >
-                    Create Mugs Variant
+                    Add Forbidden Keywords
                   </Button>
                   <Modal
                     isOpen={isDeleteModal}
@@ -675,9 +547,7 @@ class MugVariant extends React.Component {
                       method="POST"
                       onSubmit={this.handleSubmit}
                     >
-                      <ModalHeader color="primary">
-                        Mugs Variant Edit
-                      </ModalHeader>
+                      <ModalHeader color="primary">Word Edit</ModalHeader>
                       <ModalBody>
                         {responseErrors && (
                           <UncontrolledAlert color="warning">
@@ -691,78 +561,19 @@ class MugVariant extends React.Component {
                           </UncontrolledAlert>
                         )}
                         <FormGroup>
-                          <label htmlFor="mugsFormControlInput">Name</label>
+                          <label htmlFor="tshirtsFormControlInput">Name</label>
                           <Input
                             name="name"
                             ref="name"
                             required
-                            disabled
-                            value={modalMug.name}
-                            placeholder="e.g. Mug Name"
+                            value={modalWord.name}
+                            placeholder="e.g. Word Name"
                             type="text"
                             onBlur={this.handleBlur}
                             onChange={this.handleChange}
                             invalid={"name" in errors}
                           />
                           <div className="invalid-feedback">{errors.name}</div>
-                        </FormGroup>
-                        <FormGroup>
-                          <label htmlFor="genderFormControlInput">Colors</label>
-                          <Input
-                            name="color"
-                            ref="color"
-                            required
-                            type="select"
-                            value={modalMug.color}
-                            onChange={this.handleChangeSelect}
-                          >
-                            {this.state.colors.map((item) => {
-                              return (
-                                <option key={item.key} value={item.key}>
-                                  {item.name}
-                                </option>
-                              );
-                            })}
-                          </Input>
-                        </FormGroup>
-                        <FormGroup>
-                          <label htmlFor="genderFormControlInput">Sizes</label>
-                          <Input
-                            name="size"
-                            ref="size"
-                            required
-                            type="select"
-                            disabled
-                            value={modalMug.size}
-                            onChange={this.handleChangeSelect}
-                          >
-                            {this.state.sizes.map((item) => {
-                              return (
-                                <option key={item.key} value={item.key}>
-                                  {item.name}
-                                </option>
-                              );
-                            })}
-                          </Input>
-                        </FormGroup>
-                        <FormGroup>
-                          <label htmlFor="genderFormControlInput">Types</label>
-                          <Input
-                            name="type"
-                            ref="type"
-                            required
-                            type="select"
-                            value={modalMug.type}
-                            onChange={this.handleChangeSelect}
-                          >
-                            {this.state.types.map((item) => {
-                              return (
-                                <option key={item.key} value={item.key}>
-                                  {item.name}
-                                </option>
-                              );
-                            })}
-                          </Input>
                         </FormGroup>
                       </ModalBody>
                       <ModalFooter>
@@ -782,7 +593,7 @@ class MugVariant extends React.Component {
                   </Modal>
                 </Col>
                 <Col>
-                  <div className="div-searchbar-createmug">
+                  <div className="div-searchbar-createcategory">
                     <Form className="navbar-search form-inline mr-sm-3 ">
                       <FormGroup className="mb-0">
                         <InputGroup className="input-group-alternative input-group-merge">
@@ -805,8 +616,14 @@ class MugVariant extends React.Component {
               </Row>
               <Row>
                 <Col md={12} xl={12}>
-                  <div className="div-tbl-mugvariant">
-                    <Table className="align-items-center" hover bordered>
+                  <div className="div-tbl-categorylist">
+                    <Table
+                      className="align-items-center"
+                      style={{ tableLayout: "fixed" }}
+                      hover
+                      bordered
+                      responsive
+                    >
                       <thead className="thead-light">
                         <tr>{this.tableHeads()}</tr>
                       </thead>
@@ -863,19 +680,13 @@ class MugVariant extends React.Component {
   }
 }
 
-const mapStateToProps = ({ variant }) => ({
-  colors: variant.colors,
-  sizes: variant.sizes,
-  types: variant.types,
-  message: variant.message,
-  responseErrors: variant.errors,
+const mapStateToProps = ({ trademark }) => ({
+  responseErrors: trademark.errors,
+  message: trademark.message,
 });
 
 export default connect(mapStateToProps, {
-  createVariant,
-  updateVariant,
-  deleteVariant,
-  listColors,
-  listSizes,
-  listTypes,
-})(MugVariant);
+  createWord,
+  updateWord,
+  deleteWord,
+})(BannedWordList);

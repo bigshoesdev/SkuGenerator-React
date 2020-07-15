@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
 
 // plugins styles from node_modules
 import "react-notification-alert/dist/animate.css";
@@ -26,14 +26,14 @@ store.dispatch(authCheck());
 
 const app = (
   <Provider store={store}>
-    <BrowserRouter>
+    <HashRouter>
       <Switch>
         <Route path="/main" component={AdminLayout} />
         <Route path="/auth" render={props => <AuthLayout {...props} />} />
         <Route path="/main/product-detail/:id" component={ProductDetail}/>
         <Redirect from="*" to="/auth/login" />
       </Switch>
-    </BrowserRouter>
+    </HashRouter>
   </Provider>
 );
 

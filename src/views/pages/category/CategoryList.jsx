@@ -26,32 +26,30 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter
+  ModalFooter,
 } from "reactstrap";
 
 import MainHeader from "../../components/headers/MainHeader";
 import http from "../../../helper/http";
 import {
   createCategory,
+  mergeCategory,
   updateCategory,
-  deleteCategory
+  deleteCategory,
 } from "../../../store/actions/category";
-import APP_CONST from '../../../helper/constant';
+import APP_CONST from "../../../helper/constant";
 
 class CategoryList extends React.Component {
   constructor(props) {
     super(props);
-    this.columns = [
-      "id",
-      "name"
-    ];
+    this.columns = ["id", "name"];
     this.state = {
       entities: {
         data: [],
         current_page: 1,
         last_page: 1,
-        per_page: 10,
-        total: 1
+        per_page: 20,
+        total: 1,
       },
       first_page: 1,
       current_page: 1,
@@ -61,16 +59,24 @@ class CategoryList extends React.Component {
       searchKey: "",
       modalCategory: {
         id: 0,
-        name: ""
+        name: "",
+      },
+      modalMergeCategory: {
+        id: 0,
+        deletedName: "",
+        mergedName: ""
       },
       message: "",
       responseErrors: "",
       errors: {},
       isModal: false,
-      isDeleteModal: false
+      isDeleteModal: false,
+      isMergeModal: false
     };
     this.validator = new ReeValidate({
-      name: "required|min:3"
+      name: "required|min:3",
+      deletedName: "required|min:3",
+      mergedName: "required|min:3"
     });
   }
   componentDidMount() {
@@ -82,7 +88,12 @@ class CategoryList extends React.Component {
     if (nextProps.message) {
       this.showNotification(nextProps.message);
       this.setState(
-        { isModal: false, isDeleteModal: false, current_page: this.state.first_page },
+        {
+          isModal: false,
+          isMergeModal: false,
+          isDeleteModal: false,
+          current_page: this.state.first_page,
+        },
         () => {
           this.fetchEntities();
         }
@@ -93,11 +104,11 @@ class CategoryList extends React.Component {
       nextProps.responseErrors != this.state.responseErrors
     ) {
       this.setState({
-        responseErrors: nextProps.responseErrors
+        responseErrors: nextProps.responseErrors,
       });
     }
   }
-  searchKey = e => {
+  searchKey = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       const { value } = e.target;
@@ -112,36 +123,45 @@ class CategoryList extends React.Component {
 
   handleEdit(id) {
     const { data } = this.state.entities;
-    const category = data.find(obj => {
+    const category = data.find((obj) => {
       return obj.id == id;
     });
-    this.setState({ modalCategory: { ...category }, isModal: true, responseErrors: "", errors: {} });
+    this.setState({
+      modalCategory: { ...category },
+      isModal: true,
+      responseErrors: "",
+      errors: {},
+    });
   }
 
   handleDelete(id) {
     const { data } = this.state.entities;
-    const category = data.find(obj => {
+    const category = data.find((obj) => {
       return obj.id == id;
     });
-    this.setState({ modalCategory: { ...category }, isDeleteModal: true, responseErrors: "" });
+    this.setState({
+      modalCategory: { ...category },
+      isDeleteModal: true,
+      responseErrors: "",
+    });
   }
 
   fetchEntities() {
     let fetchUrl = `${APP_CONST.API_URL}/category/list/?page=${this.state.current_page}&column=${this.state.sorted_column}&order=${this.state.order}&per_page=${this.state.entities.per_page}&search_key=${this.state.searchKey}`;
     http
       .get(fetchUrl)
-      .then(response => {
+      .then((response) => {
         this.setState({ entities: response.data.data });
       })
-      .catch(e => {
+      .catch((e) => {
         this.setState({
           entities: {
             data: [],
             current_page: 1,
             last_page: 1,
-            per_page: 2,
-            total: 1
-          }
+            per_page: 20,
+            total: 1,
+          },
         });
       });
   }
@@ -176,10 +196,7 @@ class CategoryList extends React.Component {
   }
 
   columnHead(value) {
-    return value
-      .split("_")
-      .join(" ")
-      .toUpperCase();
+    return value.split("_").join(" ").toUpperCase();
   }
 
   tableHeads() {
@@ -189,13 +206,13 @@ class CategoryList extends React.Component {
     } else {
       icon = <i className="fa fa-sort-alpha-up"></i>;
     }
-    let columns = this.columns.map(column => {
+    let columns = this.columns.map((column) => {
       if (column == "id") {
         return (
           <th
             scope="col"
             className="text-center"
-            style={{ "width": "5%" }}
+            style={{ width: "5%" }}
             key={column}
           >
             {"No"}
@@ -206,7 +223,7 @@ class CategoryList extends React.Component {
           <th
             scope="col"
             className="text-center"
-            style={{ "width": "75%" }}
+            style={{ width: "75%" }}
             key={column}
             onClick={() => this.sortByColumn(column)}
           >
@@ -217,7 +234,12 @@ class CategoryList extends React.Component {
       }
     });
     columns.push(
-      <th scope="col" className="text-center" key="action" style={{ "width": "20%" }}>
+      <th
+        scope="col"
+        className="text-center"
+        key="action"
+        style={{ width: "20%" }}
+      >
         Action
       </th>
     );
@@ -230,7 +252,7 @@ class CategoryList extends React.Component {
       return this.state.entities.data.map((data, index) => {
         return (
           <tr key={data.id}>
-            {Object.keys(data).map(key => {
+            {Object.keys(data).map((key) => {
               if (key == "id")
                 return (
                   <td className="text-center" key={key}>
@@ -247,17 +269,29 @@ class CategoryList extends React.Component {
             <td className="td-action">
               <Row>
                 <Col md={12} xl={12}>
-                  <Button className="btn-tbl-categorylist-edit" size="sm" color="primary" data-dz-remove onClick={e => {
-                    self.handleEdit(data.id);
-                  }}>
+                  <Button
+                    className="btn-tbl-categorylist-edit"
+                    size="sm"
+                    color="primary"
+                    data-dz-remove
+                    onClick={(e) => {
+                      self.handleEdit(data.id);
+                    }}
+                  >
                     <span className="btn-inner--icon mr-1">
                       <i className="fas fa-edit" />
                     </span>
                     <span className="btn-inner--text">EDIT</span>
                   </Button>
-                  <Button className="btn-tbl-categorylist-delete" size="sm" color="warning" data-dz-remove onClick={e => {
-                    self.handleDelete(data.id);
-                  }}>
+                  <Button
+                    className="btn-tbl-categorylist-delete"
+                    size="sm"
+                    color="warning"
+                    data-dz-remove
+                    onClick={(e) => {
+                      self.handleDelete(data.id);
+                    }}
+                  >
                     <span className="btn-inner--icon mr-2">
                       <i className="fas fa-trash" />
                     </span>
@@ -272,7 +306,10 @@ class CategoryList extends React.Component {
     } else {
       return (
         <tr>
-          <td colSpan={this.columns.length + 1} className="text-center td-noredords">
+          <td
+            colSpan={this.columns.length + 1}
+            className="text-center td-noredords"
+          >
             No Records Found.
           </td>
         </tr>
@@ -297,7 +334,7 @@ class CategoryList extends React.Component {
         {
           sorted_column: column,
           order: "asc",
-          current_page: this.state.first_page
+          current_page: this.state.first_page,
         },
         () => {
           this.fetchEntities();
@@ -307,11 +344,11 @@ class CategoryList extends React.Component {
   }
 
   pageList() {
-    return this.pagesNumbers().map(page => {
+    return this.pagesNumbers().map((page) => {
       return (
         <PaginationItem
           className={classnames({
-            active: page === this.state.entities.current_page
+            active: page === this.state.entities.current_page,
           })}
           key={"pagination-" + page}
         >
@@ -323,23 +360,45 @@ class CategoryList extends React.Component {
     });
   }
 
-  createCategory() {
-    this.setState({
-      isModal: true,
-      modalCategory: {
-        id: 0,
-        name: ""
-      },
-      responseErrors: "",
-      errors: {}
-    });
+  handleCategory = (e) => {
+    e.preventDefault();
+    const { name } = e.target;
+
+    if (name === "createBtn") {
+      this.setState({
+        isModal: true,
+        modalCategory: {
+          id: 0,
+          name: "",
+        },
+        responseErrors: "",
+        errors: {},
+      });
+    } else {
+      this.setState({
+        isMergeModal: true,
+        modalMergeCategory: {
+          id: 0,
+          deletedName: "",
+          mergedName: ""
+        },
+        responseErrors: "",
+        errors: {},
+      });
+    }
   }
 
-  handleChange = e => {
+  handleChange = (e) => {
     const { name, value } = e.target;
-    const { modalCategory } = this.state;
-    modalCategory[name] = value;
-    this.setState({ modalCategory });
+    const { modalCategory, modalMergeCategory } = this.state;
+
+    if (name === "name") {
+      modalCategory[name] = value;
+      this.setState({ modalCategory });
+    } else {
+      modalMergeCategory[name] = value;
+      this.setState({ modalMergeCategory });
+    }
 
     const { errors } = this.state;
     if (name in errors) {
@@ -353,7 +412,7 @@ class CategoryList extends React.Component {
     }
   };
 
-  handleBlur = e => {
+  handleBlur = (e) => {
     const { name, value } = e.target;
     const validation = this.validator.errors;
 
@@ -369,51 +428,75 @@ class CategoryList extends React.Component {
       }
     });
   };
-  handleSubmitDelete = e => {
+  handleSubmitDelete = (e) => {
     e.preventDefault();
     const { modalCategory } = this.state;
     const { id } = modalCategory;
     this.props.deleteCategory(id);
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
     const { modalCategory } = this.state;
-    this.validator.validateAll(modalCategory).then(success => {
+
+    this.validator.validateAll(modalCategory).then((success) => {
       if (success) {
         if (modalCategory.id === 0) {
-          const {
-            name
-          } = modalCategory;
+          const { name } = modalCategory;
           this.props.createCategory({
-            name
+            name,
           });
         } else {
-          const {
-            id,
-            name
-          } = modalCategory;
+          const { id, name } = modalCategory;
           this.props.updateCategory({
             id,
-            name
+            name,
           });
         }
       }
     });
   };
 
-  showNotification = message => {
+  handleMergeSubmit = (e) => {
+    e.preventDefault();
+    const { modalMergeCategory } = this.state;
+
+    this.validator.validateAll(modalMergeCategory).then((success) => {
+      if (success) {
+        if (modalMergeCategory.id === 0) {
+          const { deletedName, mergedName } = modalMergeCategory;
+          
+          this.props.mergeCategory({
+            deletedName,
+            mergedName
+          });
+        } else {
+          const { id, deletedName, mergedName } = modalMergeCategory;
+          this.props.mergeCategory({
+            id,
+            deletedName,
+            mergedName
+          });
+        }
+      }
+    });
+  };
+
+  showNotification = (message) => {
     let options = {
       place: "tr",
       message: (
         <div className="alert-text">
-          <span className="alert-title" data-notify="title" dangerouslySetInnerHTML={{ __html: message }}>
-          </span>
+          <span
+            className="alert-title"
+            data-notify="title"
+            dangerouslySetInnerHTML={{ __html: message }}
+          ></span>
         </div>
       ),
       type: "success",
       icon: "ni ni-bell-55",
-      autoDismiss: 7
+      autoDismiss: 7,
     };
     this.refs.notificationAlert.notificationAlert(options);
   };
@@ -423,7 +506,9 @@ class CategoryList extends React.Component {
       errors,
       isModal,
       isDeleteModal,
+      isMergeModal,
       modalCategory,
+      modalMergeCategory,
       responseErrors,
     } = this.state;
     return (
@@ -436,12 +521,13 @@ class CategoryList extends React.Component {
           <Card style={{ minHeight: "700px" }}>
             <CardBody>
               <Row>
-                <Col>
+                <Col className="col-lg-2">
                   <Button
+                    name="createBtn"
                     className="btn-createcategory"
                     color="primary"
-                    onClick={() => {
-                      this.createCategory();
+                    onClick={(e) => {
+                      this.handleCategory(e);
                     }}
                   >
                     Create Category
@@ -450,7 +536,7 @@ class CategoryList extends React.Component {
                     isOpen={isDeleteModal}
                     toggle={() => {
                       this.setState({
-                        isDeleteModal: !this.state.isDeleteModal
+                        isDeleteModal: !this.state.isDeleteModal,
                       });
                     }}
                   >
@@ -460,7 +546,11 @@ class CategoryList extends React.Component {
                         {responseErrors && (
                           <UncontrolledAlert color="warning">
                             <span className="alert-text ml-1">
-                              <strong dangerouslySetInnerHTML={{ __html: responseErrors }}></strong>
+                              <strong
+                                dangerouslySetInnerHTML={{
+                                  __html: responseErrors,
+                                }}
+                              ></strong>
                             </span>
                           </UncontrolledAlert>
                         )}
@@ -471,7 +561,7 @@ class CategoryList extends React.Component {
                       <ModalFooter>
                         <Button
                           color="secondary"
-                          onClick={e => {
+                          onClick={(e) => {
                             this.setState({ isDeleteModal: false });
                           }}
                         >
@@ -499,14 +589,16 @@ class CategoryList extends React.Component {
                         {responseErrors && (
                           <UncontrolledAlert color="warning">
                             <span className="alert-text ml-1">
-                              <strong dangerouslySetInnerHTML={{ __html: responseErrors }}></strong>
+                              <strong
+                                dangerouslySetInnerHTML={{
+                                  __html: responseErrors,
+                                }}
+                              ></strong>
                             </span>
                           </UncontrolledAlert>
                         )}
                         <FormGroup>
-                          <label htmlFor="tshirtsFormControlInput">
-                            Name
-                          </label>
+                          <label htmlFor="tshirtsFormControlInput">Name</label>
                           <Input
                             name="name"
                             ref="name"
@@ -514,20 +606,104 @@ class CategoryList extends React.Component {
                             value={modalCategory.name}
                             placeholder="e.g. Category Name"
                             type="text"
+                            maxLength={40}
                             onBlur={this.handleBlur}
                             onChange={this.handleChange}
                             invalid={"name" in errors}
                           />
-                          <div className="invalid-feedback">
-                            {errors.name}
-                          </div>
+                          <div className="invalid-feedback">{errors.name}</div>
                         </FormGroup>
                       </ModalBody>
                       <ModalFooter>
                         <Button
                           color="secondary"
-                          onClick={e => {
+                          onClick={(e) => {
                             this.setState({ isModal: false });
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button color="primary" type="submit">
+                          Save Changes
+                        </Button>
+                      </ModalFooter>
+                    </Form>
+                  </Modal>
+                </Col>
+                <Col className="col-lg-2">
+                  <Button
+                    name="updateBtn"
+                    className="btn-createcategory"
+                    color="primary"
+                    onClick={(e) => {
+                      this.handleCategory(e);
+                    }}
+                  >
+                    Merge Category
+                  </Button>
+                  <Modal
+                    isOpen={isMergeModal}
+                    toggle={() => {
+                      this.setState({ isMergeModal: !this.state.isMergeModal });
+                    }}
+                  >
+                    <Form
+                      name="mergeCategory"
+                      role="form"
+                      method="POST"
+                      onSubmit={this.handleMergeSubmit}
+                    >
+                      <ModalHeader color="primary">Category Merge</ModalHeader>
+                      <ModalBody>
+                        {responseErrors && (
+                          <UncontrolledAlert color="warning">
+                            <span className="alert-text ml-1">
+                              <strong
+                                dangerouslySetInnerHTML={{
+                                  __html: responseErrors,
+                                }}
+                              ></strong>
+                            </span>
+                          </UncontrolledAlert>
+                        )}
+                        <FormGroup>
+                          <label htmlFor="tshirtsFormControlInput">Deleted Category Name</label>
+                          <Input
+                            name="deletedName"
+                            ref="deletedName"
+                            required
+                            value={modalMergeCategory.deletedName}
+                            placeholder="e.g. Category Name"
+                            type="text"
+                            maxLength={40}
+                            onBlur={this.handleBlur}
+                            onChange={this.handleChange}
+                            invalid={"deletedName" in errors}
+                          />
+                          <div className="invalid-feedback">{errors.deletedName}</div>
+                        </FormGroup>
+                        <FormGroup>
+                          <label htmlFor="tshirtsFormControlInput">Merged Category Name</label>
+                          <Input
+                            name="mergedName"
+                            ref="mergedName"
+                            required
+                            value={modalMergeCategory.mergedName}
+                            placeholder="e.g. Category Name"
+                            type="text"
+                            maxLength={40}
+                            onBlur={this.handleBlur}
+                            onChange={this.handleChange}
+                            invalid={"mergedName" in errors}
+                          />
+                          <div className="invalid-feedback">{errors.mergedName}</div>
+                        </FormGroup>
+                      </ModalBody>
+                      <ModalFooter>
+                        <Button
+                          color="secondary"
+                          onClick={(e) => {
+                            this.setState({ isMergeModal: false });
                           }}
                         >
                           Cancel
@@ -564,7 +740,13 @@ class CategoryList extends React.Component {
               <Row>
                 <Col md={12} xl={12}>
                   <div className="div-tbl-categorylist">
-                    <Table className="align-items-center" style={{ tableLayout: 'fixed' }} hover bordered responsive>
+                    <Table
+                      className="align-items-center"
+                      style={{ tableLayout: "fixed" }}
+                      hover
+                      bordered
+                      responsive
+                    >
                       <thead className="thead-light">
                         <tr>{this.tableHeads()}</tr>
                       </thead>
@@ -582,7 +764,7 @@ class CategoryList extends React.Component {
                 >
                   <PaginationItem
                     className={classnames({
-                      disabled: 1 == this.state.entities.current_page
+                      disabled: 1 == this.state.entities.current_page,
                     })}
                   >
                     <PaginationLink
@@ -599,7 +781,7 @@ class CategoryList extends React.Component {
                     className={classnames({
                       disabled:
                         this.state.entities.last_page ===
-                        this.state.entities.current_page
+                        this.state.entities.current_page,
                     })}
                   >
                     <PaginationLink
@@ -623,11 +805,12 @@ class CategoryList extends React.Component {
 
 const mapStateToProps = ({ category }) => ({
   responseErrors: category.errors,
-  message: category.message
+  message: category.message,
 });
 
 export default connect(mapStateToProps, {
   createCategory,
+  mergeCategory,
   updateCategory,
-  deleteCategory
+  deleteCategory,
 })(CategoryList);

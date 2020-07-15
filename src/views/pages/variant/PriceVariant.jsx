@@ -39,7 +39,8 @@ class PriceVariant extends React.Component {
             {
                 tshirts: [],
                 stickers: [],
-                mugs: [],
+                msgs: [],
+                mxgs: [],
                 toteBags: [],
                 cushionCovers: [],
                 kids: [],
@@ -84,10 +85,8 @@ class PriceVariant extends React.Component {
             }
         }
 
-        if (
-            nextProps.responseErrors &&
-            nextProps.responseErrors !== this.state.responseErrors
-        ) {
+        if (nextProps.responseErrors) {
+            this.showNotification(nextProps.responseErrors);
             this.setState({ responseErrors: nextProps.responseErrors });
         }
     }
@@ -217,9 +216,15 @@ class PriceVariant extends React.Component {
 
     Capitalize(str) {
         if (str === 'cushionCovers') {
-            str = 'Covers';
+            str = `Cushion<br>Covers`;
         } else if (str === 'toteBags') {
-            str = 'Bags';
+            str = 'Tote Bags';
+        } else if (str === 'msgs') {
+            str = 'Mugs 11oz'
+        } else if (str === 'mxgs') {
+            str = 'Mugs 15oz'
+        } else if (str === 'kids') {
+            str = 'Kids Tshirt'
         }
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
@@ -230,8 +235,9 @@ class PriceVariant extends React.Component {
                 <th
                     scope="col"
                     className="text-center"
+                    style={{paddingLeft: '3px', paddingRight: '3px'}}
+                    dangerouslySetInnerHTML={{ __html: this.Capitalize(master) }}
                 >
-                    {this.Capitalize(master)}
                 </th>
                 <th
                     scope="col"
@@ -266,7 +272,7 @@ class PriceVariant extends React.Component {
             return this.state.data[master].map((item) => {
                 return (
                     <tr key={master + item.id}>
-                        <td>
+                        <td style={{paddingLeft: '3px', paddingRight: '3px'}}>
                             {item.price} {item.default == 1 && <span style={{ 'color': 'green' }}>&#10004;</span>}
                         </td>
                         <td>
@@ -303,7 +309,7 @@ class PriceVariant extends React.Component {
         var self = this;
         return Object.keys(this.state.data).map(key => {
             return (
-                <Col style={{ 'width': '14.2%' }} key={key}>
+                <Col style={{ 'width': '9.2%' }} key={key}>
                     <div className="div-tbl-prices-variant" style={{ 'marginTop': '30px' }}>
                         <div className="tbl-wrapper">
                             {this.getModal()}

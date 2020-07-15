@@ -5,6 +5,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    text-transform: initial;
   }
 
   .card .table td,
@@ -66,8 +67,9 @@
     padding: 1px 0 0 1px;
   }
   .thead-light {
-    line-height: 15px;
+    line-height: 20px;
   }
+
   td:nth-child(2),
   th:nth-child(2) {
     padding: 0 !important;

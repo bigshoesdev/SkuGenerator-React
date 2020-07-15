@@ -1,14 +1,12 @@
 
 import {
-  ALL_PRODUCT, CREATE_KEYWORD,CREATE_PRODUCT,DELETE_PRODUCT,LIST_ALL_PRODUCT_INFO,PRODUCT_DETAIL,
-  LIST_ARTIST, LIST_STICKER_TYPE, LIST_PRINT_MODE,
-  LIST_PRICE_TSHIRTS,
-  LIST_PRICE_STICKERS,
-  LIST_PRICE_MUGS,
-  LIST_PRICE_TOTEBAGS,
-  LIST_PRICE_CUSHION_COVERS,
-  LIST_PRICE_HOODIES,
-  LIST_PRICE_KIDS,
+  CREATE_PRODUCT,
+  DELETE_PRODUCT,
+  LIST_ALL_PRODUCT_INFO,
+  PRODUCT_DETAIL,
+  LIST_ARTIST, 
+  LIST_STICKER_TYPE, 
+  LIST_PRINT_MODE,
   LIST_PRODUCT_IMAGESET,
   UPDATE_PRODUCT_IMAGESET,
   CLEAN_PRODUCT
@@ -27,16 +25,22 @@ export function createProduct(obj) {
           dispatch({ 
             type: CREATE_PRODUCT, 
             payload: res.data.data,
-            message:"The Product is created successfully!"  
+            message:"The Product is created successfully!" 
           });
           return resolve();
         })
-        .catch((err) => {
+        .catch(err => {
           if (err.response) {
-            const { status, errors } = err.response.data;
-            return reject({ status, errors });
+            let { errors } = err.response.data;
+            dispatch({ 
+              type: CREATE_PRODUCT,
+              errors: errorHandler(errors)
+            });
           } else {
-            return reject({ status: 404, errors: ['There is a network connection error.'] });
+            dispatch({
+              type: CREATE_PRODUCT,
+              errors: "There is a server connection Error, Try Later."
+            });
           }
         });
     })
@@ -72,7 +76,6 @@ export function allProductInfo(){
     http
       .post(`${APP_CONST.API_URL}/product/allProductInfo`)
       .then((response) => {
-        console.log(response);
         dispatch({
           type: LIST_ALL_PRODUCT_INFO,
           all_product: response.data.data
@@ -118,6 +121,7 @@ export function productDelete(obj){
 
 export function artistList() {
   return function (dispatch) {
+    dispatch({type: CLEAN_PRODUCT});
     http
       .post(`${APP_CONST.API_URL}/product/artist`)
       .then((response) => {
@@ -142,6 +146,7 @@ export function artistList() {
 
 export function stickertypeList() {
   return function (dispatch) {
+    dispatch({type: CLEAN_PRODUCT});
     http
       .post(`${APP_CONST.API_URL}/product/stickertype`)
       .then((response) => {
@@ -166,6 +171,7 @@ export function stickertypeList() {
 
 export function printmodeList() {
   return function (dispatch) {
+    dispatch({type: CLEAN_PRODUCT});
     http
       .post(`${APP_CONST.API_URL}/product/printmode`)
       .then((response) => {
@@ -190,6 +196,7 @@ export function printmodeList() {
 
 export function productImageSetList(){
   return function (dispatch){
+    dispatch({type: CLEAN_PRODUCT});
     http
       .get(`${APP_CONST.API_URL}/product/imagesets`)
       .then((response) => {
@@ -215,6 +222,7 @@ export function productImageSetList(){
 
 export function updateProductImageSets(obj) {
   return function (dispatch) {
+    dispatch({type: CLEAN_PRODUCT});
     http
       .post(`${APP_CONST.API_URL}/product/imagesets/update`, obj)
       .then((response) => {

@@ -162,9 +162,11 @@ class Sidebar extends React.Component {
       <div className="scrollbar-inner">
         <div className="sidenav-header d-flex align-items-center">
           {logo ? (
-            <NavbarBrand {...navbarBrandProps} style={{paddingTop: '50px', marginLeft:'28px'}}>
+            <NavbarBrand {...navbarBrandProps} style={{paddingTop: '50px', marginLeft:'-5px'}}>
             <div >
-              <h1 style={{ alignItems: 'center', justifyContent: 'center', fontWeight: 'Bold', fontSize:'1.3em', color: '#11cdef',textAlign:'center'}}>SKU <br></br>Generator</h1>
+              <h1 style={{ alignItems: 'center', justifyContent: 'center', fontWeight: 'Bold', fontSize:'1.3em', color: '#11cdef',textAlign:'center'}}>
+                <img src={require("assets/img/logo.png")}></img>
+              </h1>
             </div>
           </NavbarBrand>
           ) : null}

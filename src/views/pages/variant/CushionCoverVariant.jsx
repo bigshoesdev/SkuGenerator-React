@@ -26,7 +26,7 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter
+  ModalFooter,
 } from "reactstrap";
 
 import MainHeader from "../../components/headers/MainHeader";
@@ -39,22 +39,15 @@ import {
   listColors,
   listTypes,
 } from "../../../store/actions/variant";
-import APP_CONST from '../../../helper/constant';
-
-var colorstring = "";
-var sizestring = "";
-var typestring = "";
+import APP_CONST from "../../../helper/constant";
 
 class CushionCoversVariant extends React.Component {
   constructor(props) {
     super(props);
-    this.columns = [
-      "id",
-      "name",
-      "size",
-      "color",
-      "type"
-    ];
+    this.colorstring = "";
+    this.sizestring = "";
+    this.typestring = "";
+    this.columns = ["id", "name", "size", "color", "type"];
     this.state = {
       sizes: [],
       colors: [],
@@ -63,8 +56,8 @@ class CushionCoversVariant extends React.Component {
         data: [],
         current_page: 1,
         last_page: 1,
-        per_page: 10,
-        total: 1
+        per_page: 25,
+        total: 1,
       },
       first_page: 1,
       current_page: 1,
@@ -83,7 +76,7 @@ class CushionCoversVariant extends React.Component {
       responseErrors: "",
       errors: {},
       isModal: false,
-      isDeleteModal: false
+      isDeleteModal: false,
     };
     this.validator = new ReeValidate({
       name: "required",
@@ -100,30 +93,43 @@ class CushionCoversVariant extends React.Component {
   componentWillReceiveProps(nextProps) {
     const { modalCushionCover } = this.state;
     if (nextProps.sizes) {
-      if (nextProps.sizes.length > 0) {
+      if (
+        nextProps.sizes.length > 0 &&
+        nextProps.sizes.length != this.state.sizes.length
+      ) {
         this.setState({ sizes: nextProps.sizes }, function () {
-          modalCushionCover['size'] = this.state.sizes[0].key;
+          modalCushionCover["size"] = this.state.sizes[0].key;
         });
       }
     }
     if (nextProps.colors) {
-      if (nextProps.colors.length > 0) {
+      if (
+        nextProps.colors.length > 0 &&
+        nextProps.colors.length != this.state.colors.length
+      ) {
         this.setState({ colors: nextProps.colors }, function () {
-          modalCushionCover['color'] = this.state.colors[0].key;
+          modalCushionCover["color"] = this.state.colors[0].key;
         });
       }
     }
     if (nextProps.types) {
-      if (nextProps.types.length > 0) {
+      if (
+        nextProps.types.length > 0 &&
+        nextProps.types.length != this.state.types.length
+      ) {
         this.setState({ types: nextProps.types }, function () {
-          modalCushionCover['type'] = this.state.types[0].key;
+          modalCushionCover["type"] = this.state.types[0].key;
         });
       }
     }
     if (nextProps.message) {
       this.showNotification(nextProps.message);
       this.setState(
-        { isModal: false, isDeleteModal: false, current_page: this.state.first_page },
+        {
+          isModal: false,
+          isDeleteModal: false,
+          current_page: this.state.first_page,
+        },
         () => {
           this.fetchEntities();
         }
@@ -134,11 +140,11 @@ class CushionCoversVariant extends React.Component {
       nextProps.responseErrors !== this.state.responseErrors
     ) {
       this.setState({
-        responseErrors: nextProps.responseErrors
+        responseErrors: nextProps.responseErrors,
       });
     }
   }
-  searchKey = e => {
+  searchKey = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       const { value } = e.target;
@@ -153,36 +159,45 @@ class CushionCoversVariant extends React.Component {
 
   handleEdit(id) {
     const { data } = this.state.entities;
-    const cushioncover = data.find(obj => {
+    const cushioncover = data.find((obj) => {
       return obj.id === id;
     });
-    this.setState({ modalCushionCover: { ...cushioncover }, isModal: true, errors: {}, responseErrors: "" });
+    this.setState({
+      modalCushionCover: { ...cushioncover },
+      isModal: true,
+      errors: {},
+      responseErrors: "",
+    });
   }
 
   handleDelete(id) {
     const { data } = this.state.entities;
-    const cushioncover = data.find(obj => {
+    const cushioncover = data.find((obj) => {
       return obj.id === id;
     });
-    this.setState({ modalCushionCover: { ...cushioncover }, isDeleteModal: true, responseErrors: "" });
+    this.setState({
+      modalCushionCover: { ...cushioncover },
+      isDeleteModal: true,
+      responseErrors: "",
+    });
   }
 
   fetchEntities() {
     let fetchUrl = `${APP_CONST.API_URL}/cushioncoversVariant/list/?page=${this.state.current_page}&column=${this.state.sorted_column}&order=${this.state.order}&per_page=${this.state.entities.per_page}&search_key=${this.state.searchKey}`;
     http
       .get(fetchUrl)
-      .then(response => {
+      .then((response) => {
         this.setState({ entities: response.data.data });
       })
-      .catch(e => {
+      .catch((e) => {
         this.setState({
           entities: {
             data: [],
             current_page: 1,
             last_page: 1,
-            per_page: 2,
-            total: 1
-          }
+            per_page: 25,
+            total: 1,
+          },
         });
       });
   }
@@ -217,10 +232,7 @@ class CushionCoversVariant extends React.Component {
   }
 
   columnHead(value) {
-    return value
-      .split("_")
-      .join(" ")
-      .toUpperCase();
+    return value.split("_").join(" ").toUpperCase();
   }
 
   tableHeads() {
@@ -230,17 +242,16 @@ class CushionCoversVariant extends React.Component {
     } else {
       icon = <i className="fa fa-sort-alpha-up"></i>;
     }
-    let columns = this.columns.map(column => {
+    let columns = this.columns.map((column) => {
       if (column === "id") {
         return (
           <th
             scope="col"
             className="text-center"
-            style={{ "width": "5%" }}
+            style={{ width: "5%" }}
             key={column}
           >
             {"No"}
-
           </th>
         );
       } else if (column === "name") {
@@ -248,7 +259,7 @@ class CushionCoversVariant extends React.Component {
           <th
             scope="col"
             className="text-center"
-            style={{ "width": "20%" }}
+            style={{ width: "20%" }}
             key={column}
             onClick={() => this.sortByColumn(column)}
           >
@@ -261,7 +272,7 @@ class CushionCoversVariant extends React.Component {
           <th
             scope="col"
             className="text-center"
-            style={{ "width": "20%" }}
+            style={{ width: "20%" }}
             key={column}
           >
             {this.columnHead(column)}
@@ -271,7 +282,12 @@ class CushionCoversVariant extends React.Component {
       }
     });
     columns.push(
-      <th scope="col" className="text-center" key="action" style={{ "width": "15%" }}>
+      <th
+        scope="col"
+        className="text-center"
+        key="action"
+        style={{ width: "15%" }}
+      >
         Action
       </th>
     );
@@ -284,26 +300,41 @@ class CushionCoversVariant extends React.Component {
       return this.state.entities.data.map((data, index) => {
         return (
           <tr key={data.id}>
-            {Object.keys(data).map(key => {
+            {Object.keys(data).map((key) => {
               if (key === "id")
                 return (
                   <td className="text-center" key={key}>
                     {index + 1}
                   </td>
                 );
-              else if (key === 'color') {
-                return this.state.colors.map(item => {
-                  if (data[key] === item.key) return <td className="text-center" key={key}>{item.name}</td>;
+              else if (key === "color") {
+                return this.state.colors.map((item) => {
+                  if (data[key] === item.key)
+                    return (
+                      <td className="text-center" key={key}>
+                        {item.name}
+                      </td>
+                    );
                 });
-              } else if (key === 'size') {
-                return this.state.sizes.map(item => {
-                  if (data[key] === item.key) return <td className="text-center" key={key}>{item.name}</td>;
+              } else if (key === "size") {
+                return this.state.sizes.map((item) => {
+                  if (data[key] === item.key)
+                    return (
+                      <td className="text-center" key={key}>
+                        {item.name}
+                      </td>
+                    );
                 });
-              } else if (key === 'type') {
-                return this.state.types.map(item => {
-                  if (data[key] === item.key) return <td className="text-center" key={key}>{item.name}</td>;
+              } else if (key === "type") {
+                return this.state.types.map((item) => {
+                  if (data[key] === item.key)
+                    return (
+                      <td className="text-center" key={key}>
+                        {item.name}
+                      </td>
+                    );
                 });
-              } else if (key === 'name') {
+              } else if (key === "name") {
                 return (
                   <td className="text-center" key={key}>
                     {data[key]}
@@ -314,17 +345,29 @@ class CushionCoversVariant extends React.Component {
             <td className="td-action">
               <Row>
                 <Col md={12} xl={12}>
-                  <Button className="btn-tbl-cushioncoversVariant-edit" size="sm" color="primary" data-dz-remove onClick={e => {
-                    self.handleEdit(data.id);
-                  }}>
+                  <Button
+                    className="btn-tbl-cushioncoversVariant-edit"
+                    size="sm"
+                    color="primary"
+                    data-dz-remove
+                    onClick={(e) => {
+                      self.handleEdit(data.id);
+                    }}
+                  >
                     <span className="btn-inner--icon mr-1">
                       <i className="fas fa-edit" />
                     </span>
                     <span className="btn-inner--text">EDIT</span>
                   </Button>
-                  <Button className="btn-tbl-cushioncoversVariant-delete" size="sm" color="warning" data-dz-remove onClick={e => {
-                    self.handleDelete(data.id);
-                  }}>
+                  <Button
+                    className="btn-tbl-cushioncoversVariant-delete"
+                    size="sm"
+                    color="warning"
+                    data-dz-remove
+                    onClick={(e) => {
+                      self.handleDelete(data.id);
+                    }}
+                  >
                     <span className="btn-inner--icon mr-2">
                       <i className="fas fa-trash" />
                     </span>
@@ -339,32 +382,36 @@ class CushionCoversVariant extends React.Component {
     } else {
       return (
         <tr>
-          <td colSpan={this.columns.length + 1} className="text-center td-noredords">
+          <td
+            colSpan={this.columns.length + 1}
+            className="text-center td-noredords"
+          >
             No Records Found.
           </td>
         </tr>
       );
     }
-  } fhan
+  }
+  fhan;
 
   sortByColumn(column) {
     if (column === this.state.sorted_column) {
       this.state.order === "asc"
         ? this.setState(
-          { order: "desc", current_page: this.state.first_page },
-          () => {
-            this.fetchEntities();
-          }
-        )
+            { order: "desc", current_page: this.state.first_page },
+            () => {
+              this.fetchEntities();
+            }
+          )
         : this.setState({ order: "asc" }, () => {
-          this.fetchEntities();
-        });
+            this.fetchEntities();
+          });
     } else {
       this.setState(
         {
           sorted_column: column,
           order: "asc",
-          current_page: this.state.first_page
+          current_page: this.state.first_page,
         },
         () => {
           this.fetchEntities();
@@ -374,11 +421,11 @@ class CushionCoversVariant extends React.Component {
   }
 
   pageList() {
-    return this.pagesNumbers().map(page => {
+    return this.pagesNumbers().map((page) => {
       return (
         <PaginationItem
           className={classnames({
-            active: page === this.state.entities.current_page
+            active: page === this.state.entities.current_page,
           })}
           key={"pagination-" + page}
         >
@@ -394,48 +441,54 @@ class CushionCoversVariant extends React.Component {
     this.setState({
       isModal: true,
       errors: {},
-      responseErrors: ""
+      responseErrors: "",
     });
     const { modalCushionCover } = this.state;
-    this.state.colors.map(item => {
-      if (item.key === modalCushionCover.color) colorstring = item.name;
-    });
-    this.state.sizes.map(item => {
-      if (item.key === modalCushionCover.size) sizestring = item.name;
-    });
-    this.state.types.map(item => {
-      if (item.key === modalCushionCover.type) typestring = item.name;
-    });
-    modalCushionCover['id'] = 0;
-    modalCushionCover['name'] = colorstring + " " + typestring;
+    this.colorstring = this.state.colors[0]["name"];
+    this.sizestring = this.state.sizes[0]["name"];
+    this.typestring = this.state.types[0]["name"];
+    modalCushionCover["id"] = 0;
+    modalCushionCover["name"] = this.colorstring + " " + this.typestring;
+    modalCushionCover["color"] = this.state.colors[0]["key"];
+    modalCushionCover["type"] = this.state.types[0]["key"];
+    modalCushionCover["id"] = 0;
     this.setState({ modalCushionCover });
   }
 
-  handleChangeSelect = e => {
+  handleChangeSelect = (e) => {
     const { name, value } = e.target;
     const { modalCushionCover } = this.state;
+    this.state.colors.map((item) => {
+      if (item.key == modalCushionCover["color"]) this.colorstring = item.name;
+    });
+    this.state.sizes.map((item) => {
+      if (item.key == modalCushionCover["size"]) this.sizestring = item.name;
+    });
+    this.state.types.map((item) => {
+      if (item.key == modalCushionCover["type"]) this.typestring = item.name;
+    });
     if (name === "color") {
-      this.state.colors.map(item => {
-        if (item.key === value) colorstring = item.name;
+      this.state.colors.map((item) => {
+        if (item.key === value) this.colorstring = item.name;
       });
     }
     if (name === "size") {
-      this.state.sizes.map(item => {
-        if (item.key === value) sizestring = item.name;
+      this.state.sizes.map((item) => {
+        if (item.key === value) this.sizestring = item.name;
       });
     }
     if (name === "type") {
-      this.state.types.map(item => {
-        if (item.key === value) typestring = item.name;
+      this.state.types.map((item) => {
+        if (item.key === value) this.typestring = item.name;
       });
     }
-    var namestring = colorstring + " " + typestring;
+    var namestring = this.colorstring + " " + this.typestring;
     modalCushionCover[name] = value;
-    modalCushionCover['name'] = namestring;
+    modalCushionCover["name"] = namestring;
     this.setState({ modalCushionCover });
   };
 
-  handleChange = e => {
+  handleChange = (e) => {
     const { name, value } = e.target;
     const { modalCushionCover } = this.state;
     modalCushionCover[name] = value;
@@ -453,7 +506,7 @@ class CushionCoversVariant extends React.Component {
     }
   };
 
-  handleBlur = e => {
+  handleBlur = (e) => {
     const { name, value } = e.target;
     const validation = this.validator.errors;
 
@@ -469,16 +522,16 @@ class CushionCoversVariant extends React.Component {
       }
     });
   };
-  handleSubmitDelete = e => {
+  handleSubmitDelete = (e) => {
     e.preventDefault();
     const { modalCushionCover } = this.state;
     const { id } = modalCushionCover;
     this.props.deleteVariant(id);
   };
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
     const { modalCushionCover } = this.state;
-    this.validator.validateAll(modalCushionCover).then(success => {
+    this.validator.validateAll(modalCushionCover).then((success) => {
       if (success) {
         if (modalCushionCover.id === 0) {
           const {
@@ -487,7 +540,7 @@ class CushionCoversVariant extends React.Component {
             color,
             size,
             type,
-            master_type = "cushionCovers"
+            master_type = "cushionCovers",
           } = modalCushionCover;
           this.props.createVariant({
             name,
@@ -495,7 +548,7 @@ class CushionCoversVariant extends React.Component {
             color,
             size,
             type,
-            master_type
+            master_type,
           });
         } else {
           const {
@@ -505,7 +558,7 @@ class CushionCoversVariant extends React.Component {
             color,
             size,
             type,
-            master_type = "cushionCovers"
+            master_type = "cushionCovers",
           } = modalCushionCover;
           this.props.updateVariant({
             id,
@@ -513,25 +566,29 @@ class CushionCoversVariant extends React.Component {
             name,
             color,
             type,
-            size, master_type
+            size,
+            master_type,
           });
         }
       }
     });
   };
 
-  showNotification = message => {
+  showNotification = (message) => {
     let options = {
       place: "tr",
       message: (
         <div className="alert-text">
-          <span className="alert-title" data-notify="title" dangerouslySetInnerHTML={{ __html: message }}>
-          </span>
+          <span
+            className="alert-title"
+            data-notify="title"
+            dangerouslySetInnerHTML={{ __html: message }}
+          ></span>
         </div>
       ),
       type: "success",
       icon: "ni ni-bell-55",
-      autoDismiss: 7
+      autoDismiss: 7,
     };
     this.refs.notificationAlert.notificationAlert(options);
   };
@@ -549,7 +606,7 @@ class CushionCoversVariant extends React.Component {
         <div className="rna-wrapper">
           <NotificationAlert ref="notificationAlert" />
         </div>
-        <MainHeader name="CushionCover Variant" parentName="Variant" />
+        <MainHeader name="Cushion Cover Variant" parentName="Variant" />
         <Container className="mt--6 cushioncover-variant-container" fluid>
           <Card style={{ minHeight: "700px" }}>
             <CardBody>
@@ -562,13 +619,13 @@ class CushionCoversVariant extends React.Component {
                       this.createcushioncover();
                     }}
                   >
-                    Create Cushon Covers Variant
+                    Create Cushion Covers Variant
                   </Button>
                   <Modal
                     isOpen={isDeleteModal}
                     toggle={() => {
                       this.setState({
-                        isDeleteModal: !this.state.isDeleteModal
+                        isDeleteModal: !this.state.isDeleteModal,
                       });
                     }}
                   >
@@ -578,7 +635,11 @@ class CushionCoversVariant extends React.Component {
                         {responseErrors && (
                           <UncontrolledAlert color="warning">
                             <span className="alert-text ml-1">
-                              <strong dangerouslySetInnerHTML={{ __html: responseErrors }}></strong>
+                              <strong
+                                dangerouslySetInnerHTML={{
+                                  __html: responseErrors,
+                                }}
+                              ></strong>
                             </span>
                           </UncontrolledAlert>
                         )}
@@ -589,7 +650,7 @@ class CushionCoversVariant extends React.Component {
                       <ModalFooter>
                         <Button
                           color="secondary"
-                          onClick={e => {
+                          onClick={(e) => {
                             this.setState({ isDeleteModal: false });
                           }}
                         >
@@ -612,12 +673,18 @@ class CushionCoversVariant extends React.Component {
                       method="POST"
                       onSubmit={this.handleSubmit}
                     >
-                      <ModalHeader color="primary">Cushon Covers Variant Edit</ModalHeader>
+                      <ModalHeader color="primary">
+                        Cushion Covers Variant Edit
+                      </ModalHeader>
                       <ModalBody>
                         {responseErrors && (
                           <UncontrolledAlert color="warning">
                             <span className="alert-text ml-1">
-                              <strong dangerouslySetInnerHTML={{ __html: responseErrors }}></strong>
+                              <strong
+                                dangerouslySetInnerHTML={{
+                                  __html: responseErrors,
+                                }}
+                              ></strong>
                             </span>
                           </UncontrolledAlert>
                         )}
@@ -637,14 +704,10 @@ class CushionCoversVariant extends React.Component {
                             onChange={this.handleChange}
                             invalid={"name" in errors}
                           />
-                          <div className="invalid-feedback">
-                            {errors.name}
-                          </div>
+                          <div className="invalid-feedback">{errors.name}</div>
                         </FormGroup>
                         <FormGroup>
-                          <label htmlFor="genderFormControlInput">
-                            Colors
-                          </label>
+                          <label htmlFor="genderFormControlInput">Colors</label>
                           <Input
                             name="color"
                             ref="color"
@@ -653,15 +716,17 @@ class CushionCoversVariant extends React.Component {
                             value={modalCushionCover.color}
                             onChange={this.handleChangeSelect}
                           >
-                            {this.state.colors.map(item => {
-                              return <option key={item.key} value={item.key}>{item.name}</option>
+                            {this.state.colors.map((item) => {
+                              return (
+                                <option key={item.key} value={item.key}>
+                                  {item.name}
+                                </option>
+                              );
                             })}
                           </Input>
                         </FormGroup>
                         <FormGroup>
-                          <label htmlFor="genderFormControlInput">
-                            Sizes
-                          </label>
+                          <label htmlFor="genderFormControlInput">Sizes</label>
                           <Input
                             name="size"
                             ref="size"
@@ -671,15 +736,17 @@ class CushionCoversVariant extends React.Component {
                             value={modalCushionCover.size}
                             onChange={this.handleChangeSelect}
                           >
-                            {this.state.sizes.map(item => {
-                              return <option key={item.key} value={item.key}>{item.name}</option>
+                            {this.state.sizes.map((item) => {
+                              return (
+                                <option key={item.key} value={item.key}>
+                                  {item.name}
+                                </option>
+                              );
                             })}
                           </Input>
                         </FormGroup>
                         <FormGroup>
-                          <label htmlFor="genderFormControlInput">
-                            Types
-                          </label>
+                          <label htmlFor="genderFormControlInput">Types</label>
                           <Input
                             name="type"
                             ref="type"
@@ -688,8 +755,12 @@ class CushionCoversVariant extends React.Component {
                             value={modalCushionCover.type}
                             onChange={this.handleChangeSelect}
                           >
-                            {this.state.types.map(item => {
-                              return <option key={item.key} value={item.key}>{item.name}</option>
+                            {this.state.types.map((item) => {
+                              return (
+                                <option key={item.key} value={item.key}>
+                                  {item.name}
+                                </option>
+                              );
                             })}
                           </Input>
                         </FormGroup>
@@ -697,7 +768,7 @@ class CushionCoversVariant extends React.Component {
                       <ModalFooter>
                         <Button
                           color="secondary"
-                          onClick={e => {
+                          onClick={(e) => {
                             this.setState({ isModal: false });
                           }}
                         >
@@ -753,7 +824,7 @@ class CushionCoversVariant extends React.Component {
                 >
                   <PaginationItem
                     className={classnames({
-                      disabled: 1 == this.state.entities.current_page
+                      disabled: 1 == this.state.entities.current_page,
                     })}
                   >
                     <PaginationLink
@@ -770,7 +841,7 @@ class CushionCoversVariant extends React.Component {
                     className={classnames({
                       disabled:
                         this.state.entities.last_page ===
-                        this.state.entities.current_page
+                        this.state.entities.current_page,
                     })}
                   >
                     <PaginationLink
@@ -797,7 +868,7 @@ const mapStateToProps = ({ variant }) => ({
   sizes: variant.sizes,
   types: variant.types,
   message: variant.message,
-  responseErrors: variant.errors
+  responseErrors: variant.errors,
 });
 
 export default connect(mapStateToProps, {

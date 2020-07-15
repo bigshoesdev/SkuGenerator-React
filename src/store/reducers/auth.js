@@ -4,22 +4,24 @@ import {
     AUTH_CHECK,
     AUTH_LOGOUT,
     AUTH_ERROR,
-    CLEAN_AUTH
+    CLEAN_AUTH,
+    AUTH_RESET
 } from '../actions/types';
 
 const defaultUser = {
-    id : null,
-    name : null,
-    email : null,
+    id: null,
+    name: null,
+    email: null,
 };
-  
+
 const initialState = {
-    isLogin : false,
-    user : defaultUser,
+    isLogin: false,
+    user: defaultUser,
+    auth: [],
     message: '',
-    errors : ''
+    errors: ''
 };
-  
+
 export default function (state = initialState, action) {
     switch (action.type) {
         case AUTH_LOGIN:
@@ -28,6 +30,8 @@ export default function (state = initialState, action) {
             return { ...state, user: defaultUser, isLogin: false, message: action.message, errors: '' }
         case AUTH_CHECK:
             return { ...state, user: action.user, isLogin: action.isLogin }
+        case AUTH_RESET:
+            return { ...state, user: action.user, auth: action.auth, isLogin: action.isLogin, message: action.message, errors: '' }
         case AUTH_LOGOUT:
             return { ...state, user: defaultUser, isLogin: false, message: '', errors: '' }
         case AUTH_ERROR:

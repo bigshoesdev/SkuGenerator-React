@@ -16,23 +16,23 @@ import {
 import MainHeader from "../../components/headers/MainHeader";
 
 import {
-    updateMerchantVariantPrices, getMerchantVariantPrices
+    updateDescriptionVariant, getDescriptionVariant
 } from "../../../store/actions/variant";
 
-class PriceMerchantVariant extends React.Component {
+class DescriptionVariant extends React.Component {
     constructor(props) {
         super(props);
-        this.refPriceVars = {};
+        this.refDescriptionVars = {};
         this.state = {
             data:
             {
-                tshirts: ['', '', '', '', ''],
-                stickers: ['', '', '', '', ''],
-                mugs: ['', '', '', '', ''],
-                toteBags: ['', '', '', '', ''],
-                cushionCovers: ['', '', '', '', ''],
-                kids: ['', '', '', '', ''],
-                hoodies: ['', '', '', '', ''],
+                tshirts: '',
+                stickers: '',
+                mugs: '',
+                toteBags: '',
+                cushionCovers: '',
+                kids: '',
+                hoodies: '',
             },
             isEdit: {
                 tshirts: false,
@@ -44,42 +44,38 @@ class PriceMerchantVariant extends React.Component {
                 hoodies: false
             },
             data_th: [
-                'Australia(AUD)',
-                'Cananda(CAD)',
-                'United States(USD)',
-                'United Kingdom(GBP)',
-                'Europe (EUR)',
+                'Description',
             ],
         };
-        this.props.getMerchantVariantPrices();
+        this.props.getDescriptionVariant();
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.prices) {
-            if (nextProps.prices.length > 0) {
+        if (nextProps.description) {
+            if (nextProps.description.length > 0) {
                 let { data } = this.state;
-                nextProps.prices.map((price) => {
-                    switch (price.master) {
+                nextProps.description.map((description) => {
+                    switch (description.master) {
                         case 'tshirts':
-                            data.tshirts = [price.australia_price, price.canada_price, price.usa_price, price.uk_price, price.europe_price];
+                            data.tshirts = description.description;
                             break;
                         case 'stickers':
-                            data.stickers = [price.australia_price, price.canada_price, price.usa_price, price.uk_price, price.europe_price];
+                            data.stickers = description.description;
                             break;
                         case 'mugs':
-                            data.mugs = [price.australia_price, price.canada_price, price.usa_price, price.uk_price, price.europe_price];
+                            data.mugs = description.description;
                             break;
                         case 'toteBags':
-                            data.toteBags = [price.australia_price, price.canada_price, price.usa_price, price.uk_price, price.europe_price];
+                            data.toteBags = description.description;
                             break;
                         case 'cushionCovers':
-                            data.cushionCovers = [price.australia_price, price.canada_price, price.usa_price, price.uk_price, price.europe_price];
+                            data.cushionCovers = description.description;
                             break;
                         case 'kids':
-                            data.kids = [price.australia_price, price.canada_price, price.usa_price, price.uk_price, price.europe_price];
+                            data.kids = description.description;
                             break;
                         case 'hoodies':
-                            data.hoodies = [price.australia_price, price.canada_price, price.usa_price, price.uk_price, price.europe_price];
+                            data.hoodies = description.description;
                             break;
                     }
                 });
@@ -89,7 +85,7 @@ class PriceMerchantVariant extends React.Component {
 
         if (nextProps.responseErrors) {
             this.showNotification(nextProps.responseErrors);
-            this.props.getMerchantVariantPrices();
+            this.props.getDescriptionVariant();
         }
     }
 
@@ -104,12 +100,13 @@ class PriceMerchantVariant extends React.Component {
     }
 
     tableHeads(type) {
-        let columns = this.state.data[type].map((column, index) => {
+        let width;
+        let columns = this.state.data_th.map((column, index) => {
             return (
                 <th
                     scope="col"
                     className="text-center"
-                    style={{ "width": "17%" }}
+                    style={width}
                     key={index}
                 >
                     {this.state.data_th[index]}
@@ -120,29 +117,25 @@ class PriceMerchantVariant extends React.Component {
         return columns;
     }
 
-    emitChange(e, type, index) {
+    emitChange(e, type) {
         let { data } = this.state;
-        data[type][index] = e.target.innerHTML;
+        data[type] = e.target.innerText;
     }
 
     dataList(type) {
-        if (this.state.data[type].length) {
-            return (<tr >
-                {
-                    this.state.data[type].map((data, index) => {
-                        return (
-                            <td className="text-center" key={index}
-                                contentEditable={this.state.isEdit[type]}
-                                onInput={e => this.emitChange(e, type, index)}
-                                onBlur={e => this.emitChange(e, type, index)}
-                                dangerouslySetInnerHTML={{ __html: data }}
-                                style={{ width: '40px', height: '40px', border: this.state.isEdit[type] ? '2px solid' : '1px' }}>
-                            </td>
-                        )
-                    })
-                }
-            </tr>)
-        }
+        var self = this;
+        return (
+            <tr className="datalist-tr">
+                <td className="text-center"
+                    contentEditable={this.state.isEdit[type]}
+                    onInput={e => this.emitChange(e, type)}
+                    onBlur={e => this.emitChange(e, type)}
+                    suppressContentEditableWarning={true}
+                    style={{ height: '40px', border: this.state.isEdit[type] ? '2px solid' : '1px' }}>
+                    {this.state.data[type]}
+                </td>
+            </tr>
+        )
     }
 
     handleEdit(e, type) {
@@ -150,7 +143,7 @@ class PriceMerchantVariant extends React.Component {
         isEdit[type] = !isEdit[type];
         this.setState({ isEdit: isEdit });
         if (!isEdit[type]) {
-            this.props.updateMerchantVariantPrices({ master: type, prices: this.state.data[type] });
+            this.props.updateDescriptionVariant({ master: type, description: this.state.data[type] });
         }
     }
 
@@ -161,7 +154,7 @@ class PriceMerchantVariant extends React.Component {
                 return (
                     <Row key={key}>
                         <Col md={12} xl={12}>
-                            <div className="div-tbl-merchant-prices-variant">
+                            <div className="div-tbl-description-variant">
                                 <div className="div-tbl-title-imgVar">
                                     <Row>
                                         <Col style={{ tableLayout: 'fixed', width: "300px" }}>
@@ -177,14 +170,16 @@ class PriceMerchantVariant extends React.Component {
                                     </Row>
 
                                 </div>
-                                <Table className="align-items-center" bordered responsive>
-                                    <thead className="thead-light">
-                                        <tr>{this.tableHeads(key)}</tr>
-                                    </thead>
-                                    <tbody>
-                                        {this.dataList(key)}
-                                    </tbody>
-                                </Table>
+                                <div className="tbl-wrapper">
+                                    <Table className="align-items-center" bordered responsive>
+                                        <thead className="thead-light">
+                                            <tr>{this.tableHeads(key)}</tr>
+                                        </thead>
+                                        <tbody>
+                                            {this.dataList(key)}
+                                        </tbody>
+                                    </Table>
+                                </div>
                             </div>
                         </Col>
                     </Row>);
@@ -215,8 +210,8 @@ class PriceMerchantVariant extends React.Component {
                 <div className="rna-wrapper">
                     <NotificationAlert ref="notificationAlert" />
                 </div>
-                <MainHeader name="Variant Merchant Prices" parentName="Variant" />
-                <Container className="mt--6 merchant-price-variant-container" fluid>
+                <MainHeader name="Variant Description" parentName="Variant" />
+                <Container className="mt--6 description-variant-container" fluid>
                     <Card style={{ minHeight: "700px" }}>
                         <CardBody>
                             {
@@ -231,12 +226,12 @@ class PriceMerchantVariant extends React.Component {
 }
 
 const mapStateToProps = ({ variant }) => ({
-    prices: variant.merchantPrices,
+    description: variant.description,
     responseErrors: variant.errors,
     message: variant.message,
 });
 
 export default connect(mapStateToProps, {
-    getMerchantVariantPrices,
-    updateMerchantVariantPrices
-})(PriceMerchantVariant);
+    getDescriptionVariant,
+    updateDescriptionVariant
+})(DescriptionVariant);

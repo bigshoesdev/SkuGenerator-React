@@ -26,7 +26,7 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter
+  ModalFooter,
 } from "reactstrap";
 
 import MainHeader from "../../components/headers/MainHeader";
@@ -36,32 +36,25 @@ import {
   updateVariant,
   deleteVariant,
   listSizes,
-  listColors
+  listColors,
 } from "../../../store/actions/variant";
-import APP_CONST from '../../../helper/constant';
+import APP_CONST from "../../../helper/constant";
 
-var colorstring = "";
-var sizestring = "";
-
-class HoodyVariant extends React.Component {
+class HoodiesVariant extends React.Component {
   constructor(props) {
     super(props);
-    this.columns = [
-      "id",
-      "name",
-      "size",
-      "color"
-    ];
+    this.colorstring = "";
+    this.sizestring = "";
+    this.columns = ["id", "name", "size", "color"];
     this.state = {
       sizes: [],
       colors: [],
-      types: [],
       entities: {
         data: [],
         current_page: 1,
         last_page: 1,
-        per_page: 10,
-        total: 1
+        per_page: 25,
+        total: 1,
       },
       first_page: 1,
       current_page: 1,
@@ -69,7 +62,7 @@ class HoodyVariant extends React.Component {
       offset: 5,
       order: "asc",
       searchKey: "",
-      modalHoody: {
+      modalHoodies: {
         id: 0,
         name: "",
         gender: "",
@@ -80,7 +73,7 @@ class HoodyVariant extends React.Component {
       responseErrors: "",
       errors: {},
       isModal: false,
-      isDeleteModal: false
+      isDeleteModal: false,
     };
     this.validator = new ReeValidate({
       name: "required",
@@ -94,31 +87,35 @@ class HoodyVariant extends React.Component {
     });
   }
   componentWillReceiveProps(nextProps) {
-    const { modalHoody } = this.state;
+    const { modalHoodies } = this.state;
     if (nextProps.sizes) {
-      if (nextProps.sizes.length > 0) {
+      if (
+        nextProps.sizes.length > 0 &&
+        nextProps.sizes.length != this.state.sizes.length
+      ) {
         this.setState({ sizes: nextProps.sizes }, function () {
-          modalHoody['size'] = this.state.sizes[0].key;
+          modalHoodies["size"] = this.state.sizes[0].key;
         });
       }
     }
     if (nextProps.colors) {
-      if (nextProps.colors.length > 0) {
+      if (
+        nextProps.colors.length > 0 &&
+        nextProps.colors.length != this.state.colors.length
+      ) {
         this.setState({ colors: nextProps.colors }, function () {
-          modalHoody['color'] = this.state.colors[0].key;
-        });
-      }
-    }if (nextProps.types) {
-      if (nextProps.types.length > 0) {
-        this.setState({ types: nextProps.types }, function () {
-          modalHoody['type'] = this.state.types[0].key;
+          modalHoodies["color"] = this.state.colors[0].key;
         });
       }
     }
     if (nextProps.message) {
       this.showNotification(nextProps.message);
       this.setState(
-        { isModal: false, isDeleteModal: false, current_page: this.state.first_page },
+        {
+          isModal: false,
+          isDeleteModal: false,
+          current_page: this.state.first_page,
+        },
         () => {
           this.fetchEntities();
         }
@@ -129,11 +126,11 @@ class HoodyVariant extends React.Component {
       nextProps.responseErrors !== this.state.responseErrors
     ) {
       this.setState({
-        responseErrors: nextProps.responseErrors
+        responseErrors: nextProps.responseErrors,
       });
     }
   }
-  searchKey = e => {
+  searchKey = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       const { value } = e.target;
@@ -148,36 +145,45 @@ class HoodyVariant extends React.Component {
 
   handleEdit(id) {
     const { data } = this.state.entities;
-    const hoody = data.find(obj => {
+    const Hoodies = data.find((obj) => {
       return obj.id === id;
     });
-    this.setState({ modalHoody: { ...hoody }, isModal: true, responseErrors: "", errors: {} });
+    this.setState({
+      modalHoodies: { ...Hoodies },
+      isModal: true,
+      responseErrors: "",
+      errors: {},
+    });
   }
 
   handleDelete(id) {
     const { data } = this.state.entities;
-    const hoody = data.find(obj => {
+    const Hoodies = data.find((obj) => {
       return obj.id === id;
     });
-    this.setState({ modalHoody: { ...hoody }, isDeleteModal: true, responseErrors: "" });
+    this.setState({
+      modalHoodies: { ...Hoodies },
+      isDeleteModal: true,
+      responseErrors: "",
+    });
   }
 
   fetchEntities() {
-    let fetchUrl = `${APP_CONST.API_URL}/hoodyvariant/list/?page=${this.state.current_page}&column=${this.state.sorted_column}&order=${this.state.order}&per_page=${this.state.entities.per_page}&search_key=${this.state.searchKey}`;
+    let fetchUrl = `${APP_CONST.API_URL}/Hoodiesvariant/list/?page=${this.state.current_page}&column=${this.state.sorted_column}&order=${this.state.order}&per_page=${this.state.entities.per_page}&search_key=${this.state.searchKey}`;
     http
       .get(fetchUrl)
-      .then(response => {
+      .then((response) => {
         this.setState({ entities: response.data.data });
       })
-      .catch(e => {
+      .catch((e) => {
         this.setState({
           entities: {
             data: [],
             current_page: 1,
             last_page: 1,
-            per_page: 2,
-            total: 1
-          }
+            per_page: 25,
+            total: 1,
+          },
         });
       });
   }
@@ -212,10 +218,7 @@ class HoodyVariant extends React.Component {
   }
 
   columnHead(value) {
-    return value
-      .split("_")
-      .join(" ")
-      .toUpperCase();
+    return value.split("_").join(" ").toUpperCase();
   }
 
   tableHeads() {
@@ -225,17 +228,16 @@ class HoodyVariant extends React.Component {
     } else {
       icon = <i className="fa fa-sort-alpha-up"></i>;
     }
-    let columns = this.columns.map(column => {
+    let columns = this.columns.map((column) => {
       if (column === "id") {
         return (
           <th
             scope="col"
             className="text-center"
-            style={{ "width": "5%" }}
+            style={{ width: "5%" }}
             key={column}
           >
             {"No"}
-
           </th>
         );
       } else if (column === "name") {
@@ -243,7 +245,7 @@ class HoodyVariant extends React.Component {
           <th
             scope="col"
             className="text-center"
-            style={{ "width": "20%" }}
+            style={{ width: "20%" }}
             key={column}
             onClick={() => this.sortByColumn(column)}
           >
@@ -256,9 +258,9 @@ class HoodyVariant extends React.Component {
           <th
             scope="col"
             className="text-center"
-            style={{ "width": "20%" }}
+            style={{ width: "20%" }}
             key={column}
-          // onClick={() => this.sortByColumn(column)}
+            // onClick={() => this.sortByColumn(column)}
           >
             {this.columnHead(column)}
             {column === this.state.sorted_column && icon}
@@ -267,7 +269,12 @@ class HoodyVariant extends React.Component {
       }
     });
     columns.push(
-      <th scope="col" className="text-center" key="action" style={{ "width": "15%" }}>
+      <th
+        scope="col"
+        className="text-center"
+        key="action"
+        style={{ width: "15%" }}
+      >
         Action
       </th>
     );
@@ -280,22 +287,32 @@ class HoodyVariant extends React.Component {
       return this.state.entities.data.map((data, index) => {
         return (
           <tr key={data.id}>
-            {Object.keys(data).map(key => {
+            {Object.keys(data).map((key) => {
               if (key === "id")
                 return (
                   <td className="text-center" key={key}>
                     {index + 1}
                   </td>
                 );
-              else if (key === 'color') {
-                return this.state.colors.map(item => {
-                  if (data[key] === item.key) return <td className="text-center" key={key}>{item.name}</td>;
+              else if (key === "color") {
+                return this.state.colors.map((item) => {
+                  if (data[key] === item.key)
+                    return (
+                      <td className="text-center" key={key}>
+                        {item.name}
+                      </td>
+                    );
                 });
-              } else if (key === 'size') {
-                return this.state.sizes.map(item => {
-                  if (data[key] === item.key) return <td className="text-center" key={key}>{item.name}</td>;
+              } else if (key === "size") {
+                return this.state.sizes.map((item) => {
+                  if (data[key] === item.key)
+                    return (
+                      <td className="text-center" key={key}>
+                        {item.name}
+                      </td>
+                    );
                 });
-              } else if (key === 'name') {
+              } else if (key === "name") {
                 return (
                   <td className="text-center" key={key}>
                     {data[key]}
@@ -306,17 +323,29 @@ class HoodyVariant extends React.Component {
             <td className="td-action">
               <Row>
                 <Col md={12} xl={12}>
-                  <Button className="btn-tbl-hoodyvariant-edit" size="sm" color="primary" data-dz-remove onClick={e => {
-                    self.handleEdit(data.id);
-                  }}>
+                  <Button
+                    className="btn-tbl-Hoodiesvariant-edit"
+                    size="sm"
+                    color="primary"
+                    data-dz-remove
+                    onClick={(e) => {
+                      self.handleEdit(data.id);
+                    }}
+                  >
                     <span className="btn-inner--icon mr-1">
                       <i className="fas fa-edit" />
                     </span>
                     <span className="btn-inner--text">EDIT</span>
                   </Button>
-                  <Button className="btn-tbl-hoodyvariant-delete" size="sm" color="warning" data-dz-remove onClick={e => {
-                    self.handleDelete(data.id);
-                  }}>
+                  <Button
+                    className="btn-tbl-Hoodiesvariant-delete"
+                    size="sm"
+                    color="warning"
+                    data-dz-remove
+                    onClick={(e) => {
+                      self.handleDelete(data.id);
+                    }}
+                  >
                     <span className="btn-inner--icon mr-2">
                       <i className="fas fa-trash" />
                     </span>
@@ -331,32 +360,36 @@ class HoodyVariant extends React.Component {
     } else {
       return (
         <tr>
-          <td colSpan={this.columns.length + 1} className="text-center td-noredords">
+          <td
+            colSpan={this.columns.length + 1}
+            className="text-center td-noredords"
+          >
             No Records Found.
           </td>
         </tr>
       );
     }
-  } fhan
+  }
+  fhan;
 
   sortByColumn(column) {
     if (column === this.state.sorted_column) {
       this.state.order === "asc"
         ? this.setState(
-          { order: "desc", current_page: this.state.first_page },
-          () => {
-            this.fetchEntities();
-          }
-        )
+            { order: "desc", current_page: this.state.first_page },
+            () => {
+              this.fetchEntities();
+            }
+          )
         : this.setState({ order: "asc" }, () => {
-          this.fetchEntities();
-        });
+            this.fetchEntities();
+          });
     } else {
       this.setState(
         {
           sorted_column: column,
           order: "asc",
-          current_page: this.state.first_page
+          current_page: this.state.first_page,
         },
         () => {
           this.fetchEntities();
@@ -366,11 +399,11 @@ class HoodyVariant extends React.Component {
   }
 
   pageList() {
-    return this.pagesNumbers().map(page => {
+    return this.pagesNumbers().map((page) => {
       return (
         <PaginationItem
           className={classnames({
-            active: page === this.state.entities.current_page
+            active: page === this.state.entities.current_page,
           })}
           key={"pagination-" + page}
         >
@@ -382,47 +415,52 @@ class HoodyVariant extends React.Component {
     });
   }
 
-  createHoody() {
+  createHoodies() {
     this.setState({
       isModal: true,
       errors: {},
-      responseErrors: ""
+      responseErrors: "",
     });
-    const { modalHoody } = this.state;
-    this.state.colors.map(item => {
-      if (item.key === modalHoody.color) colorstring = item.name;
-    });
-    this.state.sizes.map(item => {
-      if (item.key === modalHoody.size) sizestring = item.name;
-    });
-    modalHoody['id'] = 0;
-    modalHoody['name'] = colorstring + " " + sizestring;
-    this.setState({ modalHoody });
+    const { modalHoodies } = this.state;
+    this.colorstring = this.state.colors[0]["name"];
+    this.sizestring = this.state.sizes[0]["name"];
+    modalHoodies["id"] = 0;
+    modalHoodies["name"] = this.colorstring + " " + this.sizestring;
+    modalHoodies["color"] = this.state.colors[0]["key"];
+    modalHoodies["size"] = this.state.sizes[0]["key"];
+    modalHoodies["id"] = 0;
+    this.setState({ modalHoodies });
   }
-  handleChangeSelect = e => {
+  handleChangeSelect = (e) => {
     const { name, value } = e.target;
-    const { modalHoody } = this.state;
+    const { modalHoodies } = this.state;
+    this.state.colors.map((item) => {
+      if (item.key == modalHoodies["color"]) this.colorstring = item.name;
+    });
+    this.state.sizes.map((item) => {
+      if (item.key == modalHoodies["size"]) this.sizestring = item.name;
+    });
     if (name === "color") {
-      this.state.colors.map(item => {
-        if (item.key === value) colorstring = item.name;
+      this.state.colors.map((item) => {
+        if (item.key === value) this.colorstring = item.name;
       });
     }
     if (name === "size") {
-      this.state.sizes.map(item => {
-        if (item.key === value) sizestring = item.name;
+      this.state.sizes.map((item) => {
+        if (item.key === value) this.sizestring = item.name;
       });
     }
-    var namestring = colorstring + " " + sizestring;
-    modalHoody[name] = value;
-    modalHoody['name'] = namestring;
-    this.setState({ modalHoody });
+    var namestring = this.colorstring + " " + this.sizestring;
+    modalHoodies[name] = value;
+    modalHoodies["name"] = namestring;
+    this.setState({ modalHoodies });
   };
 
-  handleChange = e => {
+  handleChange = (e) => {
     const { name, value } = e.target;
-    const { modalHoody } = this.state;
-    modalHoody[name] = value;
-    this.setState({ modalHoody });
+    const { modalHoodies } = this.state;
+    modalHoodies[name] = value;
+    this.setState({ modalHoodies });
 
     const { errors } = this.state;
     if (name in errors) {
@@ -436,7 +474,7 @@ class HoodyVariant extends React.Component {
     }
   };
 
-  handleBlur = e => {
+  handleBlur = (e) => {
     const { name, value } = e.target;
     const validation = this.validator.errors;
 
@@ -452,33 +490,33 @@ class HoodyVariant extends React.Component {
       }
     });
   };
-  handleSubmitDelete = e => {
+  handleSubmitDelete = (e) => {
     e.preventDefault();
-    const { modalHoody } = this.state;
-    const { id } = modalHoody;
+    const { modalHoodies } = this.state;
+    const { id } = modalHoodies;
     this.props.deleteVariant(id);
   };
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
-    const { modalHoody } = this.state;
-    this.validator.validateAll(modalHoody).then(success => {
+    const { modalHoodies } = this.state;
+    this.validator.validateAll(modalHoodies).then((success) => {
       if (success) {
-        if (modalHoody.id === 0) {
+        if (modalHoodies.id === 0) {
           const {
             name,
             gender = "",
             color,
             size,
             type = "",
-            master_type = "hoodies"
-          } = modalHoody;
+            master_type = "hoodies",
+          } = modalHoodies;
           this.props.createVariant({
             name,
             gender,
             color,
             size,
             type,
-            master_type
+            master_type,
           });
         } else {
           const {
@@ -488,33 +526,37 @@ class HoodyVariant extends React.Component {
             color,
             size,
             type = "",
-            master_type = "hoodies"
-          } = modalHoody;
+            master_type = "hoodies",
+          } = modalHoodies;
           this.props.updateVariant({
             id,
             gender,
             name,
             color,
             type,
-            size, master_type
+            size,
+            master_type,
           });
         }
       }
     });
   };
 
-  showNotification = message => {
+  showNotification = (message) => {
     let options = {
       place: "tr",
       message: (
         <div className="alert-text">
-          <span className="alert-title" data-notify="title" dangerouslySetInnerHTML={{ __html: message }}>
-          </span>
+          <span
+            className="alert-title"
+            data-notify="title"
+            dangerouslySetInnerHTML={{ __html: message }}
+          ></span>
         </div>
       ),
       type: "success",
       icon: "ni ni-bell-55",
-      autoDismiss: 7
+      autoDismiss: 7,
     };
     this.refs.notificationAlert.notificationAlert(options);
   };
@@ -524,7 +566,7 @@ class HoodyVariant extends React.Component {
       errors,
       isModal,
       isDeleteModal,
-      modalHoody,
+      modalHoodies,
       responseErrors,
     } = this.state;
     return (
@@ -532,26 +574,26 @@ class HoodyVariant extends React.Component {
         <div className="rna-wrapper">
           <NotificationAlert ref="notificationAlert" />
         </div>
-        <MainHeader name="Hoody Variant" parentName="Variant" />
-        <Container className="mt--6 hoody-variant-container" fluid>
+        <MainHeader name="Hoodies Variant" parentName="Variant" />
+        <Container className="mt--6 Hoodies-variant-container" fluid>
           <Card style={{ minHeight: "700px" }}>
             <CardBody>
               <Row>
                 <Col>
                   <Button
-                    className="btn-createhoody"
+                    className="btn-createHoodies"
                     color="primary"
                     onClick={() => {
-                      this.createHoody();
+                      this.createHoodies();
                     }}
                   >
-                    Create Hoodys Variant
+                    Create Hoodies Variant
                   </Button>
                   <Modal
                     isOpen={isDeleteModal}
                     toggle={() => {
                       this.setState({
-                        isDeleteModal: !this.state.isDeleteModal
+                        isDeleteModal: !this.state.isDeleteModal,
                       });
                     }}
                   >
@@ -561,7 +603,11 @@ class HoodyVariant extends React.Component {
                         {responseErrors && (
                           <UncontrolledAlert color="warning">
                             <span className="alert-text ml-1">
-                              <strong dangerouslySetInnerHTML={{ __html: responseErrors }}></strong>
+                              <strong
+                                dangerouslySetInnerHTML={{
+                                  __html: responseErrors,
+                                }}
+                              ></strong>
                             </span>
                           </UncontrolledAlert>
                         )}
@@ -572,7 +618,7 @@ class HoodyVariant extends React.Component {
                       <ModalFooter>
                         <Button
                           color="secondary"
-                          onClick={e => {
+                          onClick={(e) => {
                             this.setState({ isDeleteModal: false });
                           }}
                         >
@@ -595,75 +641,80 @@ class HoodyVariant extends React.Component {
                       method="POST"
                       onSubmit={this.handleSubmit}
                     >
-                      <ModalHeader color="primary">Hoodys Variant Edit</ModalHeader>
+                      <ModalHeader color="primary">
+                        Hoodies Variant Edit
+                      </ModalHeader>
                       <ModalBody>
                         {responseErrors && (
                           <UncontrolledAlert color="warning">
                             <span className="alert-text ml-1">
-                              <strong dangerouslySetInnerHTML={{ __html: responseErrors }}></strong>
+                              <strong
+                                dangerouslySetInnerHTML={{
+                                  __html: responseErrors,
+                                }}
+                              ></strong>
                             </span>
                           </UncontrolledAlert>
                         )}
                         <FormGroup>
-                          <label htmlFor="hoodiesFormControlInput">
-                            Name
-                          </label>
+                          <label htmlFor="hoodiesFormControlInput">Name</label>
                           <Input
                             name="name"
                             ref="name"
                             required
                             disabled
-                            value={modalHoody.name}
-                            placeholder="e.g. Hoody Name"
+                            value={modalHoodies.name}
+                            placeholder="e.g. Hoodies Name"
                             type="text"
                             onBlur={this.handleBlur}
                             onChange={this.handleChange}
                             invalid={"name" in errors}
                           />
-                          <div className="invalid-feedback">
-                            {errors.name}
-                          </div>
+                          <div className="invalid-feedback">{errors.name}</div>
                         </FormGroup>
                         <FormGroup>
-                          <label htmlFor="genderFormControlInput">
-                            Colors
-                          </label>
+                          <label htmlFor="genderFormControlInput">Colors</label>
                           <Input
                             name="color"
                             ref="color"
                             required
                             type="select"
-                            value={modalHoody.color}
+                            value={modalHoodies.color}
                             onChange={this.handleChangeSelect}
                           >
-                            {this.state.colors.map(item => {
-                              return <option key={item.key} value={item.key}>{item.name}</option>
+                            {this.state.colors.map((item) => {
+                              return (
+                                <option key={item.key} value={item.key}>
+                                  {item.name}
+                                </option>
+                              );
                             })}
                           </Input>
                         </FormGroup>
                         <FormGroup>
-                          <label htmlFor="genderFormControlInput">
-                            Sizes
-                          </label>
+                          <label htmlFor="genderFormControlInput">Sizes</label>
                           <Input
                             name="size"
                             ref="size"
                             required
                             type="select"
-                            value={modalHoody.size}
+                            value={modalHoodies.size}
                             onChange={this.handleChangeSelect}
                           >
-                            {this.state.sizes.map(item => {
-                              return <option key={item.key} value={item.key}>{item.name}</option>
+                            {this.state.sizes.map((item) => {
+                              return (
+                                <option key={item.key} value={item.key}>
+                                  {item.name}
+                                </option>
+                              );
                             })}
                           </Input>
                         </FormGroup>
-
                       </ModalBody>
                       <ModalFooter>
                         <Button
                           color="secondary"
-                          onClick={e => {
+                          onClick={(e) => {
                             this.setState({ isModal: false });
                           }}
                         >
@@ -677,7 +728,7 @@ class HoodyVariant extends React.Component {
                   </Modal>
                 </Col>
                 <Col>
-                  <div className="div-searchbar-createhoody">
+                  <div className="div-searchbar-createHoodies">
                     <Form className="navbar-search form-inline mr-sm-3 ">
                       <FormGroup className="mb-0">
                         <InputGroup className="input-group-alternative input-group-merge">
@@ -700,7 +751,7 @@ class HoodyVariant extends React.Component {
               </Row>
               <Row>
                 <Col md={12} xl={12}>
-                  <div className="div-tbl-hoodyvariant">
+                  <div className="div-tbl-Hoodiesvariant">
                     <Table className="align-items-center" hover bordered>
                       <thead className="thead-light">
                         <tr>{this.tableHeads()}</tr>
@@ -719,7 +770,7 @@ class HoodyVariant extends React.Component {
                 >
                   <PaginationItem
                     className={classnames({
-                      disabled: 1 == this.state.entities.current_page
+                      disabled: 1 == this.state.entities.current_page,
                     })}
                   >
                     <PaginationLink
@@ -736,7 +787,7 @@ class HoodyVariant extends React.Component {
                     className={classnames({
                       disabled:
                         this.state.entities.last_page ===
-                        this.state.entities.current_page
+                        this.state.entities.current_page,
                     })}
                   >
                     <PaginationLink
@@ -761,9 +812,8 @@ class HoodyVariant extends React.Component {
 const mapStateToProps = ({ variant }) => ({
   colors: variant.colors,
   sizes: variant.sizes,
-  types: variant.types,
   message: variant.message,
-  responseErrors: variant.errors
+  responseErrors: variant.errors,
 });
 
 export default connect(mapStateToProps, {
@@ -771,5 +821,5 @@ export default connect(mapStateToProps, {
   updateVariant,
   deleteVariant,
   listColors,
-  listSizes
-})(HoodyVariant);
+  listSizes,
+})(HoodiesVariant);

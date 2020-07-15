@@ -1,9 +1,9 @@
-import React from "react";
-import classnames from "classnames";
-import ReeValidate from "ree-validate";
-import { connect } from "react-redux";
+import React from 'react';
+import classnames from 'classnames';
+import ReeValidate from 'ree-validate';
+import { connect } from 'react-redux';
 
-import NotificationAlert from "react-notification-alert";
+import NotificationAlert from 'react-notification-alert';
 import {
   UncontrolledAlert,
   Table,
@@ -27,89 +27,56 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-} from "reactstrap";
+} from 'reactstrap';
 
-import MainHeader from "../../components/headers/MainHeader";
-import http from "../../../helper/http";
+import MainHeader from '../../components/headers/MainHeader';
+import http from '../../../helper/http';
 import {
-  createVariant,
-  updateVariant,
-  deleteVariant,
-  listSizes,
-  listColors,
-} from "../../../store/actions/variant";
-import APP_CONST from "../../../helper/constant";
+  createWord,
+  updateWord,
+  deleteWord,
+} from '../../../store/actions/trademark';
+import APP_CONST from '../../../helper/constant';
 
-class KidVariant extends React.Component {
+class ApprovedWordList extends React.Component {
   constructor(props) {
     super(props);
-    this.colorstring = "";
-    this.sizestring = "";
-    this.columns = ["id", "name", "size", "color"];
+    this.columns = ['id', 'name'];
     this.state = {
-      sizes: [],
-      colors: [],
       entities: {
         data: [],
         current_page: 1,
         last_page: 1,
-        per_page: 25,
+        per_page: 20,
         total: 1,
       },
       first_page: 1,
       current_page: 1,
-      sorted_column: this.columns[1],
+      sorted_column: this.columns[0],
       offset: 5,
-      order: "asc",
-      searchKey: "",
-      modalKid: {
+      order: 'asc',
+      searchKey: '',
+      modalWord: {
         id: 0,
-        name: "",
-        gender: "",
-        color: "",
-        size: "",
-        type: "",
+        name: '',
+        type: 'approved',
       },
-      responseErrors: "",
+      message: '',
+      responseErrors: '',
       errors: {},
       isModal: false,
       isDeleteModal: false,
     };
     this.validator = new ReeValidate({
-      name: "required",
+      name: 'required|min:2',
     });
-    this.props.listSizes({ type: "kids" });
-    this.props.listColors({ type: "kids" });
   }
-
   componentDidMount() {
     this.setState({ current_page: this.state.entities.current_page }, () => {
       this.fetchEntities();
     });
   }
-
   componentWillReceiveProps(nextProps) {
-    const { modalKid } = this.state;
-    if (nextProps.sizes) {
-      if (
-        nextProps.sizes.length > 0 &&
-        nextProps.sizes.length != this.state.sizes.length
-      ) {
-        this.setState({ sizes: nextProps.sizes }, function () {
-          modalKid["size"] = this.state.sizes[0].key;
-        });
-      }
-    }
-    if (nextProps.colors) {
-      if (
-        nextProps.colors.length > 0 &&
-        nextProps.colors.length != this.state.colors.length
-      ) {
-        this.setState({ colors: nextProps.colors }, function () {
-          modalKid["color"] = this.state.colors[0].key;
-        });
-      }
-    }
     if (nextProps.message) {
       this.showNotification(nextProps.message);
       this.setState(
@@ -125,7 +92,7 @@ class KidVariant extends React.Component {
     }
     if (
       nextProps.responseErrors &&
-      nextProps.responseErrors !== this.state.responseErrors
+      nextProps.responseErrors != this.state.responseErrors
     ) {
       this.setState({
         responseErrors: nextProps.responseErrors,
@@ -133,7 +100,7 @@ class KidVariant extends React.Component {
     }
   }
   searchKey = (e) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       e.preventDefault();
       const { value } = e.target;
       this.setState(
@@ -147,31 +114,31 @@ class KidVariant extends React.Component {
 
   handleEdit(id) {
     const { data } = this.state.entities;
-    const kid = data.find((obj) => {
-      return obj.id === id;
+    const word = data.find((obj) => {
+      return obj.id == id;
     });
     this.setState({
-      modalKid: { ...kid },
+      modalWord: { ...word },
       isModal: true,
-      responseErrors: "",
+      responseErrors: '',
       errors: {},
     });
   }
 
   handleDelete(id) {
     const { data } = this.state.entities;
-    const kid = data.find((obj) => {
-      return obj.id === id;
+    const word = data.find((obj) => {
+      return obj.id == id;
     });
     this.setState({
-      modalKid: { ...kid },
+      modalWord: { ...word },
       isDeleteModal: true,
-      responseErrors: "",
+      responseErrors: '',
     });
   }
 
   fetchEntities() {
-    let fetchUrl = `${APP_CONST.API_URL}/kidvariant/list/?page=${this.state.current_page}&column=${this.state.sorted_column}&order=${this.state.order}&per_page=${this.state.entities.per_page}&search_key=${this.state.searchKey}`;
+    let fetchUrl = `${APP_CONST.API_URL}/trademark/word/list/?type=approved&page=${this.state.current_page}&column=${this.state.sorted_column}&order=${this.state.order}&per_page=${this.state.entities.per_page}&search_key=${this.state.searchKey}`;
     http
       .get(fetchUrl)
       .then((response) => {
@@ -183,7 +150,7 @@ class KidVariant extends React.Component {
             data: [],
             current_page: 1,
             last_page: 1,
-            per_page: 25,
+            per_page: 20,
             total: 1,
           },
         });
@@ -220,48 +187,36 @@ class KidVariant extends React.Component {
   }
 
   columnHead(value) {
-    return value.split("_").join(" ").toUpperCase();
+    return value.split('_').join(' ').toUpperCase();
   }
 
   tableHeads() {
     let icon;
-    if (this.state.order === "asc") {
-      icon = <i className="fa fa-sort-alpha-down"></i>;
+    if (this.state.order === 'asc') {
+      icon = <i className='fa fa-sort-alpha-down'></i>;
     } else {
-      icon = <i className="fa fa-sort-alpha-up"></i>;
+      icon = <i className='fa fa-sort-alpha-up'></i>;
     }
     let columns = this.columns.map((column) => {
-      if (column === "id") {
+      if (column == 'id') {
         return (
           <th
-            scope="col"
-            className="text-center"
-            style={{ width: "5%" }}
+            scope='col'
+            className='text-center'
+            style={{ width: '5%' }}
             key={column}
           >
-            {"No"}
-          </th>
-        );
-      } else if (column === "name") {
-        return (
-          <th
-            scope="col"
-            className="text-center"
-            style={{ width: "20%" }}
-            key={column}
-            onClick={() => this.sortByColumn(column)}
-          >
-            {this.columnHead(column)}
-            {column === this.state.sorted_column && icon}
+            {'No'}
           </th>
         );
       } else {
         return (
           <th
-            scope="col"
-            className="text-center"
-            style={{ width: "20%" }}
+            scope='col'
+            className='text-center'
+            style={{ width: '75%' }}
             key={column}
+            onClick={() => this.sortByColumn(column)}
           >
             {this.columnHead(column)}
             {column === this.state.sorted_column && icon}
@@ -271,10 +226,10 @@ class KidVariant extends React.Component {
     });
     columns.push(
       <th
-        scope="col"
-        className="text-center"
-        key="action"
-        style={{ width: "15%" }}
+        scope='col'
+        className='text-center'
+        key='action'
+        style={{ width: '20%' }}
       >
         Action
       </th>
@@ -289,68 +244,49 @@ class KidVariant extends React.Component {
         return (
           <tr key={data.id}>
             {Object.keys(data).map((key) => {
-              if (key === "id")
+              if (key == 'id')
                 return (
-                  <td className="text-center" key={key}>
+                  <td className='text-center' key={key}>
                     {index + 1}
                   </td>
                 );
-              else if (key === "color") {
-                return this.state.colors.map((item) => {
-                  if (data[key] === item.key)
-                    return (
-                      <td className="text-center" key={key}>
-                        {item.name}
-                      </td>
-                    );
-                });
-              } else if (key === "size") {
-                return this.state.sizes.map((item) => {
-                  if (data[key] === item.key)
-                    return (
-                      <td className="text-center" key={key}>
-                        {item.name}
-                      </td>
-                    );
-                });
-              } else if (key === "name") {
+              else if (key != 'type')
                 return (
-                  <td className="text-center" key={key}>
+                  <td className='text-center' key={key}>
                     {data[key]}
                   </td>
                 );
-              }
             })}
-            <td className="td-action">
+            <td className='td-action'>
               <Row>
                 <Col md={12} xl={12}>
                   <Button
-                    className="btn-tbl-kidvariant-edit"
-                    size="sm"
-                    color="primary"
+                    className='btn-tbl-categorylist-edit'
+                    size='sm'
+                    color='primary'
                     data-dz-remove
                     onClick={(e) => {
                       self.handleEdit(data.id);
                     }}
                   >
-                    <span className="btn-inner--icon mr-1">
-                      <i className="fas fa-edit" />
+                    <span className='btn-inner--icon mr-1'>
+                      <i className='fas fa-edit' />
                     </span>
-                    <span className="btn-inner--text">EDIT</span>
+                    <span className='btn-inner--text'>EDIT</span>
                   </Button>
                   <Button
-                    className="btn-tbl-kidvariant-delete"
-                    size="sm"
-                    color="warning"
+                    className='btn-tbl-categorylist-delete'
+                    size='sm'
+                    color='warning'
                     data-dz-remove
                     onClick={(e) => {
                       self.handleDelete(data.id);
                     }}
                   >
-                    <span className="btn-inner--icon mr-2">
-                      <i className="fas fa-trash" />
+                    <span className='btn-inner--icon mr-2'>
+                      <i className='fas fa-trash' />
                     </span>
-                    <span className="btn-inner--text">DELETE</span>
+                    <span className='btn-inner--text'>DELETE</span>
                   </Button>
                 </Col>
               </Row>
@@ -363,7 +299,7 @@ class KidVariant extends React.Component {
         <tr>
           <td
             colSpan={this.columns.length + 1}
-            className="text-center td-noredords"
+            className='text-center td-noredords'
           >
             No Records Found.
           </td>
@@ -371,25 +307,24 @@ class KidVariant extends React.Component {
       );
     }
   }
-  fhan;
 
   sortByColumn(column) {
     if (column === this.state.sorted_column) {
-      this.state.order === "asc"
+      this.state.order === 'asc'
         ? this.setState(
-            { order: "desc", current_page: this.state.first_page },
+            { order: 'desc', current_page: this.state.first_page },
             () => {
               this.fetchEntities();
             }
           )
-        : this.setState({ order: "asc" }, () => {
+        : this.setState({ order: 'asc' }, () => {
             this.fetchEntities();
           });
     } else {
       this.setState(
         {
           sorted_column: column,
-          order: "asc",
+          order: 'asc',
           current_page: this.state.first_page,
         },
         () => {
@@ -406,7 +341,7 @@ class KidVariant extends React.Component {
           className={classnames({
             active: page === this.state.entities.current_page,
           })}
-          key={"pagination-" + page}
+          key={'pagination-' + page}
         >
           <PaginationLink onClick={() => this.changePage(page)}>
             {page}
@@ -416,52 +351,24 @@ class KidVariant extends React.Component {
     });
   }
 
-  createKid() {
+  createWord() {
     this.setState({
       isModal: true,
-      responseErrors: "",
+      modalWord: {
+        id: 0,
+        name: '',
+        type: 'approved',
+      },
+      responseErrors: '',
       errors: {},
     });
-    const { modalKid } = this.state;
-    this.colorstring = this.state.colors[0]["name"];
-    this.sizestring = this.state.sizes[0]["name"];
-    modalKid["id"] = 0;
-    modalKid["name"] = this.colorstring + " " + this.sizestring;
-    modalKid["color"] = this.state.colors[0]["key"];
-    modalKid["size"] = this.state.sizes[0]["key"];
-    modalKid["id"] = 0;
-    this.setState({ modalKid });
   }
-  handleChangeSelect = (e) => {
-    const { name, value } = e.target;
-    const { modalKid } = this.state;
-    this.state.colors.map((item) => {
-      if (item.key == modalKid["color"]) this.colorstring = item.name;
-    });
-    this.state.sizes.map((item) => {
-      if (item.key == modalKid["size"]) this.sizestring = item.name;
-    });
-    if (name === "color") {
-      this.state.colors.map((item) => {
-        if (item.key === value) this.colorstring = item.name;
-      });
-    }
-    if (name === "size") {
-      this.state.sizes.map((item) => {
-        if (item.key === value) this.sizestring = item.name;
-      });
-    }
-    var namestring = this.colorstring + " " + this.sizestring;
-    modalKid[name] = value;
-    modalKid["name"] = namestring;
-    this.setState({ modalKid });
-  };
 
   handleChange = (e) => {
     const { name, value } = e.target;
-    const { modalKid } = this.state;
-    modalKid[name] = value;
-    this.setState({ modalKid });
+    const { modalWord } = this.state;
+    modalWord[name] = value;
+    this.setState({ modalWord });
 
     const { errors } = this.state;
     if (name in errors) {
@@ -479,7 +386,7 @@ class KidVariant extends React.Component {
     const { name, value } = e.target;
     const validation = this.validator.errors;
 
-    if (value === "") {
+    if (value === '') {
       return;
     }
 
@@ -491,52 +398,32 @@ class KidVariant extends React.Component {
       }
     });
   };
+
   handleSubmitDelete = (e) => {
     e.preventDefault();
-    const { modalKid } = this.state;
-    const { id } = modalKid;
-    this.props.deleteVariant(id);
+    const { modalWord } = this.state;
+    const { id } = modalWord;
+    this.props.deleteWord(id);
   };
+
   handleSubmit = (e) => {
     e.preventDefault();
-    const { modalKid } = this.state;
-    this.validator.validateAll(modalKid).then((success) => {
+    const { modalWord } = this.state;
+    this.validator.validateAll(modalWord).then((success) => {
       if (success) {
-        if (modalKid.id === 0) {
-          const {
+        if (modalWord.id === 0) {
+          const { name, type } = modalWord;
+          this.props.createWord({
             name,
-            gender = "",
-            color,
-            size,
-            type = "",
-            master_type = "kids",
-          } = modalKid;
-          this.props.createVariant({
-            name,
-            gender,
-            color,
-            size,
             type,
-            master_type,
           });
         } else {
-          const {
+          const { id, name, type } = modalWord;
+          console.log(type);
+          this.props.updateWord({
             id,
-            gender = "",
             name,
-            color,
-            size,
-            type = "",
-            master_type = "kids",
-          } = modalKid;
-          this.props.updateVariant({
-            id,
-            gender,
-            name,
-            color,
             type,
-            size,
-            master_type,
           });
         }
       }
@@ -545,18 +432,18 @@ class KidVariant extends React.Component {
 
   showNotification = (message) => {
     let options = {
-      place: "tr",
+      place: 'tr',
       message: (
-        <div className="alert-text">
+        <div className='alert-text'>
           <span
-            className="alert-title"
-            data-notify="title"
+            className='alert-title'
+            data-notify='title'
             dangerouslySetInnerHTML={{ __html: message }}
           ></span>
         </div>
       ),
-      type: "success",
-      icon: "ni ni-bell-55",
+      type: 'success',
+      icon: 'ni ni-bell-55',
       autoDismiss: 7,
     };
     this.refs.notificationAlert.notificationAlert(options);
@@ -567,28 +454,44 @@ class KidVariant extends React.Component {
       errors,
       isModal,
       isDeleteModal,
-      modalKid,
+      modalWord,
       responseErrors,
     } = this.state;
     return (
       <>
-        <div className="rna-wrapper">
-          <NotificationAlert ref="notificationAlert" />
+        <div className='rna-wrapper'>
+          <NotificationAlert ref='notificationAlert' />
         </div>
-        <MainHeader name="Kid Variant" parentName="Variant" />
-        <Container className="mt--6 kid-variant-container" fluid>
-          <Card style={{ minHeight: "700px" }}>
+        <MainHeader name='Approved Keywords' parentName='Trademark' />
+        <Container className='mt--6 category-list-container' fluid>
+          <Card style={{ minHeight: '700px' }}>
             <CardBody>
+              <Row>
+                <Col md={8}>
+                  <h4 className='display-4 ml-3'>Approved Keywords</h4>
+                  <p className='mb-0 ml-3'>
+                    <i
+                      className='fas fa-exclamation-triangle'
+                      style={{ color: 'red' }}
+                    ></i>
+                    &nbsp; This is a list of <b>trusted</b> keywords. This is a
+                    list of keywords that are{' '}
+                    <b>excluded from trademark search</b>. You must make sure
+                    all words would be manually trademark checked by you before
+                    adding to this list.
+                  </p>
+                </Col>
+              </Row>
               <Row>
                 <Col>
                   <Button
-                    className="btn-createkid"
-                    color="primary"
+                    className='btn-createcategory'
                     onClick={() => {
-                      this.createKid();
+                      this.createWord();
                     }}
+                    color='success'
                   >
-                    Create Kids Variant
+                    Add Trusted Keyword
                   </Button>
                   <Modal
                     isOpen={isDeleteModal}
@@ -598,12 +501,12 @@ class KidVariant extends React.Component {
                       });
                     }}
                   >
-                    <Form method="POST" onSubmit={this.handleSubmitDelete}>
+                    <Form method='POST' onSubmit={this.handleSubmitDelete}>
                       <ModalHeader>Confirm</ModalHeader>
                       <ModalBody>
                         {responseErrors && (
-                          <UncontrolledAlert color="warning">
-                            <span className="alert-text ml-1">
+                          <UncontrolledAlert color='warning'>
+                            <span className='alert-text ml-1'>
                               <strong
                                 dangerouslySetInnerHTML={{
                                   __html: responseErrors,
@@ -618,14 +521,14 @@ class KidVariant extends React.Component {
                       </ModalBody>
                       <ModalFooter>
                         <Button
-                          color="secondary"
+                          color='secondary'
                           onClick={(e) => {
                             this.setState({ isDeleteModal: false });
                           }}
                         >
                           Cancel
                         </Button>
-                        <Button color="primary" type="submit">
+                        <Button color='primary' type='submit'>
                           Delete
                         </Button>
                       </ModalFooter>
@@ -638,17 +541,15 @@ class KidVariant extends React.Component {
                     }}
                   >
                     <Form
-                      role="form"
-                      method="POST"
+                      role='form'
+                      method='POST'
                       onSubmit={this.handleSubmit}
                     >
-                      <ModalHeader color="primary">
-                        Kids Variant Edit
-                      </ModalHeader>
+                      <ModalHeader color='primary'>Word Edit</ModalHeader>
                       <ModalBody>
                         {responseErrors && (
-                          <UncontrolledAlert color="warning">
-                            <span className="alert-text ml-1">
+                          <UncontrolledAlert color='warning'>
+                            <span className='alert-text ml-1'>
                               <strong
                                 dangerouslySetInnerHTML={{
                                   __html: responseErrors,
@@ -658,70 +559,31 @@ class KidVariant extends React.Component {
                           </UncontrolledAlert>
                         )}
                         <FormGroup>
-                          <label htmlFor="kidsFormControlInput">Name</label>
+                          <label htmlFor='tshirtsFormControlInput'>Name</label>
                           <Input
-                            name="name"
-                            ref="name"
+                            name='name'
+                            ref='name'
                             required
-                            disabled
-                            value={modalKid.name}
-                            placeholder="e.g. Kid Name"
-                            type="text"
+                            value={modalWord.name}
+                            placeholder='e.g. Word Name'
+                            type='text'
                             onBlur={this.handleBlur}
                             onChange={this.handleChange}
-                            invalid={"name" in errors}
+                            invalid={'name' in errors}
                           />
-                          <div className="invalid-feedback">{errors.name}</div>
-                        </FormGroup>
-                        <FormGroup>
-                          <label htmlFor="genderFormControlInput">Colors</label>
-                          <Input
-                            name="color"
-                            ref="color"
-                            required
-                            type="select"
-                            value={modalKid.color}
-                            onChange={this.handleChangeSelect}
-                          >
-                            {this.state.colors.map((item) => {
-                              return (
-                                <option key={item.key} value={item.key}>
-                                  {item.name}
-                                </option>
-                              );
-                            })}
-                          </Input>
-                        </FormGroup>
-                        <FormGroup>
-                          <label htmlFor="genderFormControlInput">Sizes</label>
-                          <Input
-                            name="size"
-                            ref="size"
-                            required
-                            type="select"
-                            value={modalKid.size}
-                            onChange={this.handleChangeSelect}
-                          >
-                            {this.state.sizes.map((item) => {
-                              return (
-                                <option key={item.key} value={item.key}>
-                                  {item.name}
-                                </option>
-                              );
-                            })}
-                          </Input>
+                          <div className='invalid-feedback'>{errors.name}</div>
                         </FormGroup>
                       </ModalBody>
                       <ModalFooter>
                         <Button
-                          color="secondary"
+                          color='secondary'
                           onClick={(e) => {
                             this.setState({ isModal: false });
                           }}
                         >
                           Cancel
                         </Button>
-                        <Button color="primary" type="submit">
+                        <Button color='primary' type='submit'>
                           Save Changes
                         </Button>
                       </ModalFooter>
@@ -729,19 +591,19 @@ class KidVariant extends React.Component {
                   </Modal>
                 </Col>
                 <Col>
-                  <div className="div-searchbar-createkid">
-                    <Form className="navbar-search form-inline mr-sm-3 ">
-                      <FormGroup className="mb-0">
-                        <InputGroup className="input-group-alternative input-group-merge">
-                          <InputGroupAddon addonType="prepend">
+                  <div className='div-searchbar-createcategory'>
+                    <Form className='navbar-search form-inline mr-sm-3 '>
+                      <FormGroup className='mb-0'>
+                        <InputGroup className='input-group-alternative input-group-merge'>
+                          <InputGroupAddon addonType='prepend'>
                             <InputGroupText>
-                              <i className="fas fa-search" />
+                              <i className='fas fa-search' />
                             </InputGroupText>
                           </InputGroupAddon>
                           <Input
-                            placeholder="Search"
-                            type="text"
-                            name="searchKey"
+                            placeholder='Search'
+                            type='text'
+                            name='searchKey'
                             onKeyDown={this.searchKey}
                           />
                         </InputGroup>
@@ -752,9 +614,15 @@ class KidVariant extends React.Component {
               </Row>
               <Row>
                 <Col md={12} xl={12}>
-                  <div className="div-tbl-kidvariant">
-                    <Table className="align-items-center" hover bordered>
-                      <thead className="thead-light">
+                  <div className='div-tbl-categorylist'>
+                    <Table
+                      className='align-items-center'
+                      style={{ tableLayout: 'fixed' }}
+                      hover
+                      bordered
+                      responsive
+                    >
+                      <thead className='thead-light'>
                         <tr>{this.tableHeads()}</tr>
                       </thead>
                       <tbody>{this.dataList()}</tbody>
@@ -763,11 +631,11 @@ class KidVariant extends React.Component {
                 </Col>
               </Row>
             </CardBody>
-            <CardFooter className="py-4">
-              <nav aria-label="...">
+            <CardFooter className='py-4'>
+              <nav aria-label='...'>
                 <Pagination
-                  className="pagination justify-content-end mb-0"
-                  listClassName="justify-content-end mb-0"
+                  className='pagination justify-content-end mb-0'
+                  listClassName='justify-content-end mb-0'
                 >
                   <PaginationItem
                     className={classnames({
@@ -779,8 +647,8 @@ class KidVariant extends React.Component {
                         this.changePage(this.state.entities.current_page - 1)
                       }
                     >
-                      <i className="fas fa-angle-left" />
-                      <span className="sr-only">Previous</span>
+                      <i className='fas fa-angle-left' />
+                      <span className='sr-only'>Previous</span>
                     </PaginationLink>
                   </PaginationItem>
                   {this.pageList()}
@@ -796,8 +664,8 @@ class KidVariant extends React.Component {
                         this.changePage(this.state.entities.current_page + 1)
                       }
                     >
-                      <i className="fas fa-angle-right" />
-                      <span className="sr-only">Next</span>
+                      <i className='fas fa-angle-right' />
+                      <span className='sr-only'>Next</span>
                     </PaginationLink>
                   </PaginationItem>
                 </Pagination>
@@ -810,17 +678,13 @@ class KidVariant extends React.Component {
   }
 }
 
-const mapStateToProps = ({ variant }) => ({
-  colors: variant.colors,
-  sizes: variant.sizes,
-  message: variant.message,
-  responseErrors: variant.errors,
+const mapStateToProps = ({ trademark }) => ({
+  responseErrors: trademark.errors,
+  message: trademark.message,
 });
 
 export default connect(mapStateToProps, {
-  createVariant,
-  updateVariant,
-  deleteVariant,
-  listColors,
-  listSizes,
-})(KidVariant);
+  createWord,
+  updateWord,
+  deleteWord,
+})(ApprovedWordList);

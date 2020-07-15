@@ -10,10 +10,15 @@ import {
     UPDATE_IMAGE_VARIANT,
     ALL_MERCHANT_PRICE_VARIANT,
     UPDATE_MERCHANT_PRICE_VARIANT,
+    ALL_DESCRIPTION_VARIANT,
+    UPDATE_DESCRIPTION_VARIANT,
     ALL_PRICE_VARIANT,
     ADD_PRICE_VARIANT,
     DELETE_VARIANT,
-    DELETE_PRICE_VARIANT
+    DELETE_PRICE_VARIANT,
+    CLEAN_SIZE,
+    CLEAN_COLOR,
+    CLEAN_TYPE
 } from './types';
 
 import http from '../../helper/http';
@@ -22,6 +27,7 @@ import { errorHandler } from "../../helper/util";
 
 export function listSizes(type) {
   return function(dispatch) {
+    dispatch({ type: CLEAN_SIZE });
     http
       .post(`${APP_CONST.API_URL}/variant/sizes`, type)
       .then((response) => {
@@ -45,6 +51,7 @@ export function listSizes(type) {
 }
 export function listColors(type) {
   return function(dispatch) {
+    dispatch({ type: CLEAN_COLOR });
     http
       .post(`${APP_CONST.API_URL}/variant/colors`, type)
       .then((response) => {
@@ -68,6 +75,7 @@ export function listColors(type) {
 }
 export function listTypes(type) {
   return function(dispatch) {
+    dispatch({ type: CLEAN_TYPE });
     http
       .post(`${APP_CONST.API_URL}/variant/types`, type)
       .then((response) => {
@@ -251,6 +259,57 @@ export function updateMerchantVariantPrices(obj) {
           type: UPDATE_MERCHANT_PRICE_VARIANT,
           message: "The variant merchant price is updated successfully!",
           prices: response.data.data.prices
+        });
+      })
+      .catch(err => {
+        if (err.response) {
+          let { errors } = err.response.data;
+          dispatch({ type: VARIANT_ERROR, errors: errorHandler(errors) });
+        } else {
+          dispatch({
+            type: VARIANT_ERROR,
+            errors: "There is a server connection Error, Try Later."
+          });
+        }
+      });
+  };
+}
+
+export function getDescriptionVariant(){
+  return function (dispatch){
+    dispatch({type: CLEAN_VARIANT});
+    http
+      .get(`${APP_CONST.API_URL}/variant/description`)
+      .then((response) => {
+        dispatch({
+          type: ALL_DESCRIPTION_VARIANT,
+          description: response.data.data
+        });
+      })
+      .catch(err => {
+        if (err.response) {
+          let { errors } = err.response.data;
+          dispatch({ type: VARIANT_ERROR, errors: errorHandler(errors) });
+        } else {
+          dispatch({
+            type: VARIANT_ERROR,
+            errors: "There is a server connection Error, Try Later."
+          });
+        }
+      });
+  }
+}
+
+export function updateDescriptionVariant(obj) {
+  return function (dispatch) {
+    dispatch({ type: CLEAN_VARIANT });
+    http
+      .post(`${APP_CONST.API_URL}/variant/description/update`, obj)
+      .then((response) => {
+        dispatch({
+          type: UPDATE_DESCRIPTION_VARIANT,
+          message: "The description is updated successfully!",
+          description: response.data.data.description
         });
       })
       .catch(err => {

@@ -26,7 +26,7 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter
+  ModalFooter,
 } from "reactstrap";
 
 import MainHeader from "../../components/headers/MainHeader";
@@ -36,32 +36,26 @@ import {
   updateVariant,
   deleteVariant,
   listSizes,
-  listColors
+  listColors,
 } from "../../../store/actions/variant";
-import APP_CONST from '../../../helper/constant';
-
-var colorstring = "";
-var sizestring = "";
+import APP_CONST from "../../../helper/constant";
 
 class ToteBagVariant extends React.Component {
   constructor(props) {
     super(props);
-    this.columns = [
-      "id",
-      "name",
-      "size",
-      "color"
-    ];
+    this.colorstring = "";
+    this.sizestring = "";
+
+    this.columns = ["id", "name", "size", "color"];
     this.state = {
       sizes: [],
       colors: [],
-      types: [],
       entities: {
         data: [],
         current_page: 1,
         last_page: 1,
-        per_page: 10,
-        total: 1
+        per_page: 25,
+        total: 1,
       },
       first_page: 1,
       current_page: 1,
@@ -75,12 +69,12 @@ class ToteBagVariant extends React.Component {
         gender: "",
         color: "",
         size: "",
-        type: ""
+        type: "",
       },
       responseErrors: "",
       errors: {},
       isModal: false,
-      isDeleteModal: false
+      isDeleteModal: false,
     };
     this.validator = new ReeValidate({
       name: "required",
@@ -96,30 +90,33 @@ class ToteBagVariant extends React.Component {
   componentWillReceiveProps(nextProps) {
     const { modalToteBag } = this.state;
     if (nextProps.sizes) {
-      if (nextProps.sizes.length > 0) {
+      if (
+        nextProps.sizes.length > 0 &&
+        nextProps.sizes.length != this.state.sizes.length
+      ) {
         this.setState({ sizes: nextProps.sizes }, function () {
-          modalToteBag['size'] = this.state.sizes[0].key;
+          modalToteBag["size"] = this.state.sizes[0].key;
         });
       }
     }
     if (nextProps.colors) {
-      if (nextProps.colors.length > 0) {
+      if (
+        nextProps.colors.length > 0 &&
+        nextProps.colors.length != this.state.colors.length
+      ) {
         this.setState({ colors: nextProps.colors }, function () {
-          modalToteBag['color'] = this.state.colors[0].key;
-        });
-      }
-    }
-    if (nextProps.types) {
-      if (nextProps.types.length > 0) {
-        this.setState({ types: nextProps.types }, function () {
-          modalToteBag['type'] = this.state.types[0].key;
+          modalToteBag["color"] = this.state.colors[0].key;
         });
       }
     }
     if (nextProps.message) {
       this.showNotification(nextProps.message);
       this.setState(
-        { isModal: false, isDeleteModal: false, current_page: this.state.first_page },
+        {
+          isModal: false,
+          isDeleteModal: false,
+          current_page: this.state.first_page,
+        },
         () => {
           this.fetchEntities();
         }
@@ -130,11 +127,11 @@ class ToteBagVariant extends React.Component {
       nextProps.responseErrors !== this.state.responseErrors
     ) {
       this.setState({
-        responseErrors: nextProps.responseErrors
+        responseErrors: nextProps.responseErrors,
       });
     }
   }
-  searchKey = e => {
+  searchKey = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       const { value } = e.target;
@@ -149,36 +146,45 @@ class ToteBagVariant extends React.Component {
 
   handleEdit(id) {
     const { data } = this.state.entities;
-    const toteBag = data.find(obj => {
+    const toteBag = data.find((obj) => {
       return obj.id === id;
     });
-    this.setState({ modalToteBag: { ...toteBag }, isModal: true, responseErrors: "", errors: {} });
+    this.setState({
+      modalToteBag: { ...toteBag },
+      isModal: true,
+      responseErrors: "",
+      errors: {},
+    });
   }
 
   handleDelete(id) {
     const { data } = this.state.entities;
-    const toteBag = data.find(obj => {
+    const toteBag = data.find((obj) => {
       return obj.id === id;
     });
-    this.setState({ modalToteBag: { ...toteBag }, isDeleteModal: true, responseErrors: "" });
+    this.setState({
+      modalToteBag: { ...toteBag },
+      isDeleteModal: true,
+      responseErrors: "",
+    });
   }
 
   fetchEntities() {
     let fetchUrl = `${APP_CONST.API_URL}/toteBagvariant/list/?page=${this.state.current_page}&column=${this.state.sorted_column}&order=${this.state.order}&per_page=${this.state.entities.per_page}&search_key=${this.state.searchKey}`;
     http
       .get(fetchUrl)
-      .then(response => {
+      .then((response) => {
         this.setState({ entities: response.data.data });
       })
-      .catch(e => {
+      .catch((e) => {
         this.setState({
           entities: {
             data: [],
             current_page: 1,
             last_page: 1,
-            per_page: 2,
-            total: 1
-          }
+            per_page: 25,
+            total: 1,
+          },
         });
       });
   }
@@ -213,10 +219,7 @@ class ToteBagVariant extends React.Component {
   }
 
   columnHead(value) {
-    return value
-      .split("_")
-      .join(" ")
-      .toUpperCase();
+    return value.split("_").join(" ").toUpperCase();
   }
 
   tableHeads() {
@@ -226,17 +229,16 @@ class ToteBagVariant extends React.Component {
     } else {
       icon = <i className="fa fa-sort-alpha-up"></i>;
     }
-    let columns = this.columns.map(column => {
+    let columns = this.columns.map((column) => {
       if (column === "id") {
         return (
           <th
             scope="col"
             className="text-center"
-            style={{ "width": "5%" }}
+            style={{ width: "5%" }}
             key={column}
           >
             {"No"}
-
           </th>
         );
       } else if (column === "name") {
@@ -244,7 +246,7 @@ class ToteBagVariant extends React.Component {
           <th
             scope="col"
             className="text-center"
-            style={{ "width": "20%" }}
+            style={{ width: "20%" }}
             key={column}
             onClick={() => this.sortByColumn(column)}
           >
@@ -257,7 +259,7 @@ class ToteBagVariant extends React.Component {
           <th
             scope="col"
             className="text-center"
-            style={{ "width": "20%" }}
+            style={{ width: "20%" }}
             key={column}
           >
             {this.columnHead(column)}
@@ -267,7 +269,12 @@ class ToteBagVariant extends React.Component {
       }
     });
     columns.push(
-      <th scope="col" className="text-center" key="action" style={{ "width": "15%" }}>
+      <th
+        scope="col"
+        className="text-center"
+        key="action"
+        style={{ width: "15%" }}
+      >
         Action
       </th>
     );
@@ -280,26 +287,32 @@ class ToteBagVariant extends React.Component {
       return this.state.entities.data.map((data, index) => {
         return (
           <tr key={data.id}>
-            {Object.keys(data).map(key => {
+            {Object.keys(data).map((key) => {
               if (key === "id")
                 return (
                   <td className="text-center" key={key}>
                     {index + 1}
                   </td>
                 );
-              else if (key === 'color') {
-                return this.state.colors.map(item => {
-                  if (data[key] === item.key) return <td className="text-center" key={key}>{item.name}</td>;
+              else if (key === "color") {
+                return this.state.colors.map((item) => {
+                  if (data[key] === item.key)
+                    return (
+                      <td className="text-center" key={key}>
+                        {item.name}
+                      </td>
+                    );
                 });
-              } else if (key === 'size') {
-                return this.state.sizes.map(item => {
-                  if (data[key] === item.key) return <td className="text-center" key={key}>{item.name}</td>;
+              } else if (key === "size") {
+                return this.state.sizes.map((item) => {
+                  if (data[key] === item.key)
+                    return (
+                      <td className="text-center" key={key}>
+                        {item.name}
+                      </td>
+                    );
                 });
-              } else if (key === 'type') {
-                return this.state.types.map(item => {
-                  if (data[key] === item.key) return <td className="text-center" key={key}>{item.name}</td>;
-                });
-              }else if (key === 'name') {
+              } else if (key === "name") {
                 return (
                   <td className="text-center" key={key}>
                     {data[key]}
@@ -310,17 +323,29 @@ class ToteBagVariant extends React.Component {
             <td className="td-action">
               <Row>
                 <Col md={12} xl={12}>
-                  <Button className="btn-tbl-toteBagvariant-edit" size="sm" color="primary" data-dz-remove onClick={e => {
-                    self.handleEdit(data.id);
-                  }}>
+                  <Button
+                    className="btn-tbl-toteBagvariant-edit"
+                    size="sm"
+                    color="primary"
+                    data-dz-remove
+                    onClick={(e) => {
+                      self.handleEdit(data.id);
+                    }}
+                  >
                     <span className="btn-inner--icon mr-1">
                       <i className="fas fa-edit" />
                     </span>
                     <span className="btn-inner--text">EDIT</span>
                   </Button>
-                  <Button className="btn-tbl-toteBagvariant-delete" size="sm" color="warning" data-dz-remove onClick={e => {
-                    self.handleDelete(data.id);
-                  }}>
+                  <Button
+                    className="btn-tbl-toteBagvariant-delete"
+                    size="sm"
+                    color="warning"
+                    data-dz-remove
+                    onClick={(e) => {
+                      self.handleDelete(data.id);
+                    }}
+                  >
                     <span className="btn-inner--icon mr-2">
                       <i className="fas fa-trash" />
                     </span>
@@ -335,32 +360,36 @@ class ToteBagVariant extends React.Component {
     } else {
       return (
         <tr>
-          <td colSpan={this.columns.length + 1} className="text-center td-noredords">
+          <td
+            colSpan={this.columns.length + 1}
+            className="text-center td-noredords"
+          >
             No Records Found.
           </td>
         </tr>
       );
     }
-  } fhan
+  }
+  fhan;
 
   sortByColumn(column) {
     if (column === this.state.sorted_column) {
       this.state.order === "asc"
         ? this.setState(
-          { order: "desc", current_page: this.state.first_page },
-          () => {
-            this.fetchEntities();
-          }
-        )
+            { order: "desc", current_page: this.state.first_page },
+            () => {
+              this.fetchEntities();
+            }
+          )
         : this.setState({ order: "asc" }, () => {
-          this.fetchEntities();
-        });
+            this.fetchEntities();
+          });
     } else {
       this.setState(
         {
           sorted_column: column,
           order: "asc",
-          current_page: this.state.first_page
+          current_page: this.state.first_page,
         },
         () => {
           this.fetchEntities();
@@ -370,11 +399,11 @@ class ToteBagVariant extends React.Component {
   }
 
   pageList() {
-    return this.pagesNumbers().map(page => {
+    return this.pagesNumbers().map((page) => {
       return (
         <PaginationItem
           className={classnames({
-            active: page === this.state.entities.current_page
+            active: page === this.state.entities.current_page,
           })}
           key={"pagination-" + page}
         >
@@ -390,39 +419,45 @@ class ToteBagVariant extends React.Component {
     this.setState({
       isModal: true,
       errors: {},
-      responseErrors: ""
+      responseErrors: "",
     });
     const { modalToteBag } = this.state;
-    this.state.colors.map(item => {
-      if (item.key === modalToteBag.color) colorstring = item.name;
-    });
-    this.state.sizes.map(item => {
-      if (item.key === modalToteBag.size) sizestring = item.name;
-    });
-    modalToteBag['id'] = 0;
-    modalToteBag['name'] = colorstring;
+
+    this.colorstring = this.state.colors[0]["name"];
+    this.sizestring = this.state.sizes[0]["name"];
+    modalToteBag["id"] = 0;
+    modalToteBag["name"] = this.colorstring;
+    modalToteBag["color"] = this.state.colors[0]["key"];
+    modalToteBag["id"] = 0;
     this.setState({ modalToteBag });
   }
-  handleChangeSelect = e => {
+  handleChangeSelect = (e) => {
     const { name, value } = e.target;
     const { modalToteBag } = this.state;
+    this.state.colors.map((item) => {
+      if (item.key == modalToteBag["color"]) this.colorstring = item.name;
+    });
+    this.state.sizes.map((item) => {
+      if (item.key == modalToteBag["size"]) this.sizestring = item.name;
+    });
     if (name === "color") {
-      this.state.colors.map(item => {
-        if (item.key === value) colorstring = item.name;
+      this.state.colors.map((item) => {
+        if (item.key === value) this.colorstring = item.name;
       });
     }
     if (name === "size") {
-      this.state.sizes.map(item => {
-        if (item.key === value) sizestring = item.name;
+      this.state.sizes.map((item) => {
+        if (item.key === value) this.sizestring = item.name;
       });
     }
-    var namestring = colorstring;
+
+    var namestring = this.colorstring;
     modalToteBag[name] = value;
-    modalToteBag['name'] = namestring;
+    modalToteBag["name"] = namestring;
     this.setState({ modalToteBag });
   };
 
-  handleChange = e => {
+  handleChange = (e) => {
     const { name, value } = e.target;
     const { modalToteBag } = this.state;
     modalToteBag[name] = value;
@@ -440,7 +475,7 @@ class ToteBagVariant extends React.Component {
     }
   };
 
-  handleBlur = e => {
+  handleBlur = (e) => {
     const { name, value } = e.target;
     const validation = this.validator.errors;
 
@@ -456,16 +491,16 @@ class ToteBagVariant extends React.Component {
       }
     });
   };
-  handleSubmitDelete = e => {
+  handleSubmitDelete = (e) => {
     e.preventDefault();
     const { modalToteBag } = this.state;
     const { id } = modalToteBag;
     this.props.deleteVariant(id);
   };
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
     const { modalToteBag } = this.state;
-    this.validator.validateAll(modalToteBag).then(success => {
+    this.validator.validateAll(modalToteBag).then((success) => {
       if (success) {
         if (modalToteBag.id === 0) {
           const {
@@ -474,7 +509,7 @@ class ToteBagVariant extends React.Component {
             color,
             size,
             type = "",
-            master_type = "toteBags"
+            master_type = "toteBags",
           } = modalToteBag;
           this.props.createVariant({
             name,
@@ -482,7 +517,7 @@ class ToteBagVariant extends React.Component {
             color,
             size,
             type,
-            master_type
+            master_type,
           });
         } else {
           const {
@@ -492,7 +527,7 @@ class ToteBagVariant extends React.Component {
             color,
             size,
             type = "",
-            master_type = "toteBags"
+            master_type = "toteBags",
           } = modalToteBag;
           this.props.updateVariant({
             id,
@@ -500,25 +535,29 @@ class ToteBagVariant extends React.Component {
             name,
             color,
             type,
-            size, master_type
+            size,
+            master_type,
           });
         }
       }
     });
   };
 
-  showNotification = message => {
+  showNotification = (message) => {
     let options = {
       place: "tr",
       message: (
         <div className="alert-text">
-          <span className="alert-title" data-notify="title" dangerouslySetInnerHTML={{ __html: message }}>
-          </span>
+          <span
+            className="alert-title"
+            data-notify="title"
+            dangerouslySetInnerHTML={{ __html: message }}
+          ></span>
         </div>
       ),
       type: "success",
       icon: "ni ni-bell-55",
-      autoDismiss: 7
+      autoDismiss: 7,
     };
     this.refs.notificationAlert.notificationAlert(options);
   };
@@ -555,7 +594,7 @@ class ToteBagVariant extends React.Component {
                     isOpen={isDeleteModal}
                     toggle={() => {
                       this.setState({
-                        isDeleteModal: !this.state.isDeleteModal
+                        isDeleteModal: !this.state.isDeleteModal,
                       });
                     }}
                   >
@@ -565,7 +604,11 @@ class ToteBagVariant extends React.Component {
                         {responseErrors && (
                           <UncontrolledAlert color="warning">
                             <span className="alert-text ml-1">
-                              <strong dangerouslySetInnerHTML={{ __html: responseErrors }}></strong>
+                              <strong
+                                dangerouslySetInnerHTML={{
+                                  __html: responseErrors,
+                                }}
+                              ></strong>
                             </span>
                           </UncontrolledAlert>
                         )}
@@ -576,7 +619,7 @@ class ToteBagVariant extends React.Component {
                       <ModalFooter>
                         <Button
                           color="secondary"
-                          onClick={e => {
+                          onClick={(e) => {
                             this.setState({ isDeleteModal: false });
                           }}
                         >
@@ -599,19 +642,23 @@ class ToteBagVariant extends React.Component {
                       method="POST"
                       onSubmit={this.handleSubmit}
                     >
-                      <ModalHeader color="primary">ToteBags Variant Edit</ModalHeader>
+                      <ModalHeader color="primary">
+                        ToteBags Variant Edit
+                      </ModalHeader>
                       <ModalBody>
                         {responseErrors && (
                           <UncontrolledAlert color="warning">
                             <span className="alert-text ml-1">
-                              <strong dangerouslySetInnerHTML={{ __html: responseErrors }}></strong>
+                              <strong
+                                dangerouslySetInnerHTML={{
+                                  __html: responseErrors,
+                                }}
+                              ></strong>
                             </span>
                           </UncontrolledAlert>
                         )}
                         <FormGroup>
-                          <label htmlFor="toteBagsFormControlInput">
-                            Name
-                          </label>
+                          <label htmlFor="toteBagsFormControlInput">Name</label>
                           <Input
                             name="name"
                             ref="name"
@@ -624,14 +671,10 @@ class ToteBagVariant extends React.Component {
                             onChange={this.handleChange}
                             invalid={"name" in errors}
                           />
-                          <div className="invalid-feedback">
-                            {errors.name}
-                          </div>
+                          <div className="invalid-feedback">{errors.name}</div>
                         </FormGroup>
                         <FormGroup>
-                          <label htmlFor="genderFormControlInput">
-                            Colors
-                          </label>
+                          <label htmlFor="genderFormControlInput">Colors</label>
                           <Input
                             name="color"
                             ref="color"
@@ -640,15 +683,17 @@ class ToteBagVariant extends React.Component {
                             value={modalToteBag.color}
                             onChange={this.handleChangeSelect}
                           >
-                            {this.state.colors.map(item => {
-                              return <option key={item.key} value={item.key}>{item.name}</option>
+                            {this.state.colors.map((item) => {
+                              return (
+                                <option key={item.key} value={item.key}>
+                                  {item.name}
+                                </option>
+                              );
                             })}
                           </Input>
                         </FormGroup>
                         <FormGroup>
-                          <label htmlFor="genderFormControlInput">
-                            Sizes
-                          </label>
+                          <label htmlFor="genderFormControlInput">Sizes</label>
                           <Input
                             name="size"
                             ref="size"
@@ -658,17 +703,20 @@ class ToteBagVariant extends React.Component {
                             onChange={this.handleChangeSelect}
                             disabled
                           >
-                            {this.state.sizes.map(item => {
-                              return <option key={item.key} value={item.key}>{item.name}</option>
+                            {this.state.sizes.map((item) => {
+                              return (
+                                <option key={item.key} value={item.key}>
+                                  {item.name}
+                                </option>
+                              );
                             })}
                           </Input>
                         </FormGroup>
-
                       </ModalBody>
                       <ModalFooter>
                         <Button
                           color="secondary"
-                          onClick={e => {
+                          onClick={(e) => {
                             this.setState({ isModal: false });
                           }}
                         >
@@ -724,7 +772,7 @@ class ToteBagVariant extends React.Component {
                 >
                   <PaginationItem
                     className={classnames({
-                      disabled: 1 == this.state.entities.current_page
+                      disabled: 1 == this.state.entities.current_page,
                     })}
                   >
                     <PaginationLink
@@ -741,7 +789,7 @@ class ToteBagVariant extends React.Component {
                     className={classnames({
                       disabled:
                         this.state.entities.last_page ===
-                        this.state.entities.current_page
+                        this.state.entities.current_page,
                     })}
                   >
                     <PaginationLink
@@ -766,9 +814,8 @@ class ToteBagVariant extends React.Component {
 const mapStateToProps = ({ variant }) => ({
   colors: variant.colors,
   sizes: variant.sizes,
-  types: variant.types,
   message: variant.message,
-  responseErrors: variant.errors
+  responseErrors: variant.errors,
 });
 
 export default connect(mapStateToProps, {
@@ -776,5 +823,5 @@ export default connect(mapStateToProps, {
   updateVariant,
   deleteVariant,
   listColors,
-  listSizes
+  listSizes,
 })(ToteBagVariant);

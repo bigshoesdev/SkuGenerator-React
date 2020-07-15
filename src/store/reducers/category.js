@@ -1,5 +1,6 @@
 import {
   CREATE_CATEGORY,
+  MERGE_CATEGORY,
   CLEAN_CATEGORY,
   CATEGORY_ERROR,
   DELETE_CATEGORY,
@@ -13,14 +14,16 @@ const initialState = {
   errors: ""
 };
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   switch (action.type) {
     case ALL_CATEGORY:
       return { ...state, categories: action.categories, message: "", errors: "" };
     case CREATE_CATEGORY:
       return { ...state, message: action.message, errors: "" };
+    case MERGE_CATEGORY:
+      return { ...state, message: action.message, errors: "" };
     case CLEAN_CATEGORY:
-    return { ...state, message: '', errors: "" };
+      return { ...state, message: '', errors: "" };
     case UPDATE_CATEGORY:
       return { ...state, message: action.message, errors: "" };
     case DELETE_CATEGORY:

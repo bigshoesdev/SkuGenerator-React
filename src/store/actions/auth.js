@@ -4,7 +4,8 @@ import {
   AUTH_LOGOUT,
   AUTH_ERROR,
   AUTH_CHECK,
-  CLEAN_AUTH
+  CLEAN_AUTH,
+  AUTH_RESET
 } from './types';
 import http from '../../helper/http';
 import APP_CONST from '../../helper/constant';
@@ -37,7 +38,7 @@ export function authLogin(credentials) {
         localStorage.setItem('access_token', token);
         localStorage.setItem('user', JSON.stringify(user));
         http.defaults.headers.common.Authorization = `Bearer ${token}`;
-        dispatch({ type: AUTH_LOGIN, user: user, message: '<strong>Login successful!</strong>'});
+        dispatch({ type: AUTH_LOGIN, user: user, message: '<strong>Login successful!</strong>' });
       })
       .catch((err) => {
         if (err.response) {
@@ -65,6 +66,24 @@ export function authCheck() {
       isLogin: isLogin,
       user: user
     })
+  }
+}
+
+export function resetAuth(obj) {
+  return function (dispatch) {
+    dispatch({ type: CLEAN_AUTH });
+    http.post(`${APP_CONST.API_URL}/resetAuth`, obj)
+      .then((response) => {
+        dispatch({ type: AUTH_RESET, auth: response.data.user, message: '<strong>Reset Credential successful!</strong>' });
+      })
+      .catch((err) => {
+        if (err.response) {
+          let { errors } = err.response.data;
+          dispatch({ type: AUTH_ERROR, errors: errorHandler(errors) })
+        } else {
+          dispatch({ type: AUTH_ERROR, errors: 'There is a server connection Error, Try Later.' });
+        }
+      });
   }
 }
 

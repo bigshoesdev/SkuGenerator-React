@@ -17,14 +17,61 @@ import {
   NavItem,
   Nav,
   Container,
+  Input,
+  Form,
+  FormGroup,
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter
 } from "reactstrap";
 
+import { resetAuth } from "../../../store/actions/auth";
+
 class AdminNavbar extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: props.user.email,
+      password: "",
+      responseErrors: "",
+      isModal: false,
+      auth_name: props.user.name,
+    };
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.user) {
+      this.setState({ auth_name: nextProps.user.name });
+    }
+  }
+
   logOut() {
     this.props.authLogout();
   }
 
+  resetLog() {
+    this.setState({ isModal: true });
+  }
+
+  handleChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
+  }
+
+  handleSubmit(e) {
+    e.preventDefault();
+    const { email, password } = this.state;
+    this.props.resetAuth({ email, password });
+  }
+
   render() {
+    const { isModal, email, password } = this.state;
     return (
       <>
         <Navbar
@@ -66,18 +113,77 @@ class AdminNavbar extends React.Component {
                       </span>
                       <Media className="ml-2 d-none d-lg-block">
                         <span className="mb-0 text-sm font-weight-bold">
-                          {this.props.user.name}
+                          {this.state.auth_name}
                         </span>
                       </Media>
                     </Media>
                   </DropdownToggle>
+                  <Modal
+                    isOpen={isModal}
+                    toggle={() => {
+                      this.setState({ isModal: !this.state.isModal });
+                    }}
+                  >
+                    <Form
+                      role="form"
+                      method="POST"
+                      onSubmit={this.handleSubmit}
+                    >
+                      <ModalHeader color="primary">Credential Reset</ModalHeader>
+                      <ModalBody>
+                        <FormGroup>
+                          <label htmlFor="emailFormControlInput">
+                            New Email
+                          </label>
+                          <Input
+                            name="email"
+                            ref="email"
+                            required
+                            placeholder="Please enter your new email"
+                            value={email}
+                            type="email"
+                            onChange={this.handleChange}
+                          />
+                        </FormGroup>
+                        <FormGroup>
+                          <label htmlFor="passwordFormControlInput">
+                            New Password
+                          </label>
+                          <Input
+                            name="password"
+                            ref="password"
+                            required
+                            type="password"
+                            placeholder="Please enter your new password"
+                            value={password}
+                            onChange={this.handleChange}
+                            minLength="6"
+                          >
+                          </Input>
+                        </FormGroup>
+                      </ModalBody>
+                      <ModalFooter>
+                        <Button
+                          color="secondary"
+                          onClick={e => {
+                            this.setState({ isModal: false });
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button color="primary" type="submit">
+                          Save Changes
+                        </Button>
+                      </ModalFooter>
+                    </Form>
+                  </Modal>
                   <DropdownMenu right>
                     <DropdownItem className="noti-title" header tag="div" >
-                      <h6 className="text-overflow m-0" style={{'cursor': 'pointer'}}>Welcome!</h6>
+                      <h6 className="text-overflow m-0" style={{ 'cursor': 'pointer' }}>Welcome!</h6>
                     </DropdownItem>
                     <DropdownItem
-                      onClick={e => e.preventDefault()}
-                      style={{'cursor': 'pointer'}}
+                      onClick={e => this.resetLog()}
+                      style={{ 'cursor': 'pointer' }}
                     >
                       <i className="ni ni-settings-gear-65" />
                       <span>Settings</span>
@@ -85,7 +191,7 @@ class AdminNavbar extends React.Component {
                     <DropdownItem divider />
                     <DropdownItem
                       onClick={e => this.logOut()}
-                      style={{'cursor': 'pointer'}}
+                      style={{ 'cursor': 'pointer' }}
                     >
                       <i className="ni ni-user-run" />
                       <span>Logout</span>
@@ -117,4 +223,4 @@ const mapStateToProps = ({ auth }) => ({
   user: auth.user
 });
 
-export default connect(mapStateToProps, { authLogout })(withRouter(AdminNavbar));
+export default connect(mapStateToProps, { authLogout, resetAuth })(withRouter(AdminNavbar));

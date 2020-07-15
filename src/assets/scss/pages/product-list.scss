@@ -49,8 +49,7 @@
   .card .table td,
   .card .table th {
     padding: 0.5rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    font-size: 0.7rem;
   }
 
   .card .table th {
@@ -83,6 +82,7 @@
 
   .img-tbl-productlist {
     width: 50px;
+    min-height: 50px !important;
   }
 
   .align-items-center {
@@ -107,5 +107,11 @@
     margin-left: 20px;
     margin-top: 20px;
     margin-bottom: 20px;
+  }
+
+  .custom-control-disable{
+    .custom-control-label::before{
+      background-color: #b89494;
+    }
   }
 }

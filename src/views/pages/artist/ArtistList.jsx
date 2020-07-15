@@ -26,7 +26,7 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter
+  ModalFooter,
 } from "reactstrap";
 
 import MainHeader from "../../components/headers/MainHeader";
@@ -34,19 +34,14 @@ import http from "../../../helper/http";
 import {
   createArtist,
   updateArtist,
-  deleteArtist
+  deleteArtist,
 } from "../../../store/actions/artist";
-import APP_CONST from '../../../helper/constant';
+import APP_CONST from "../../../helper/constant";
 
 class ArtistList extends React.Component {
   constructor(props) {
     super(props);
-    this.columns = [
-      "id",
-      "code",
-      "name",
-      "email"
-    ];
+    this.columns = ["id", "code", "name", "artist email"];
     this.state = {
       code: "",
       name: "",
@@ -55,8 +50,8 @@ class ArtistList extends React.Component {
         data: [],
         current_page: 1,
         last_page: 1,
-        per_page: 10,
-        total: 1
+        per_page: 20,
+        total: 1,
       },
       first_page: 1,
       current_page: 1,
@@ -73,12 +68,12 @@ class ArtistList extends React.Component {
       responseErrors: "",
       errors: {},
       isModal: false,
-      isDeleteModal: false
+      isDeleteModal: false,
     };
     this.validator = new ReeValidate({
-      code: "required|min:3",
+      code: "required|min:1|max:4",
       name: "required|min:3",
-      email: "required|email"
+      email: "required|email",
     });
   }
 
@@ -92,7 +87,11 @@ class ArtistList extends React.Component {
     if (nextProps.message) {
       this.showNotification(nextProps.message);
       this.setState(
-        { isModal: false, isDeleteModal: false, current_page: this.state.first_page },
+        {
+          isModal: false,
+          isDeleteModal: false,
+          current_page: this.state.first_page,
+        },
         () => {
           this.fetchEntities();
         }
@@ -103,11 +102,11 @@ class ArtistList extends React.Component {
       nextProps.responseErrors != this.state.responseErrors
     ) {
       this.setState({
-        responseErrors: nextProps.responseErrors
+        responseErrors: nextProps.responseErrors,
       });
     }
   }
-  searchKey = e => {
+  searchKey = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       const { value } = e.target;
@@ -122,36 +121,45 @@ class ArtistList extends React.Component {
 
   handleEdit(id) {
     const { data } = this.state.entities;
-    const artist = data.find(obj => {
+    const artist = data.find((obj) => {
       return obj.id == id;
     });
-    this.setState({ modalArtist: { ...artist }, errors: {}, isModal: true, responseErrors: "" });
+    this.setState({
+      modalArtist: { ...artist },
+      errors: {},
+      isModal: true,
+      responseErrors: "",
+    });
   }
 
   handleDelete(id) {
     const { data } = this.state.entities;
-    const artist = data.find(obj => {
+    const artist = data.find((obj) => {
       return obj.id == id;
     });
-    this.setState({ modalArtist: { ...artist }, isDeleteModal: true, responseErrors: "" });
+    this.setState({
+      modalArtist: { ...artist },
+      isDeleteModal: true,
+      responseErrors: "",
+    });
   }
 
   fetchEntities() {
     let fetchUrl = `${APP_CONST.API_URL}/artist/list/?page=${this.state.current_page}&column=${this.state.sorted_column}&order=${this.state.order}&per_page=${this.state.entities.per_page}&search_key=${this.state.searchKey}`;
     http
       .get(fetchUrl)
-      .then(response => {
+      .then((response) => {
         this.setState({ entities: response.data.data });
       })
-      .catch(e => {
+      .catch((e) => {
         this.setState({
           entities: {
             data: [],
             current_page: 1,
             last_page: 1,
-            per_page: 10,
-            total: 1
-          }
+            per_page: 20,
+            total: 1,
+          },
         });
       });
   }
@@ -186,10 +194,7 @@ class ArtistList extends React.Component {
   }
 
   columnHead(value) {
-    return value
-      .split("_")
-      .join(" ")
-      .toUpperCase();
+    return value.split("_").join(" ").toUpperCase();
   }
 
   tableHeads() {
@@ -199,13 +204,13 @@ class ArtistList extends React.Component {
     } else {
       icon = <i className="fa fa-sort-alpha-up"></i>;
     }
-    let columns = this.columns.map(column => {
+    let columns = this.columns.map((column) => {
       if (column == "id") {
         return (
           <th
             scope="col"
             className="text-center"
-            style={{ "width": "5%" }}
+            style={{ width: "5%" }}
             key={column}
           >
             {"No"}
@@ -216,7 +221,7 @@ class ArtistList extends React.Component {
           <th
             scope="col"
             className="text-center"
-            style={{ "width": "26%" }}
+            style={{ width: "26%" }}
             key={column}
             onClick={() => this.sortByColumn(column)}
           >
@@ -227,7 +232,12 @@ class ArtistList extends React.Component {
       }
     });
     columns.push(
-      <th scope="col" className="text-center" key="action" style={{ "width": "17%" }}>
+      <th
+        scope="col"
+        className="text-center"
+        key="action"
+        style={{ width: "17%" }}
+      >
         Action
       </th>
     );
@@ -240,7 +250,7 @@ class ArtistList extends React.Component {
       return this.state.entities.data.map((data, index) => {
         return (
           <tr key={data.id}>
-            {Object.keys(data).map(key => {
+            {Object.keys(data).map((key) => {
               if (key == "id")
                 return (
                   <td className="text-center" key={key}>
@@ -257,17 +267,29 @@ class ArtistList extends React.Component {
             <td className="td-action">
               <Row>
                 <Col md={12} xl={12}>
-                  <Button className="btn-tbl-artistlist-edit" size="sm" color="primary" data-dz-remove onClick={e => {
-                    self.handleEdit(data.id);
-                  }}>
+                  <Button
+                    className="btn-tbl-artistlist-edit"
+                    size="sm"
+                    color="primary"
+                    data-dz-remove
+                    onClick={(e) => {
+                      self.handleEdit(data.id);
+                    }}
+                  >
                     <span className="btn-inner--icon mr-1">
                       <i className="fas fa-edit" />
                     </span>
                     <span className="btn-inner--text">EDIT</span>
                   </Button>
-                  <Button className="btn-tbl-artistlist-delete" size="sm" color="warning" data-dz-remove onClick={e => {
-                    self.handleDelete(data.id);
-                  }}>
+                  <Button
+                    className="btn-tbl-artistlist-delete"
+                    size="sm"
+                    color="warning"
+                    data-dz-remove
+                    onClick={(e) => {
+                      self.handleDelete(data.id);
+                    }}
+                  >
                     <span className="btn-inner--icon mr-2">
                       <i className="fas fa-trash" />
                     </span>
@@ -282,7 +304,10 @@ class ArtistList extends React.Component {
     } else {
       return (
         <tr>
-          <td colSpan={this.columns.length + 1} className="text-center td-noredords">
+          <td
+            colSpan={this.columns.length + 1}
+            className="text-center td-noredords"
+          >
             No Records Found.
           </td>
         </tr>
@@ -294,20 +319,20 @@ class ArtistList extends React.Component {
     if (column === this.state.sorted_column) {
       this.state.order === "asc"
         ? this.setState(
-          { order: "desc", current_page: this.state.first_page },
-          () => {
-            this.fetchEntities();
-          }
-        )
+            { order: "desc", current_page: this.state.first_page },
+            () => {
+              this.fetchEntities();
+            }
+          )
         : this.setState({ order: "asc" }, () => {
-          this.fetchEntities();
-        });
+            this.fetchEntities();
+          });
     } else {
       this.setState(
         {
           sorted_column: column,
           order: "asc",
-          current_page: this.state.first_page
+          current_page: this.state.first_page,
         },
         () => {
           this.fetchEntities();
@@ -317,11 +342,11 @@ class ArtistList extends React.Component {
   }
 
   pageList() {
-    return this.pagesNumbers().map(page => {
+    return this.pagesNumbers().map((page) => {
       return (
         <PaginationItem
           className={classnames({
-            active: page === this.state.entities.current_page
+            active: page === this.state.entities.current_page,
           })}
           key={"pagination-" + page}
         >
@@ -340,14 +365,14 @@ class ArtistList extends React.Component {
         id: 0,
         code: "",
         name: "",
-        email: ""
+        email: "",
       },
-      responseErrors: "", 
-      errors: {}
+      responseErrors: "",
+      errors: {},
     });
   }
 
-  handleChange = e => {
+  handleChange = (e) => {
     const { name, value } = e.target;
     const { modalArtist } = this.state;
     modalArtist[name] = value;
@@ -364,7 +389,7 @@ class ArtistList extends React.Component {
     }
   };
 
-  handleBlur = e => {
+  handleBlur = (e) => {
     const { name, value } = e.target;
     const validation = this.validator.errors;
 
@@ -380,18 +405,18 @@ class ArtistList extends React.Component {
       }
     });
   };
-  
-  handleSubmitDelete = e => {
+
+  handleSubmitDelete = (e) => {
     e.preventDefault();
     const { modalArtist } = this.state;
     const { id } = modalArtist;
     this.props.deleteArtist(id);
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
     const { modalArtist } = this.state;
-    this.validator.validateAll(modalArtist).then(success => {
+    this.validator.validateAll(modalArtist).then((success) => {
       if (success) {
         if (modalArtist.id === 0) {
           this.props.createArtist(modalArtist);
@@ -402,18 +427,21 @@ class ArtistList extends React.Component {
     });
   };
 
-  showNotification = message => {
+  showNotification = (message) => {
     let options = {
       place: "tr",
       message: (
         <div className="alert-text">
-          <span className="alert-title" data-notify="title" dangerouslySetInnerHTML={{ __html: message }}>
-          </span>
+          <span
+            className="alert-title"
+            data-notify="title"
+            dangerouslySetInnerHTML={{ __html: message }}
+          ></span>
         </div>
       ),
       type: "success",
       icon: "ni ni-bell-55",
-      autoDismiss: 7
+      autoDismiss: 7,
     };
     this.refs.notificationAlert.notificationAlert(options);
   };
@@ -450,7 +478,7 @@ class ArtistList extends React.Component {
                     isOpen={isDeleteModal}
                     toggle={() => {
                       this.setState({
-                        isDeleteModal: !this.state.isDeleteModal
+                        isDeleteModal: !this.state.isDeleteModal,
                       });
                     }}
                   >
@@ -460,7 +488,11 @@ class ArtistList extends React.Component {
                         {responseErrors && (
                           <UncontrolledAlert color="warning">
                             <span className="alert-text ml-1">
-                              <strong dangerouslySetInnerHTML={{ __html: responseErrors }}></strong>
+                              <strong
+                                dangerouslySetInnerHTML={{
+                                  __html: responseErrors,
+                                }}
+                              ></strong>
                             </span>
                           </UncontrolledAlert>
                         )}
@@ -471,7 +503,7 @@ class ArtistList extends React.Component {
                       <ModalFooter>
                         <Button
                           color="secondary"
-                          onClick={e => {
+                          onClick={(e) => {
                             this.setState({ isDeleteModal: false });
                           }}
                         >
@@ -499,7 +531,11 @@ class ArtistList extends React.Component {
                         {responseErrors && (
                           <UncontrolledAlert color="warning">
                             <span className="alert-text ml-1">
-                              <strong dangerouslySetInnerHTML={{ __html: responseErrors }}></strong>
+                              <strong
+                                dangerouslySetInnerHTML={{
+                                  __html: responseErrors,
+                                }}
+                              ></strong>
                             </span>
                           </UncontrolledAlert>
                         )}
@@ -517,9 +553,7 @@ class ArtistList extends React.Component {
                             onChange={this.handleChange}
                             invalid={"code" in errors}
                           />
-                          <div className="invalid-feedback">
-                            {errors.code}
-                          </div>
+                          <div className="invalid-feedback">{errors.code}</div>
                         </FormGroup>
                         <FormGroup>
                           <label htmlFor="tshirtsFormControlInput">
@@ -535,13 +569,11 @@ class ArtistList extends React.Component {
                             onChange={this.handleChange}
                             invalid={"name" in errors}
                           />
-                          <div className="invalid-feedback">
-                            {errors.name}
-                          </div>
+                          <div className="invalid-feedback">{errors.name}</div>
                         </FormGroup>
                         <FormGroup>
                           <label htmlFor="tshirtsFormControlInput">
-                            Artist Eamil
+                            Artist Email
                           </label>
                           <Input
                             name="email"
@@ -553,15 +585,13 @@ class ArtistList extends React.Component {
                             onChange={this.handleChange}
                             invalid={"email" in errors}
                           />
-                          <div className="invalid-feedback">
-                            {errors.email}
-                          </div>
+                          <div className="invalid-feedback">{errors.email}</div>
                         </FormGroup>
                       </ModalBody>
                       <ModalFooter>
                         <Button
                           color="secondary"
-                          onClick={e => {
+                          onClick={(e) => {
                             this.setState({ isModal: false });
                           }}
                         >
@@ -599,7 +629,13 @@ class ArtistList extends React.Component {
               <Row>
                 <Col md={12} xl={12}>
                   <div className="div-tbl-artistlist">
-                    <Table className="align-items-center" style={{ tableLayout: 'fixed' }} hover bordered responsive>
+                    <Table
+                      className="align-items-center"
+                      style={{ tableLayout: "fixed" }}
+                      hover
+                      bordered
+                      responsive
+                    >
                       <thead className="thead-light">
                         <tr>{this.tableHeads()}</tr>
                       </thead>
@@ -617,7 +653,7 @@ class ArtistList extends React.Component {
                 >
                   <PaginationItem
                     className={classnames({
-                      disabled: 1 == this.state.entities.current_page
+                      disabled: 1 == this.state.entities.current_page,
                     })}
                   >
                     <PaginationLink
@@ -634,7 +670,7 @@ class ArtistList extends React.Component {
                     className={classnames({
                       disabled:
                         this.state.entities.last_page ===
-                        this.state.entities.current_page
+                        this.state.entities.current_page,
                     })}
                   >
                     <PaginationLink
@@ -658,11 +694,11 @@ class ArtistList extends React.Component {
 
 const mapStateToProps = ({ artist }) => ({
   responseErrors: artist.errors,
-  message: artist.message
+  message: artist.message,
 });
 
 export default connect(mapStateToProps, {
   createArtist,
   updateArtist,
-  deleteArtist
+  deleteArtist,
 })(ArtistList);

@@ -1,5 +1,6 @@
 import {
   CREATE_CATEGORY,
+  MERGE_CATEGORY,
   UPDATE_CATEGORY,
   DELETE_CATEGORY,
   CLEAN_CATEGORY,
@@ -12,7 +13,7 @@ import http from "../../helper/http";
 import APP_CONST from "../../helper/constant";
 
 export function allCategories() {
-  return function(dispatch) {
+  return function (dispatch) {
     dispatch({ type: CLEAN_CATEGORY });
     http
       .get(`${APP_CONST.API_URL}/category/all`)
@@ -37,7 +38,7 @@ export function allCategories() {
 }
 
 export function createCategory(obj) {
-  return function(dispatch) {
+  return function (dispatch) {
     dispatch({ type: CLEAN_CATEGORY });
     http
       .post(`${APP_CONST.API_URL}/category/create`, obj)
@@ -61,8 +62,33 @@ export function createCategory(obj) {
   };
 }
 
+export function mergeCategory(obj) {
+  return function (dispatch) {
+    dispatch({ type: CLEAN_CATEGORY });
+    http
+      .post(`${APP_CONST.API_URL}/category/merge`, obj)
+      .then(() => {
+        dispatch({
+          type: MERGE_CATEGORY,
+          message: "The category is merged successfully!"
+        });
+      })
+      .catch(err => {
+        if (err.response) {
+          let { errors } = err.response.data;
+          dispatch({ type: CATEGORY_ERROR, errors: errorHandler(errors) });
+        } else {
+          dispatch({
+            type: CATEGORY_ERROR,
+            errors: "There is a server connection Error, Try Later."
+          });
+        }
+      });
+  };
+}
+
 export function updateCategory(obj) {
-  return function(dispatch) {
+  return function (dispatch) {
     dispatch({ type: CLEAN_CATEGORY });
     http
       .post(`${APP_CONST.API_URL}/category/update/${obj.id}`, obj)
@@ -86,7 +112,7 @@ export function updateCategory(obj) {
   };
 }
 export function deleteCategory(id) {
-  return function(dispatch) {
+  return function (dispatch) {
     dispatch({ type: CLEAN_CATEGORY });
     http
       .post(`${APP_CONST.API_URL}/category/delete/${id}`)

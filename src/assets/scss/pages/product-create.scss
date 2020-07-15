@@ -3,9 +3,13 @@
   .card-body {
     margin-top: 20px;
   }
+  .check-text {
+    font-size: 14px;
+  }
   .list-group {
     overflow-y: auto;
-    min-height: 570px;
+    min-height: 620px;
+    max-height: 620px;
     border: 1px solid #e9ecef;
     border-radius: 6px;
   }
@@ -37,7 +41,7 @@
     margin-bottom: 1rem;
   }
   .btn {
-    width: 25%;
+    width: 40%;
   }
   h4 {
     color: #666666;

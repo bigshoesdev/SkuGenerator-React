@@ -1,7 +1,8 @@
-import React from 'react'
-import classnames from 'classnames'
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
+import React from 'react';
+import classnames from 'classnames';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+import NotificationAlert from 'react-notification-alert';
 import {
   Table,
   Container,
@@ -27,16 +28,17 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter
-} from 'reactstrap'
-import MainHeader from '../../components/headers/MainHeader'
-import APP_CONST from '../../../helper/constant'
-import http from '../../../helper/http'
-import { productDelete } from '../../../store/actions/product'
+  ModalFooter,
+  UncontrolledAlert,
+} from 'reactstrap';
+import MainHeader from '../../components/headers/MainHeader';
+import APP_CONST from '../../../helper/constant';
+import http from '../../../helper/http';
+import { productDelete } from '../../../store/actions/product';
 
 class ProductList extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.form = React.createRef();
     this.columns = [
       'id',
@@ -51,18 +53,18 @@ class ProductList extends React.Component {
       'check_mugs',
       'name_mugs',
       'image_bags',
-      'check_bags',
-      'name_bags',
+      'check_toteBags',
+      'name_toteBags',
       'image_covers',
-      'check_covers',
-      'name_covers',
+      'check_cushionCovers',
+      'name_cushionCovers',
       'image_kids',
       'check_kids',
       'name_kids',
       'image_hoodies',
       'check_hoodies',
-      'name_hoodies'
-    ]
+      'name_hoodies',
+    ];
     this.state = {
       imageUrl: [],
       onlyData: [],
@@ -70,146 +72,165 @@ class ProductList extends React.Component {
         data: [],
         current_page: 1,
         last_page: 1,
-        per_page: 10,
-        total: 1
+        per_page: 50,
+        total: 1,
       },
       first_page: 1,
       current_page: 1,
-      sorted_column: this.columns[1],
+      sorted_column: 'updated_at',
       offset: 5,
-      order: 'asc',
+      order: 'desc',
       searchKey: '',
-      modalKeyword: {
-        id: 0,
-        tshirts: '',
-        stickers: '',
-        mugs: '',
-        tote_bags: '',
-        cushion_covers: '',
-        kids: '',
-        hoodies: ''
-      },
       message: '',
       responseErrors: '',
       errors: {},
       isModal: false,
       isDeleteModal: false,
-      isUploadData: [],
-    }
+      isDownloadData: [],
+      columnsAllCheck: [],
+      productListId: '',
+    };
     this.onSubmitExport = this.onSubmitExport.bind(this);
-    this.onclickExport = this.onclickExport.bind(this);
+    this.fetchEntities = this.fetchEntities.bind(this);
   }
+
   componentDidMount() {
     this.setState({ current_page: this.state.entities.current_page }, () => {
-      this.fetchEntities()
-    })
+      this.fetchEntities();
+    });
   }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.imageUrl) {
-      this.setState({ imageUrl: nextProps.imageUrl })
+      this.setState({ imageUrl: nextProps.imageUrl });
     }
     if (nextProps.message) {
-      this.fetchEntities()
+      this.showNotification(nextProps.message);
+      this.setState(
+        {
+          isModal: false,
+          isDeleteModal: false,
+          current_page: this.state.first_page,
+        },
+        () => {
+          this.fetchEntities();
+        }
+      );
+    }
+    if (nextProps.responseErrors) {
+      console.log('Error');
     }
   }
+
   changePage(pageNumber) {
     this.setState({ current_page: pageNumber }, () => {
-      this.fetchEntities()
-    })
+      this.fetchEntities();
+    });
   }
+
   fetchEntities() {
-    let fetchUrl = `${APP_CONST.API_URL}/product/list/?page=${this.state.current_page}&column=${this.state.sorted_column}&order=${this.state.order}&per_page=${this.state.entities.per_page}&search_key=${this.state.searchKey}`
+    let fetchUrl = `${APP_CONST.API_URL}/product/list/?page=${this.state.current_page}&column=${this.state.sorted_column}&order=${this.state.order}&per_page=${this.state.entities.per_page}&search_key=${this.state.searchKey}`;
     http
       .get(fetchUrl)
-      .then(response => {
+      .then((response) => {
         this.setState({
           entities: response.data.data,
-          onlyData: response.data.data.data
-        })
-        // this.setState({ onlyData: response.data.data.data});
+          isDownloadData: [],
+          columnsAllCheck: [],
+        });
       })
-      .catch(e => {
+      .catch((e) => {
         this.setState({
           entities: {
             data: [],
             current_page: 1,
             last_page: 1,
-            per_page: 2,
-            total: 1
-          }
-        })
-      })
+            per_page: 10,
+            total: 1,
+          },
+          isDownloadData: [],
+          columnsAllCheck: [],
+        });
+      });
   }
-  searchKey = e => {
+
+  searchKey = (e) => {
     if (e.key === 'Enter') {
-      e.preventDefault()
-      const { value } = e.target
+      e.preventDefault();
+      const { value } = e.target;
       this.setState(
-        { current_page: this.state.first_page, searchKey: value },
+        {
+          current_page: this.state.first_page,
+          searchKey: value,
+        },
         () => {
-          this.fetchEntities()
+          this.fetchEntities();
         }
-      )
+      );
     }
-  }
+  };
+
   pagesNumbers() {
     if (!this.state.entities.to) {
-      return []
+      return [];
     }
-    let from = this.state.entities.current_page - this.state.offset
+    let from = this.state.entities.current_page - this.state.offset;
     if (from < 1) {
-      from = 1
+      from = 1;
     }
-    let to = from + this.state.offset * 2 - 1
+    let to = from + this.state.offset * 2 - 1;
     if (to >= this.state.entities.last_page) {
-      to = this.state.entities.last_page
-      from = this.state.entities.last_page - this.state.offset * 2
+      to = this.state.entities.last_page;
+      from = this.state.entities.last_page - this.state.offset * 2;
       if (from < 1) {
-        from = 1
+        from = 1;
       }
     }
-    let pagesArray = []
+    let pagesArray = [];
     for (let page = from; page <= to; page++) {
-      pagesArray.push(page)
+      pagesArray.push(page);
     }
-    return pagesArray
+    return pagesArray;
   }
+
   columnHead(value) {
-    const name = value.toUpperCase().split('_')
-    if (name.length > 1) return name[1]
-    else return name
+    const name = value.toUpperCase().split('_');
+    if (name.length > 1) return name[1];
+    else return name;
   }
+
   sortByColumn(column) {
     if (column === this.state.sorted_column) {
       this.state.order === 'asc'
         ? this.setState(
-          { order: 'desc', current_page: this.state.first_page },
-          () => {
-            this.fetchEntities()
-          }
-        )
+            { order: 'desc', current_page: this.state.first_page },
+            () => {
+              this.fetchEntities();
+            }
+          )
         : this.setState({ order: 'asc' }, () => {
-          this.fetchEntities()
-        })
+            this.fetchEntities();
+          });
     } else {
       this.setState(
         {
           sorted_column: column,
           order: 'asc',
-          current_page: this.state.first_page
+          current_page: this.state.first_page,
         },
         () => {
-          this.fetchEntities()
+          this.fetchEntities();
         }
-      )
+      );
     }
   }
+
   pageList() {
-    return this.pagesNumbers().map(page => {
+    return this.pagesNumbers().map((page) => {
       return (
         <PaginationItem
           className={classnames({
-            active: page === this.state.entities.current_page
+            active: page === this.state.entities.current_page,
           })}
           key={'pagination-' + page}
         >
@@ -217,18 +238,20 @@ class ProductList extends React.Component {
             {page}
           </PaginationLink>
         </PaginationItem>
-      )
-    })
+      );
+    });
   }
+
   tableHeads() {
-    let icon
+    let icon;
+    let self = this;
     if (this.state.order === 'asc') {
-      icon = <i className='fa fa-sort-alpha-down'></i>
+      icon = <i className='fa fa-sort-alpha-down'></i>;
     } else {
-      icon = <i className='fa fa-sort-alpha-up'></i>
+      icon = <i className='fa fa-sort-alpha-up'></i>;
     }
-    let columns = this.columns.map(column => {
-      if (column == 'id') {
+    let columns = this.columns.map((column) => {
+      if (column === 'id') {
         return (
           <th
             scope='col'
@@ -238,7 +261,7 @@ class ProductList extends React.Component {
           >
             {'No'}
           </th>
-        )
+        );
       } else if (column.includes('check')) {
         return (
           <th
@@ -246,8 +269,22 @@ class ProductList extends React.Component {
             key={column}
             className='text-center'
             style={{ width: '3%' }}
-          ></th>
-        )
+          >
+            <div className='custom-control custom-checkbox product-item-checkbox'>
+              <Input
+                className='custom-control-input'
+                type='checkbox'
+                checked={this.state.columnsAllCheck.includes(column)}
+                id={column + '_column'}
+                onChange={(e) => self.handleAllColumnCheck(e, column)}
+              />
+              <label
+                className='custom-control-label'
+                htmlFor={column + '_column'}
+              ></label>
+            </div>
+          </th>
+        );
       } else if (column.includes('image')) {
         return (
           <th
@@ -258,7 +295,7 @@ class ProductList extends React.Component {
           >
             IMAGE
           </th>
-        )
+        );
       } else if (column.includes('title')) {
         return (
           <th
@@ -271,7 +308,46 @@ class ProductList extends React.Component {
             {this.columnHead(column)}
             {column === this.state.sorted_column && icon}
           </th>
-        )
+        );
+      } else if (column.includes('name_covers')) {
+        return (
+          <th
+            scope='col'
+            className='text-center'
+            style={{ width: '25%' }}
+            key={column}
+            onClick={() => this.sortByColumn(column)}
+          >
+            CUSHION COVERS
+            {column === this.state.sorted_column && icon}
+          </th>
+        );
+      } else if (column.includes('name_bags')) {
+        return (
+          <th
+            scope='col'
+            className='text-center'
+            style={{ width: '25%' }}
+            key={column}
+            onClick={() => this.sortByColumn(column)}
+          >
+            TOTE BAGS
+            {column === this.state.sorted_column && icon}
+          </th>
+        );
+      } else if (column.includes('name_kids')) {
+        return (
+          <th
+            scope='col'
+            className='text-center'
+            style={{ width: '25%' }}
+            key={column}
+            onClick={() => this.sortByColumn(column)}
+          >
+            KIDS TSHIRTS
+            {column === this.state.sorted_column && icon}
+          </th>
+        );
       } else {
         return (
           <th
@@ -284,9 +360,9 @@ class ProductList extends React.Component {
             {this.columnHead(column)}
             {column === this.state.sorted_column && icon}
           </th>
-        )
+        );
       }
-    })
+    });
     columns.push(
       <th
         scope='col'
@@ -296,25 +372,16 @@ class ProductList extends React.Component {
       >
         Action
       </th>
-    )
-    return columns
+    );
+    return columns;
   }
 
   handleDetail(id) {
-    this.props.history.push('/main/product-detail/' + id)
+    this.props.history.push('/main/product-detail/' + id);
   }
-  handleCheck(e, name) {
-    if (e.target.checked) {
-      //var data = this.state.isUploadData;
-      var data = [...this.state.isUploadData]
-      if (data.indexOf(name) === -1) {
-        data.push(name)
-        this.setState({ isUploadData: data })
-      }
-    }
-  }
+
   dataList() {
-    var self = this
+    var self = this;
     if (this.state.entities.data.length) {
       return this.state.entities.data.map((product, index) => {
         return (
@@ -325,59 +392,81 @@ class ProductList extends React.Component {
                   <td key={key} className='text-center'>
                     {index + 1}
                   </td>
-                )
-              } else if (key.includes('isupload')) {
-                if (product[key] == '1') {
-                  return (
-                    <td key={key}>
-                      <div className='custom-control custom-checkbox product-item-checkbox'>
-                        <Input
-                          className='custom-control-input'
-                          id={key + index}
-                          type='checkbox'
-                          disabled
-                        />
-                        <label
-                          className='custom-control-label'
-                          htmlFor={key + index}
-                        ></label>
-                      </div>
-                    </td>
-                  )
-                } else {
-                  return (
-                    <td key={key}>
-                      <div className='custom-control custom-checkbox product-item-checkbox'>
-                        <Input
-                          className='custom-control-input'
-                          id={key + index}
-                          type='checkbox'
-                          onChange={e =>
-                            self.handleCheck(
-                              e,
-                              product[Object.keys(product)[i + 1]]
-                            )
-                          }
-                        />
-                        <label
-                          className='custom-control-label'
-                          htmlFor={key + index}
-                        ></label>
-                      </div>
-                    </td>
-                  )
-                }
-              } else if (key.includes('image')) {
-                let url = "http://127.0.0.1:5000/data/dropbox?fileName=" + product[key].replace('.jpg', '');
+                );
+              } else if (key.includes('name')) {
+                let downloadLink = '';
+                downloadLink = product['name_' + key.substring(5)];
+                return (
+                  <td
+                    className='text-center'
+                    key={key}
+                    style={{ width: '40px', height: '40px' }}
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        product['isdownload_' + key.substring(5)] === 1
+                          ? '<a target="__blank" href="' +
+                            APP_CONST.BASE_URL +
+                            '/export-file?data=%5B%22' +
+                            downloadLink +
+                            '%22%5D' +
+                            '"><img src="https://img.icons8.com/ultraviolet/40/000000/export-csv.png" style="width: 22px;height: 22px;"></a>   ' +
+                            product[key]
+                          : product[key],
+                    }}
+                  ></td>
+                );
+              } else if (key.includes('isdownload')) {
                 return (
                   <td key={key}>
-                    {/* <img
-                      className='img-tbl-productlist'
-                      // src={url}
-                      alt=''
-                    /> */}
+                    <div
+                      className={classnames(
+                        'custom-control custom-checkbox product-item-checkbox',
+                        {
+                          'custom-control-disable':
+                            product['isupload' + key.substring(10)],
+                        }
+                      )}
+                    >
+                      <Input
+                        className='custom-control-input'
+                        id={key + index}
+                        checked={this.state.isDownloadData.includes(
+                          product[Object.keys(product)[i + 1]]
+                        )}
+                        type='checkbox'
+                        disabled={
+                          product['isupload' + key.substring(10)] ? true : false
+                        }
+                        onChange={(e) =>
+                          self.handleCheck(
+                            e,
+                            product[Object.keys(product)[i + 1]]
+                          )
+                        }
+                      />
+                      <label
+                        className='custom-control-label'
+                        htmlFor={key + index}
+                      ></label>
+                    </div>
                   </td>
-                )
+                );
+              } else if (key.includes('image')) {
+                let url =
+                  `${APP_CONST.BASE_URL}` +
+                  '/data/dropbox?fileName=' +
+                  product[key].replace('.jpg', '');
+                return (
+                  <td key={key}>
+                    <img className='img-tbl-productlist' src={url} alt='' />
+                  </td>
+                );
+              } else if (
+                key.includes('updated_at') ||
+                key.includes('isupload') ||
+                key.includes('download_link')
+              ) {
+                return null;
               } else {
                 return (
                   <td
@@ -387,7 +476,7 @@ class ProductList extends React.Component {
                   >
                     {product[key]}
                   </td>
-                )
+                );
               }
             })}
             <td className='td-action'>
@@ -402,15 +491,15 @@ class ProductList extends React.Component {
                 </DropdownToggle>
                 <DropdownMenu className='dropdown-menu-arrow' right>
                   <DropdownItem
-                    onClick={e => {
-                      self.handleDetail(product.id)
+                    onClick={(e) => {
+                      self.handleDetail(product.id);
                     }}
                   >
                     Detail
                   </DropdownItem>
                   <DropdownItem
-                    onClick={e => {
-                      self.handleDelete(product.id)
+                    onClick={(e) => {
+                      self.handleDelete(product.id);
                     }}
                   >
                     Delete
@@ -419,8 +508,8 @@ class ProductList extends React.Component {
               </UncontrolledDropdown>
             </td>
           </tr>
-        )
-      })
+        );
+      });
     } else {
       return (
         <tr>
@@ -431,35 +520,160 @@ class ProductList extends React.Component {
             No Records Found.
           </td>
         </tr>
-      )
+      );
     }
   }
 
+  showNotification = (message) => {
+    let options = {
+      place: 'tr',
+      message: (
+        <div className='alert-text'>
+          <span
+            className='alert-title'
+            data-notify='title'
+            dangerouslySetInnerHTML={{ __html: message }}
+          ></span>
+        </div>
+      ),
+      type: 'success',
+      icon: 'ni ni-bell-55',
+      autoDismiss: 7,
+    };
+    this.refs.notificationAlert.notificationAlert(options);
+  };
+
+  handleSubmitDelete = (e) => {
+    e.preventDefault();
+    const id = this.state.productListId;
+    this.props.productDelete({ id: id });
+  };
+
   handleDelete(id) {
-    this.props.productDelete({ id: id })
+    this.setState({
+      productListId: id,
+      isDeleteModal: true,
+      responseErrors: '',
+    });
   }
 
   onSubmitExport(event) {
     event.preventDefault();
-    // this.refs.refexport.click();
-    //this.form.dispatchEvent(new Event("submit"));
+    this.form.submit();
+    this.setState({ isDownloadData: [] });
   }
-  onclickExport() {
-    // this.form.dispatchEvent(new Event("submit"));
-    this.refs.refexport.click();
+
+  handleCheck(e, name) {
+    var data = [...this.state.isDownloadData];
+    if (e.target.checked) {
+      if (data.indexOf(name) === -1) {
+        data.push(name);
+      }
+    } else {
+      data = data.filter((item) => item !== name);
+    }
+    this.setState({ isDownloadData: data });
   }
+
+  handleAllColumnCheck(e, column) {
+    var isDownloadData = [...this.state.isDownloadData];
+    let variant = column.substring(6);
+    for (let i in this.state.entities.data) {
+      let variantSkuNo = this.state.entities.data[i]['name_' + variant];
+      if (e.target.checked) {
+        if (!isDownloadData.includes(variantSkuNo)) {
+          isDownloadData.push(variantSkuNo);
+          continue;
+        }
+      } else {
+        if (isDownloadData.includes(variantSkuNo)) {
+          isDownloadData = isDownloadData.filter(
+            (item) => item !== variantSkuNo
+          );
+        }
+      }
+    }
+
+    var columnsAllCheck = [...this.state.columnsAllCheck];
+    if (e.target.checked) {
+      if (columnsAllCheck.indexOf(column) === -1) {
+        columnsAllCheck.push(column);
+      }
+    } else {
+      columnsAllCheck = columnsAllCheck.filter((item) => item !== column);
+    }
+
+    this.setState({ isDownloadData, columnsAllCheck });
+  }
+
   render() {
+    let { responseErrors, isDeleteModal } = this.state;
     return (
       <>
+        <div className='rna-wrapper'>
+          <NotificationAlert ref='notificationAlert' />
+        </div>
         <MainHeader name='Product List' parentName='Product' />
         <Container className='mt--6 product-list-container' fluid>
           <Card style={{ minHeight: '700px' }}>
             <CardBody>
               <Row>
                 <Col>
-                  <form action="http://127.0.0.1:5000/export" ref={f => (this.form = f)} method="get">
-                    <input type="hidden" name="data" value={JSON.stringify(this.state.isUploadData)}></input>
-                    <Button className="btn-productList" color="primary" type="submit">Export CSV</Button>
+                  <Modal
+                    isOpen={isDeleteModal}
+                    toggle={() => {
+                      this.setState({
+                        isDeleteModal: !this.state.isDeleteModal,
+                      });
+                    }}
+                  >
+                    <Form method='POST' onSubmit={this.handleSubmitDelete}>
+                      <ModalHeader>Confirm</ModalHeader>
+                      <ModalBody>
+                        {responseErrors && (
+                          <UncontrolledAlert color='warning'>
+                            <span className='alert-text ml-1'>
+                              <strong
+                                dangerouslySetInnerHTML={{
+                                  __html: responseErrors,
+                                }}
+                              ></strong>
+                            </span>
+                          </UncontrolledAlert>
+                        )}
+                        <FormGroup>
+                          <label>Do you really want to delete?</label>
+                        </FormGroup>
+                      </ModalBody>
+                      <ModalFooter>
+                        <Button
+                          color='secondary'
+                          onClick={(e) => {
+                            this.setState({ isDeleteModal: false });
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button color='primary' type='submit'>
+                          Delete
+                        </Button>
+                      </ModalFooter>
+                    </Form>
+                  </Modal>
+                  <form
+                    action={APP_CONST.BASE_URL + '/export'}
+                    ref={(f) => (this.form = f)}
+                    method='get'
+                    onSubmit={this.onSubmitExport}
+                  >
+                    <input
+                      type='hidden'
+                      name='data'
+                      value={JSON.stringify(this.state.isDownloadData)}
+                    ></input>
+                    <Button className='btn-productList' color='primary'>
+                      Export CSV
+                    </Button>
                   </form>
                 </Col>
                 <Col>
@@ -510,7 +724,7 @@ class ProductList extends React.Component {
                 >
                   <PaginationItem
                     className={classnames({
-                      disabled: 1 == this.state.entities.current_page
+                      disabled: 1 == this.state.entities.current_page,
                     })}
                   >
                     <PaginationLink
@@ -527,7 +741,7 @@ class ProductList extends React.Component {
                     className={classnames({
                       disabled:
                         this.state.entities.last_page ===
-                        this.state.entities.current_page
+                        this.state.entities.current_page,
                     })}
                   >
                     <PaginationLink
@@ -545,13 +759,14 @@ class ProductList extends React.Component {
           </Card>
         </Container>
       </>
-    )
+    );
   }
 }
 const mapStateToProps = ({ product }) => ({
   imageUrl: product.imageUrl,
-  message: product.message
-})
+  message: product.message,
+  responseErrors: product.errors,
+});
 export default connect(mapStateToProps, {
-  productDelete
-})(withRouter(ProductList))
+  productDelete,
+})(withRouter(ProductList));

@@ -30,7 +30,7 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter
+  ModalFooter,
 } from "reactstrap";
 
 import MainHeader from "../../components/headers/MainHeader";
@@ -38,9 +38,9 @@ import http from "../../../helper/http";
 import {
   createKeyword,
   updateKeyword,
-  deleteKeyword
+  deleteKeyword,
 } from "../../../store/actions/keyword";
-import APP_CONST from '../../../helper/constant';
+import APP_CONST from "../../../helper/constant";
 
 class KeywordList extends React.Component {
   constructor(props) {
@@ -53,15 +53,15 @@ class KeywordList extends React.Component {
       "tote_bags",
       "cushion_covers",
       "kids",
-      "hoodies"
+      "hoodies",
     ];
     this.state = {
       entities: {
         data: [],
         current_page: 1,
         last_page: 1,
-        per_page: 10,
-        total: 1
+        per_page: 20,
+        total: 1,
       },
       first_page: 1,
       current_page: 1,
@@ -77,12 +77,12 @@ class KeywordList extends React.Component {
         tote_bags: "",
         cushion_covers: "",
         kids: "",
-        hoodies: ""
+        hoodies: "",
       },
       responseErrors: "",
       errors: {},
       isModal: false,
-      isDeleteModal: false
+      isDeleteModal: false,
     };
 
     this.validator = new ReeValidate({
@@ -92,7 +92,7 @@ class KeywordList extends React.Component {
       tote_bags: "required|min:3",
       cushion_covers: "required|min:3",
       kids: "required|min:3",
-      hoodies: "required|min:3"
+      hoodies: "required|min:3",
     });
   }
 
@@ -106,7 +106,11 @@ class KeywordList extends React.Component {
     if (nextProps.message) {
       this.showNotification(nextProps.message);
       this.setState(
-        { isModal: false, isDeleteModal: false, current_page: this.state.first_page },
+        {
+          isModal: false,
+          isDeleteModal: false,
+          current_page: this.state.first_page,
+        },
         () => {
           this.fetchEntities();
         }
@@ -117,12 +121,12 @@ class KeywordList extends React.Component {
       nextProps.responseErrors !== this.state.responseErrors
     ) {
       this.setState({
-        responseErrors: nextProps.responseErrors
+        responseErrors: nextProps.responseErrors,
       });
     }
   }
 
-  searchKey = e => {
+  searchKey = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       const { value } = e.target;
@@ -137,36 +141,45 @@ class KeywordList extends React.Component {
 
   handleEdit(id) {
     const { data } = this.state.entities;
-    const keyword = data.find(obj => {
+    const keyword = data.find((obj) => {
       return obj.id === id;
     });
-    this.setState({ modalKeyword: { ...keyword }, isModal: true, responseErrors: "", errors: {} });
+    this.setState({
+      modalKeyword: { ...keyword },
+      isModal: true,
+      responseErrors: "",
+      errors: {},
+    });
   }
 
   handleDelete(id) {
     const { data } = this.state.entities;
-    const keyword = data.find(obj => {
+    const keyword = data.find((obj) => {
       return obj.id === id;
     });
-    this.setState({ modalKeyword: { ...keyword }, isDeleteModal: true, responseErrors: "" });
+    this.setState({
+      modalKeyword: { ...keyword },
+      isDeleteModal: true,
+      responseErrors: "",
+    });
   }
 
   fetchEntities() {
     let fetchUrl = `${APP_CONST.API_URL}/keyword/list/?page=${this.state.current_page}&column=${this.state.sorted_column}&order=${this.state.order}&per_page=${this.state.entities.per_page}&search_key=${this.state.searchKey}`;
     http
       .get(fetchUrl)
-      .then(response => {
+      .then((response) => {
         this.setState({ entities: response.data.data });
       })
-      .catch(e => {
+      .catch((e) => {
         this.setState({
           entities: {
             data: [],
             current_page: 1,
             last_page: 1,
-            per_page: 2,
-            total: 1
-          }
+            per_page: 20,
+            total: 1,
+          },
         });
       });
   }
@@ -201,10 +214,7 @@ class KeywordList extends React.Component {
   }
 
   columnHead(value) {
-    return value
-      .split("_")
-      .join(" ")
-      .toUpperCase();
+    return value.split("_").join(" ").toUpperCase();
   }
 
   tableHeads() {
@@ -214,13 +224,13 @@ class KeywordList extends React.Component {
     } else {
       icon = <i className="fa fa-sort-alpha-up"></i>;
     }
-    let columns = this.columns.map(column => {
+    let columns = this.columns.map((column) => {
       if (column === "id") {
         return (
           <th
             scope="col"
             className="text-center"
-            style={{ "width": "5%" }}
+            style={{ width: "5%" }}
             key={column}
           >
             {"No"}
@@ -231,7 +241,7 @@ class KeywordList extends React.Component {
           <th
             scope="col"
             className="text-center"
-            style={{ "width": "13%" }}
+            style={{ width: "13%" }}
             key={column}
             onClick={() => this.sortByColumn(column)}
           >
@@ -242,7 +252,12 @@ class KeywordList extends React.Component {
       }
     });
     columns.push(
-      <th scope="col" className="text-center" key="action" style={{ "width": "6%" }}>
+      <th
+        scope="col"
+        className="text-center"
+        key="action"
+        style={{ width: "6%" }}
+      >
         Action
       </th>
     );
@@ -255,7 +270,7 @@ class KeywordList extends React.Component {
       return this.state.entities.data.map((data, index) => {
         return (
           <tr key={data.id}>
-            {Object.keys(data).map(key => {
+            {Object.keys(data).map((key) => {
               if (key === "id")
                 return (
                   <td className="text-center" key={key}>
@@ -281,14 +296,14 @@ class KeywordList extends React.Component {
                 </DropdownToggle>
                 <DropdownMenu className="dropdown-menu-arrow" right>
                   <DropdownItem
-                    onClick={e => {
+                    onClick={(e) => {
                       self.handleEdit(data.id);
                     }}
                   >
                     Edit
                   </DropdownItem>
                   <DropdownItem
-                    onClick={e => {
+                    onClick={(e) => {
                       self.handleDelete(data.id);
                     }}
                   >
@@ -303,7 +318,10 @@ class KeywordList extends React.Component {
     } else {
       return (
         <tr>
-          <td colSpan={this.columns.length + 1} className="text-center td-noredords">
+          <td
+            colSpan={this.columns.length + 1}
+            className="text-center td-noredords"
+          >
             No Records Found.
           </td>
         </tr>
@@ -315,20 +333,20 @@ class KeywordList extends React.Component {
     if (column === this.state.sorted_column) {
       this.state.order === "asc"
         ? this.setState(
-          { order: "desc", current_page: this.state.first_page },
-          () => {
-            this.fetchEntities();
-          }
-        )
+            { order: "desc", current_page: this.state.first_page },
+            () => {
+              this.fetchEntities();
+            }
+          )
         : this.setState({ order: "asc" }, () => {
-          this.fetchEntities();
-        });
+            this.fetchEntities();
+          });
     } else {
       this.setState(
         {
           sorted_column: column,
           order: "asc",
-          current_page: this.state.first_page
+          current_page: this.state.first_page,
         },
         () => {
           this.fetchEntities();
@@ -338,11 +356,11 @@ class KeywordList extends React.Component {
   }
 
   pageList() {
-    return this.pagesNumbers().map(page => {
+    return this.pagesNumbers().map((page) => {
       return (
         <PaginationItem
           className={classnames({
-            active: page === this.state.entities.current_page
+            active: page === this.state.entities.current_page,
           })}
           key={"pagination-" + page}
         >
@@ -366,14 +384,14 @@ class KeywordList extends React.Component {
         tote_bags: "",
         cushion_covers: "",
         kids: "",
-        hoodies: ""
+        hoodies: "",
       },
       responseErrors: "",
-      errors: {}
+      errors: {},
     });
   }
 
-  handleChange = e => {
+  handleChange = (e) => {
     const { name, value } = e.target;
     const { modalKeyword } = this.state;
     modalKeyword[name] = value;
@@ -391,7 +409,7 @@ class KeywordList extends React.Component {
     }
   };
 
-  handleBlur = e => {
+  handleBlur = (e) => {
     const { name, value } = e.target;
     const validation = this.validator.errors;
 
@@ -408,17 +426,17 @@ class KeywordList extends React.Component {
     });
   };
 
-  handleSubmitDelete = e => {
+  handleSubmitDelete = (e) => {
     e.preventDefault();
     const { modalKeyword } = this.state;
     const { id } = modalKeyword;
     this.props.deleteKeyword(id);
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
     const { modalKeyword } = this.state;
-    this.validator.validateAll(modalKeyword).then(success => {
+    this.validator.validateAll(modalKeyword).then((success) => {
       if (success) {
         if (modalKeyword.id === 0) {
           const {
@@ -428,7 +446,7 @@ class KeywordList extends React.Component {
             tote_bags,
             cushion_covers,
             kids,
-            hoodies
+            hoodies,
           } = modalKeyword;
           this.props.createKeyword({
             tshirts,
@@ -437,7 +455,7 @@ class KeywordList extends React.Component {
             tote_bags,
             cushion_covers,
             kids,
-            hoodies
+            hoodies,
           });
         } else {
           const {
@@ -448,7 +466,7 @@ class KeywordList extends React.Component {
             tote_bags,
             cushion_covers,
             kids,
-            hoodies
+            hoodies,
           } = modalKeyword;
           this.props.updateKeyword({
             id,
@@ -458,25 +476,28 @@ class KeywordList extends React.Component {
             tote_bags,
             cushion_covers,
             kids,
-            hoodies
+            hoodies,
           });
         }
       }
     });
   };
 
-  showNotification = message => {
+  showNotification = (message) => {
     let options = {
       place: "tr",
       message: (
         <div className="alert-text">
-          <span className="alert-title" data-notify="title" dangerouslySetInnerHTML={{ __html: message }}>
-          </span>
+          <span
+            className="alert-title"
+            data-notify="title"
+            dangerouslySetInnerHTML={{ __html: message }}
+          ></span>
         </div>
       ),
       type: "success",
       icon: "ni ni-bell-55",
-      autoDismiss: 7
+      autoDismiss: 7,
     };
     this.refs.notificationAlert.notificationAlert(options);
   };
@@ -487,7 +508,7 @@ class KeywordList extends React.Component {
       isModal,
       isDeleteModal,
       modalKeyword,
-      responseErrors
+      responseErrors,
     } = this.state;
 
     return (
@@ -514,7 +535,7 @@ class KeywordList extends React.Component {
                     isOpen={isDeleteModal}
                     toggle={() => {
                       this.setState({
-                        isDeleteModal: !this.state.isDeleteModal
+                        isDeleteModal: !this.state.isDeleteModal,
                       });
                     }}
                   >
@@ -524,7 +545,11 @@ class KeywordList extends React.Component {
                         {responseErrors && (
                           <UncontrolledAlert color="warning">
                             <span className="alert-text ml-1">
-                              <strong dangerouslySetInnerHTML={{ __html: responseErrors }}></strong>
+                              <strong
+                                dangerouslySetInnerHTML={{
+                                  __html: responseErrors,
+                                }}
+                              ></strong>
                             </span>
                           </UncontrolledAlert>
                         )}
@@ -535,7 +560,7 @@ class KeywordList extends React.Component {
                       <ModalFooter>
                         <Button
                           color="secondary"
-                          onClick={e => {
+                          onClick={(e) => {
                             this.setState({ isDeleteModal: false });
                           }}
                         >
@@ -563,7 +588,11 @@ class KeywordList extends React.Component {
                         {responseErrors && (
                           <UncontrolledAlert color="warning">
                             <span className="alert-text ml-1">
-                              <strong dangerouslySetInnerHTML={{ __html: responseErrors }}></strong>
+                              <strong
+                                dangerouslySetInnerHTML={{
+                                  __html: responseErrors,
+                                }}
+                              ></strong>
                             </span>
                           </UncontrolledAlert>
                         )}
@@ -580,6 +609,7 @@ class KeywordList extends React.Component {
                             onBlur={this.handleBlur}
                             onChange={this.handleChange}
                             invalid={"tshirts" in errors}
+                            maxLength={40}
                           />
                           <div className="invalid-feedback">
                             {errors.tshirts}
@@ -598,6 +628,7 @@ class KeywordList extends React.Component {
                             invalid={"stickers" in errors}
                             value={modalKeyword.stickers}
                             type="text"
+                            maxLength={40}
                           />
                           <div className="invalid-feedback">
                             {errors.stickers}
@@ -616,6 +647,7 @@ class KeywordList extends React.Component {
                             invalid={"mugs" in errors}
                             value={modalKeyword.mugs}
                             type="text"
+                            maxLength={40}
                           />
                           <div className="invalid-feedback">{errors.mugs}</div>
                         </FormGroup>
@@ -632,8 +664,11 @@ class KeywordList extends React.Component {
                             invalid={"tote_bags" in errors}
                             value={modalKeyword.tote_bags}
                             type="text"
+                            maxLength={40}
                           />
-                          <div className="invalid-feedback">{errors.tote_bags}</div>
+                          <div className="invalid-feedback">
+                            {errors.tote_bags}
+                          </div>
                         </FormGroup>
                         <FormGroup>
                           <label htmlFor="cushionFormControlInput">
@@ -648,6 +683,7 @@ class KeywordList extends React.Component {
                             onChange={this.handleChange}
                             invalid={"cushion_covers" in errors}
                             type="text"
+                            maxLength={40}
                           />
                           <div className="invalid-feedback">
                             {errors.cushion_covers}
@@ -667,6 +703,7 @@ class KeywordList extends React.Component {
                             invalid={"kids" in errors}
                             placeholder="e.g. Kids Funny Cute School"
                             type="text"
+                            maxLength={40}
                           />
                           <div className="invalid-feedback">{errors.kids}</div>
                         </FormGroup>
@@ -684,6 +721,7 @@ class KeywordList extends React.Component {
                             invalid={"hoodies" in errors}
                             placeholder="e.g. Hoodies Funny Pun Joke Novelty"
                             type="text"
+                            maxLength={40}
                           />
                           <div className="invalid-feedback">
                             {errors.hoodies}
@@ -693,7 +731,7 @@ class KeywordList extends React.Component {
                       <ModalFooter>
                         <Button
                           color="secondary"
-                          onClick={e => {
+                          onClick={(e) => {
                             this.setState({ isModal: false });
                           }}
                         >
@@ -731,7 +769,12 @@ class KeywordList extends React.Component {
               <Row>
                 <Col md={12} xl={12}>
                   <div className="div-tbl-keywordlist">
-                    <Table className="align-items-center" hover bordered responsive>
+                    <Table
+                      className="align-items-center"
+                      hover
+                      bordered
+                      responsive
+                    >
                       <thead className="thead-light">
                         <tr>{this.tableHeads()}</tr>
                       </thead>
@@ -749,7 +792,7 @@ class KeywordList extends React.Component {
                 >
                   <PaginationItem
                     className={classnames({
-                      disabled: 1 == this.state.entities.current_page
+                      disabled: 1 == this.state.entities.current_page,
                     })}
                   >
                     <PaginationLink
@@ -766,7 +809,7 @@ class KeywordList extends React.Component {
                     className={classnames({
                       disabled:
                         this.state.entities.last_page ===
-                        this.state.entities.current_page
+                        this.state.entities.current_page,
                     })}
                   >
                     <PaginationLink
@@ -790,11 +833,11 @@ class KeywordList extends React.Component {
 
 const mapStateToProps = ({ keyword }) => ({
   responseErrors: keyword.errors,
-  message: keyword.message
+  message: keyword.message,
 });
 
 export default connect(mapStateToProps, {
   createKeyword,
   updateKeyword,
-  deleteKeyword
+  deleteKeyword,
 })(KeywordList);

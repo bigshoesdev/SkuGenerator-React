@@ -10,11 +10,16 @@ import {
         UPDATE_IMAGE_VARIANT,
         ALL_MERCHANT_PRICE_VARIANT,
         UPDATE_MERCHANT_PRICE_VARIANT,
+        ALL_DESCRIPTION_VARIANT,
+        UPDATE_DESCRIPTION_VARIANT,
         UPDATE_VARIANT,
         ALL_PRICE_VARIANT,
         ADD_PRICE_VARIANT,
         DELETE_PRICE_VARIANT,
-        DEFAULT_PRICE_VARIANT
+        DEFAULT_PRICE_VARIANT,
+        CLEAN_COLOR,
+        CLEAN_TYPE,
+        CLEAN_SIZE
 } from '../actions/types';
 
 const initialState = {
@@ -22,6 +27,7 @@ const initialState = {
         sizes: [],
         types: [],
         merchantPrices: [],
+        description: '',
         message: '',
         errors: ""
 };
@@ -42,6 +48,10 @@ export default function (state = initialState, action) {
                         return { ...state, merchantPrices: action.prices, message: "", errors: "" }
                 case UPDATE_MERCHANT_PRICE_VARIANT:
                         return { ...state, merchantPrices: action.prices, message: action.message, errors: "" }
+                case ALL_DESCRIPTION_VARIANT:
+                        return { ...state, description: action.description, message: "", errors: "" }
+                case UPDATE_DESCRIPTION_VARIANT:
+                        return { ...state, description: action.description, message: action.message, errors: "" }
                 case CREATE_VARIANT:
                         return { ...state, message: action.message, errors: "" }
                 case ALL_PRICE_VARIANT:
@@ -60,6 +70,12 @@ export default function (state = initialState, action) {
                         return { ...state, message: "", errors: action.errors };
                 case CLEAN_VARIANT:
                         return { ...state, message: '', errors: "" };
+                case CLEAN_SIZE:
+                        return { ...state, sizes: '', message: '', errors: "" };
+                case CLEAN_COLOR:
+                        return { ...state, colors: '', message: '', errors: "" };
+                case CLEAN_TYPE:
+                        return { ...state, types: '', message: '', errors: "" };
                 default:
                         return state
         }
