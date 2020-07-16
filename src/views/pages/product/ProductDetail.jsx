@@ -158,46 +158,6 @@ class ProductDetail extends React.Component {
     else return name;
   }
 
-  sortByColumn(column) {
-    var stateDetails = [...this.state.data[this.state.showDetailType]];
-    if (column === this.state.sorted_column) {
-      this.state.order === 'asc'
-        ? this.setState({ order: 'desc' }, () => {
-            stateDetails.sort(function (a, b) {
-              if (a[column] < b[column]) return 1;
-              if (a[column] > b[column]) return -1;
-              return 0;
-            });
-            let data = this.state.data;
-            data[this.state.showDetailType] = stateDetails;
-            this.setState({ data: data });
-          })
-        : this.setState({ order: 'asc' }, () => {
-            stateDetails.sort(function (a, b) {
-              if (a[column] < b[column]) return -1;
-              if (a[column] > b[column]) return 1;
-              return 0;
-            });
-            let data = this.state.data;
-            data[this.state.showDetailType] = stateDetails;
-            this.setState({ data: data });
-          });
-    } else {
-      this.setState({ sorted_column: column, order: 'asc' }, () => {
-        this.setState({ order: 'asc' }, () => {
-          stateDetails.sort(function (a, b) {
-            if (a[column] < b[column]) return -1;
-            if (a[column] > b[column]) return 1;
-            return 0;
-          });
-          let data = this.state.data;
-          data[this.state.showDetailType] = stateDetails;
-          this.setState({ data: data });
-        });
-      });
-    }
-  }
-
   tableHeads() {
     let icon;
     if (this.state.order === 'asc') {
@@ -218,26 +178,6 @@ class ProductDetail extends React.Component {
               {'No'}
             </th>
           );
-        } else if (column.includes('check')) {
-          return (
-            <th
-              scope='col'
-              className='text-center'
-              style={{ width: '3%' }}
-              key={column}
-            ></th>
-          );
-        } else if (column.includes('image')) {
-          return (
-            <th
-              scope='col'
-              className='text-center'
-              style={{ width: '13%' }}
-              key={column}
-            >
-              IMAGE
-            </th>
-          );
         } else if (column.includes('title')) {
           return (
             <th
@@ -245,7 +185,6 @@ class ProductDetail extends React.Component {
               className='text-center'
               style={{ minWidth: '200px' }}
               key={column}
-              onClick={() => this.sortByColumn(column)}
             >
               {this.columnHead(column)}
               {column === this.state.sorted_column && icon}

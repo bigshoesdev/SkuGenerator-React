@@ -72,7 +72,7 @@ class ProductList extends React.Component {
         data: [],
         current_page: 1,
         last_page: 1,
-        per_page: 50,
+        per_page: 25,
         total: 1,
       },
       first_page: 1,
@@ -145,7 +145,7 @@ class ProductList extends React.Component {
             data: [],
             current_page: 1,
             last_page: 1,
-            per_page: 10,
+            per_page: 25,
             total: 1,
           },
           isDownloadData: [],
@@ -344,7 +344,7 @@ class ProductList extends React.Component {
             key={column}
             onClick={() => this.sortByColumn(column)}
           >
-            KIDS TSHIRTS
+            KIDS
             {column === this.state.sorted_column && icon}
           </th>
         );

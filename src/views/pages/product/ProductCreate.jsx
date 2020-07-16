@@ -119,7 +119,7 @@ class ProductCreate extends React.Component {
     super(props);
     this.validator = new ReeValidate({
       product_title: 'required|min:3',
-      source: 'max:120',
+      source: 'required|min:5|max:120',
       stickers_width: 'required|min_value:0',
       stickers_height: 'required|min_value:0',
       tshirt_weight: 'required|min_value:0',
@@ -415,6 +415,7 @@ class ProductCreate extends React.Component {
       this.setState({ p_kid: value });
     }
   };
+
   handleSearchTitleSubmit = (e) => {
     e.preventDefault();
     if (this.state.product_title) {
@@ -485,6 +486,7 @@ class ProductCreate extends React.Component {
     product['category'] = this.state.category;
     product['keyword'] = this.state.keyword;
     this.setState({ isShowError: true });
+    console.log(product)
     this.validator.validateAll(product).then((success) => {
       if (success) {
         const {
@@ -808,6 +810,7 @@ class ProductCreate extends React.Component {
                               value={this.state.source}
                               className='form-control form-control'
                               placeholder='Enter Source'
+                              required
                             ></Input>
                             <div className='invalid-feedback ml-2'>
                               {errors.source}
