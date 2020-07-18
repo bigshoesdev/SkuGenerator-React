@@ -22,6 +22,8 @@ import ApprovedWordList from "./views/pages/trademark/ApprovedWordList";
 import BannedWordList from "./views/pages/trademark/BannedWordList";
 import TradeMarkCheck from "./views/pages/trademark/TradeMarkCheck";
 import TradeMarkClassWordList from "./views/pages/trademark/TradeMarkClassWordList";
+import Performance from "./views/pages/performance/Performance";
+
 
 export const authRoutes = [
   {
@@ -174,7 +176,7 @@ export const routes = [
   {
     path: "/keyword",
     name: "Keyword",
-    icon: "ni ni-archive-2 text-green",
+    icon: "ni ni-archive-2 text-primary",
     component: KeywordList,
     layout: "/main",
   },
@@ -190,6 +192,13 @@ export const routes = [
     name: "Category",
     icon: "ni ni-map-big text-green",
     component: CategoryList,
+    layout: "/main",
+  },
+  {
+    path: "/performance",
+    name: "Performance",
+    icon: "ni ni-atom text-green",
+    component: Performance,
     layout: "/main",
   },
   {

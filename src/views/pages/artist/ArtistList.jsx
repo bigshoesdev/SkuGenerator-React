@@ -1,9 +1,9 @@
-import React from "react";
-import classnames from "classnames";
-import ReeValidate from "ree-validate";
-import { connect } from "react-redux";
+import React from 'react';
+import classnames from 'classnames';
+import ReeValidate from 'ree-validate';
+import { connect } from 'react-redux';
 
-import NotificationAlert from "react-notification-alert";
+import NotificationAlert from 'react-notification-alert';
 import {
   UncontrolledAlert,
   Table,
@@ -27,25 +27,25 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-} from "reactstrap";
+} from 'reactstrap';
 
-import MainHeader from "../../components/headers/MainHeader";
-import http from "../../../helper/http";
+import MainHeader from '../../components/headers/MainHeader';
+import http from '../../../helper/http';
 import {
   createArtist,
   updateArtist,
   deleteArtist,
-} from "../../../store/actions/artist";
-import APP_CONST from "../../../helper/constant";
+} from '../../../store/actions/artist';
+import APP_CONST from '../../../helper/constant';
 
 class ArtistList extends React.Component {
   constructor(props) {
     super(props);
-    this.columns = ["id", "code", "name", "artist email"];
+    this.columns = ['id', 'code', 'name', 'artist email', 'target'];
     this.state = {
-      code: "",
-      name: "",
-      email: "",
+      code: '',
+      name: '',
+      email: '',
       entities: {
         data: [],
         current_page: 1,
@@ -57,23 +57,25 @@ class ArtistList extends React.Component {
       current_page: 1,
       sorted_column: this.columns[0],
       offset: 5,
-      order: "asc",
-      searchKey: "",
+      order: 'asc',
+      searchKey: '',
       modalArtist: {
         id: 0,
-        code: "",
-        name: "",
-        email: "",
+        code: '',
+        name: '',
+        email: '',
+        target: 0,
       },
-      responseErrors: "",
+      responseErrors: '',
       errors: {},
       isModal: false,
       isDeleteModal: false,
     };
     this.validator = new ReeValidate({
-      code: "required|min:1|max:4",
-      name: "required|min:3",
-      email: "required|email",
+      code: 'required|min:1|max:4',
+      name: 'required|min:3',
+      email: 'required|email',
+      target: 'required|min:1',
     });
   }
 
@@ -107,7 +109,7 @@ class ArtistList extends React.Component {
     }
   }
   searchKey = (e) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       e.preventDefault();
       const { value } = e.target;
       this.setState(
@@ -128,7 +130,7 @@ class ArtistList extends React.Component {
       modalArtist: { ...artist },
       errors: {},
       isModal: true,
-      responseErrors: "",
+      responseErrors: '',
     });
   }
 
@@ -140,7 +142,7 @@ class ArtistList extends React.Component {
     this.setState({
       modalArtist: { ...artist },
       isDeleteModal: true,
-      responseErrors: "",
+      responseErrors: '',
     });
   }
 
@@ -194,34 +196,34 @@ class ArtistList extends React.Component {
   }
 
   columnHead(value) {
-    return value.split("_").join(" ").toUpperCase();
+    return value.split('_').join(' ').toUpperCase();
   }
 
   tableHeads() {
     let icon;
-    if (this.state.order === "asc") {
-      icon = <i className="fa fa-sort-alpha-down"></i>;
+    if (this.state.order === 'asc') {
+      icon = <i className='fa fa-sort-alpha-down'></i>;
     } else {
-      icon = <i className="fa fa-sort-alpha-up"></i>;
+      icon = <i className='fa fa-sort-alpha-up'></i>;
     }
     let columns = this.columns.map((column) => {
-      if (column == "id") {
+      if (column === 'id') {
         return (
           <th
-            scope="col"
-            className="text-center"
-            style={{ width: "5%" }}
+            scope='col'
+            className='text-center'
+            style={{ width: '5%' }}
             key={column}
           >
-            {"No"}
+            {'No'}
           </th>
         );
       } else {
         return (
           <th
-            scope="col"
-            className="text-center"
-            style={{ width: "26%" }}
+            scope='col'
+            className='text-center'
+            style={{ width: '26%' }}
             key={column}
             onClick={() => this.sortByColumn(column)}
           >
@@ -233,10 +235,10 @@ class ArtistList extends React.Component {
     });
     columns.push(
       <th
-        scope="col"
-        className="text-center"
-        key="action"
-        style={{ width: "17%" }}
+        scope='col'
+        className='text-center'
+        key='action'
+        style={{ width: '17%' }}
       >
         Action
       </th>
@@ -251,49 +253,49 @@ class ArtistList extends React.Component {
         return (
           <tr key={data.id}>
             {Object.keys(data).map((key) => {
-              if (key == "id")
+              if (key == 'id')
                 return (
-                  <td className="text-center" key={key}>
+                  <td className='text-center' key={key}>
                     {index + 1}
                   </td>
                 );
               else
                 return (
-                  <td className="text-center" key={key}>
+                  <td className='text-center' key={key}>
                     {data[key]}
                   </td>
                 );
             })}
-            <td className="td-action">
+            <td className='td-action'>
               <Row>
                 <Col md={12} xl={12}>
                   <Button
-                    className="btn-tbl-artistlist-edit"
-                    size="sm"
-                    color="primary"
+                    className='btn-tbl-artistlist-edit'
+                    size='sm'
+                    color='primary'
                     data-dz-remove
                     onClick={(e) => {
                       self.handleEdit(data.id);
                     }}
                   >
-                    <span className="btn-inner--icon mr-1">
-                      <i className="fas fa-edit" />
+                    <span className='btn-inner--icon mr-1'>
+                      <i className='fas fa-edit' />
                     </span>
-                    <span className="btn-inner--text">EDIT</span>
+                    <span className='btn-inner--text'>EDIT</span>
                   </Button>
                   <Button
-                    className="btn-tbl-artistlist-delete"
-                    size="sm"
-                    color="warning"
+                    className='btn-tbl-artistlist-delete'
+                    size='sm'
+                    color='warning'
                     data-dz-remove
                     onClick={(e) => {
                       self.handleDelete(data.id);
                     }}
                   >
-                    <span className="btn-inner--icon mr-2">
-                      <i className="fas fa-trash" />
+                    <span className='btn-inner--icon mr-2'>
+                      <i className='fas fa-trash' />
                     </span>
-                    <span className="btn-inner--text">DELETE</span>
+                    <span className='btn-inner--text'>DELETE</span>
                   </Button>
                 </Col>
               </Row>
@@ -306,7 +308,7 @@ class ArtistList extends React.Component {
         <tr>
           <td
             colSpan={this.columns.length + 1}
-            className="text-center td-noredords"
+            className='text-center td-noredords'
           >
             No Records Found.
           </td>
@@ -317,21 +319,21 @@ class ArtistList extends React.Component {
 
   sortByColumn(column) {
     if (column === this.state.sorted_column) {
-      this.state.order === "asc"
+      this.state.order === 'asc'
         ? this.setState(
-            { order: "desc", current_page: this.state.first_page },
+            { order: 'desc', current_page: this.state.first_page },
             () => {
               this.fetchEntities();
             }
           )
-        : this.setState({ order: "asc" }, () => {
+        : this.setState({ order: 'asc' }, () => {
             this.fetchEntities();
           });
     } else {
       this.setState(
         {
           sorted_column: column,
-          order: "asc",
+          order: 'asc',
           current_page: this.state.first_page,
         },
         () => {
@@ -348,7 +350,7 @@ class ArtistList extends React.Component {
           className={classnames({
             active: page === this.state.entities.current_page,
           })}
-          key={"pagination-" + page}
+          key={'pagination-' + page}
         >
           <PaginationLink onClick={() => this.changePage(page)}>
             {page}
@@ -363,11 +365,11 @@ class ArtistList extends React.Component {
       isModal: true,
       modalArtist: {
         id: 0,
-        code: "",
-        name: "",
-        email: "",
+        code: '',
+        name: '',
+        email: '',
       },
-      responseErrors: "",
+      responseErrors: '',
       errors: {},
     });
   }
@@ -393,7 +395,7 @@ class ArtistList extends React.Component {
     const { name, value } = e.target;
     const validation = this.validator.errors;
 
-    if (value === "") {
+    if (value === '') {
       return;
     }
 
@@ -429,18 +431,18 @@ class ArtistList extends React.Component {
 
   showNotification = (message) => {
     let options = {
-      place: "tr",
+      place: 'tr',
       message: (
-        <div className="alert-text">
+        <div className='alert-text'>
           <span
-            className="alert-title"
-            data-notify="title"
+            className='alert-title'
+            data-notify='title'
             dangerouslySetInnerHTML={{ __html: message }}
           ></span>
         </div>
       ),
-      type: "success",
-      icon: "ni ni-bell-55",
+      type: 'success',
+      icon: 'ni ni-bell-55',
       autoDismiss: 7,
     };
     this.refs.notificationAlert.notificationAlert(options);
@@ -456,18 +458,18 @@ class ArtistList extends React.Component {
     } = this.state;
     return (
       <>
-        <div className="rna-wrapper">
-          <NotificationAlert ref="notificationAlert" />
+        <div className='rna-wrapper'>
+          <NotificationAlert ref='notificationAlert' />
         </div>
-        <MainHeader name="Artist List" parentName="Artist" />
-        <Container className="mt--6 artist-list-container" fluid>
-          <Card style={{ minHeight: "700px" }}>
+        <MainHeader name='Artist List' parentName='Artist' />
+        <Container className='mt--6 artist-list-container' fluid>
+          <Card style={{ minHeight: '700px' }}>
             <CardBody>
               <Row>
                 <Col>
                   <Button
-                    className="btn-createartist"
-                    color="primary"
+                    className='btn-createartist'
+                    color='primary'
                     onClick={() => {
                       this.createArtist();
                     }}
@@ -482,12 +484,12 @@ class ArtistList extends React.Component {
                       });
                     }}
                   >
-                    <Form method="POST" onSubmit={this.handleSubmitDelete}>
+                    <Form method='POST' onSubmit={this.handleSubmitDelete}>
                       <ModalHeader>Confirm</ModalHeader>
                       <ModalBody>
                         {responseErrors && (
-                          <UncontrolledAlert color="warning">
-                            <span className="alert-text ml-1">
+                          <UncontrolledAlert color='warning'>
+                            <span className='alert-text ml-1'>
                               <strong
                                 dangerouslySetInnerHTML={{
                                   __html: responseErrors,
@@ -502,14 +504,14 @@ class ArtistList extends React.Component {
                       </ModalBody>
                       <ModalFooter>
                         <Button
-                          color="secondary"
+                          color='secondary'
                           onClick={(e) => {
                             this.setState({ isDeleteModal: false });
                           }}
                         >
                           Cancel
                         </Button>
-                        <Button color="primary" type="submit">
+                        <Button color='primary' type='submit'>
                           Delete
                         </Button>
                       </ModalFooter>
@@ -522,15 +524,15 @@ class ArtistList extends React.Component {
                     }}
                   >
                     <Form
-                      role="form"
-                      method="POST"
+                      role='form'
+                      method='POST'
                       onSubmit={this.handleSubmit}
                     >
-                      <ModalHeader color="primary">Artist Edit</ModalHeader>
+                      <ModalHeader color='primary'>Artist Edit</ModalHeader>
                       <ModalBody>
                         {responseErrors && (
-                          <UncontrolledAlert color="warning">
-                            <span className="alert-text ml-1">
+                          <UncontrolledAlert color='warning'>
+                            <span className='alert-text ml-1'>
                               <strong
                                 dangerouslySetInnerHTML={{
                                   __html: responseErrors,
@@ -540,64 +542,80 @@ class ArtistList extends React.Component {
                           </UncontrolledAlert>
                         )}
                         <FormGroup>
-                          <label htmlFor="tshirtsFormControlInput">
+                          <label htmlFor='tshirtsFormControlInput'>
                             Artist Code
                           </label>
                           <Input
-                            name="code"
+                            name='code'
                             required
                             value={modalArtist.code}
-                            placeholder="e.g. Artist Code"
-                            type="text"
+                            placeholder='e.g. Artist Code'
+                            type='text'
                             onBlur={this.handleBlur}
                             onChange={this.handleChange}
-                            invalid={"code" in errors}
+                            invalid={'code' in errors}
                           />
-                          <div className="invalid-feedback">{errors.code}</div>
+                          <div className='invalid-feedback'>{errors.code}</div>
                         </FormGroup>
                         <FormGroup>
-                          <label htmlFor="tshirtsFormControlInput">
+                          <label htmlFor='tshirtsFormControlInput'>
                             Artist Name
                           </label>
                           <Input
-                            name="name"
+                            name='name'
                             required
                             value={modalArtist.name}
-                            placeholder="e.g. Artist Name"
-                            type="text"
+                            placeholder='e.g. Artist Name'
+                            type='text'
                             onBlur={this.handleBlur}
                             onChange={this.handleChange}
-                            invalid={"name" in errors}
+                            invalid={'name' in errors}
                           />
-                          <div className="invalid-feedback">{errors.name}</div>
+                          <div className='invalid-feedback'>{errors.name}</div>
                         </FormGroup>
                         <FormGroup>
-                          <label htmlFor="tshirtsFormControlInput">
+                          <label htmlFor='tshirtsFormControlInput'>
                             Artist Email
                           </label>
                           <Input
-                            name="email"
+                            name='email'
                             required
                             value={modalArtist.email}
-                            placeholder="e.g. Artist Email"
-                            type="text"
+                            placeholder='e.g. Artist Email'
+                            type='text'
                             onBlur={this.handleBlur}
                             onChange={this.handleChange}
-                            invalid={"email" in errors}
+                            invalid={'email' in errors}
                           />
-                          <div className="invalid-feedback">{errors.email}</div>
+                          <div className='invalid-feedback'>{errors.email}</div>
+                        </FormGroup>
+                        <FormGroup>
+                          <label htmlFor='tshirtsFormControlInput'>
+                            Artist Target
+                          </label>
+                          <Input
+                            name='target'
+                            required
+                            value={modalArtist.target}
+                            placeholder='e.g. Artist Target'
+                            type='number'
+                            onBlur={this.handleBlur}
+                            onChange={this.handleChange}
+                            invalid={'target' in errors}
+                          />
+                          <div className='invalid-feedback'>{errors.target}</div>
                         </FormGroup>
                       </ModalBody>
                       <ModalFooter>
                         <Button
-                          color="secondary"
+                          color='secondary'
                           onClick={(e) => {
                             this.setState({ isModal: false });
                           }}
                         >
                           Cancel
                         </Button>
-                        <Button color="primary" type="submit">
+                        <Button color='primary' type='submit'>
                           Save Changes
                         </Button>
                       </ModalFooter>
@@ -605,19 +623,19 @@ class ArtistList extends React.Component {
                   </Modal>
                 </Col>
                 <Col>
-                  <div className="div-searchbar-createartist">
-                    <Form className="navbar-search form-inline mr-sm-3 ">
-                      <FormGroup className="mb-0">
-                        <InputGroup className="input-group-alternative input-group-merge">
-                          <InputGroupAddon addonType="prepend">
+                  <div className='div-searchbar-createartist'>
+                    <Form className='navbar-search form-inline mr-sm-3 '>
+                      <FormGroup className='mb-0'>
+                        <InputGroup className='input-group-alternative input-group-merge'>
+                          <InputGroupAddon addonType='prepend'>
                             <InputGroupText>
-                              <i className="fas fa-search" />
+                              <i className='fas fa-search' />
                             </InputGroupText>
                           </InputGroupAddon>
                           <Input
-                            placeholder="Search"
-                            type="text"
-                            name="searchKey"
+                            placeholder='Search'
+                            type='text'
+                            name='searchKey'
                             onKeyDown={this.searchKey}
                           />
                         </InputGroup>
@@ -628,15 +646,15 @@ class ArtistList extends React.Component {
               </Row>
               <Row>
                 <Col md={12} xl={12}>
-                  <div className="div-tbl-artistlist">
+                  <div className='div-tbl-artistlist'>
                     <Table
-                      className="align-items-center"
-                      style={{ tableLayout: "fixed" }}
+                      className='align-items-center'
+                      style={{ tableLayout: 'fixed' }}
                       hover
                       bordered
                       responsive
                     >
-                      <thead className="thead-light">
+                      <thead className='thead-light'>
                         <tr>{this.tableHeads()}</tr>
                       </thead>
                       <tbody>{this.dataList()}</tbody>
@@ -645,11 +663,11 @@ class ArtistList extends React.Component {
                 </Col>
               </Row>
             </CardBody>
-            <CardFooter className="py-4">
-              <nav aria-label="...">
+            <CardFooter className='py-4'>
+              <nav aria-label='...'>
                 <Pagination
-                  className="pagination justify-content-end mb-0"
-                  listClassName="justify-content-end mb-0"
+                  className='pagination justify-content-end mb-0'
+                  listClassName='justify-content-end mb-0'
                 >
                   <PaginationItem
                     className={classnames({
@@ -661,8 +679,8 @@ class ArtistList extends React.Component {
                         this.changePage(this.state.entities.current_page - 1)
                       }
                     >
-                      <i className="fas fa-angle-left" />
-                      <span className="sr-only">Previous</span>
+                      <i className='fas fa-angle-left' />
+                      <span className='sr-only'>Previous</span>
                     </PaginationLink>
                   </PaginationItem>
                   {this.pageList()}
@@ -678,8 +696,8 @@ class ArtistList extends React.Component {
                         this.changePage(this.state.entities.current_page + 1)
                       }
                     >
-                      <i className="fas fa-angle-right" />
-                      <span className="sr-only">Next</span>
+                      <i className='fas fa-angle-right' />
+                      <span className='sr-only'>Next</span>
                     </PaginationLink>
                   </PaginationItem>
                 </Pagination>
