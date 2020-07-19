@@ -738,14 +738,15 @@ class ProductCreate extends React.Component {
                     <Col md={4}>
                       <h4>Product Create Instructions</h4>
                       <hr />
-                      <small className='text-uppercase text-muted font-weight-bold'>
+                      <small className='text-uppercase text-muted font-weight-bold' style={{
+                        'whiteSpace': 'pre-wrap'
+                      }}>
                         {this.state.setting.product_create_guide}
                       </small>
                     </Col>
                   </Row>
                 </Form>
                 <form
-                  role='form'
                   method='POST'
                   onSubmit={this.handleSubmit}
                   ref={(el) => (this.myFormRef = el)}
