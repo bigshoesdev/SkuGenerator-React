@@ -463,8 +463,7 @@ class ProductList extends React.Component {
                 );
               } else if (
                 key.includes('updated_at') ||
-                key.includes('isupload') ||
-                key.includes('download_link')
+                key.includes('isupload') 
               ) {
                 return null;
               } else {
