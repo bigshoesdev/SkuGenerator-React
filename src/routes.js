@@ -20,7 +20,6 @@ import PriceMerchantVariant from "views/pages/variant/PriceMerchantVariant.jsx";
 import DescriptionVariant from "./views/pages/variant/DescriptionVariant";
 import ApprovedWordList from "./views/pages/trademark/ApprovedWordList";
 import BannedWordList from "./views/pages/trademark/BannedWordList";
-import TradeMarkCheck from "./views/pages/trademark/TradeMarkCheck";
 import TradeMarkClassWordList from "./views/pages/trademark/TradeMarkClassWordList";
 import Performance from "./views/pages/performance/Performance";
 
@@ -147,12 +146,6 @@ export const routes = [
     icon: "ni ni-map-big text-primary",
     state: "trademarkCollapse",
     views: [
-      {
-        path: "/trademark-check",
-        name: "Trademark Check",
-        component: TradeMarkCheck,
-        layout: "/main",
-      },
       {
         path: "/trademark-approved",
         name: "Approved Keywords",

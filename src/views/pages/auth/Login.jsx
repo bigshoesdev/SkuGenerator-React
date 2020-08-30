@@ -37,7 +37,7 @@ class Login extends React.Component {
       password: 'required|min:6'
     });
   }
-
+  
   componentWillReceiveProps(nextProps) {
     if (
       nextProps.responseErrors &&
