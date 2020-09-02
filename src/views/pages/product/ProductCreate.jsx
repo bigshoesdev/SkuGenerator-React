@@ -424,27 +424,13 @@ class ProductCreate extends React.Component {
       http
         .get(fetchUrl)
         .then(({ data }) => {
-          let dataLength = Object.keys(data.data.result).length;
-
-          if (dataLength === 1) {
-            let value = Object.values(data.data.result)[0];
-
-            if (typeof value === 'string' &&
-              (value === 'The product with this title is already existed' ||
-                value.includes('Banned Word List'))
-            ) {
-              this.setState({
-                isActive: false,
-                isNext: false,
-                checkResult: data.data.result,
-              });
-            } else {
-              this.setState({
-                isActive: false,
-                isNext: true,
-                checkResult: data.data.result,
-              });
-            }
+          console.log(data.data.result)
+          if (Object.keys(data.data.result).includes('error')) {
+            this.setState({
+              isActive: false,
+              isNext: false,
+              checkResult: data.data.result,
+            });
           } else {
             this.setState({
               isActive: false,
@@ -717,28 +703,70 @@ class ProductCreate extends React.Component {
                           </Button>
                         </Col>
                       </Row>
-                      <Row>
-                        {Object.keys(checkResult).length == 0 && isNext ? (
+                      {Object.keys(checkResult).length == 0 && isNext ? (
+                        <Row>
                           <p className='mt-2 mb-1 ml-3 check-text'>
                             No trademark issues found
                           </p>
-                        ) : (
-                            ''
-                          )}
-                        {Object.keys(checkResult).map((keyName, keyIndex) => {
-                          return (
-                            <p
-                              className='mt-2 mb-1 ml-3 check-text'
-                              key={'check-result-' + keyIndex}
-                            >
-                              {
-                                `${keyName.toUpperCase()} - ${typeof checkResult[keyName] === 'object' ?
-                                  checkResult[keyName]['US'] : checkResult[keyName]}`
-                              }
-                            </p>
-                          );
-                        })}
-                      </Row>
+                        </Row>
+                      ) : null}
+                      {Object.keys(checkResult).includes('error') ? (
+                        Object.keys(checkResult['error']).map(item => (
+                          <Row key={`check-result-error-${item}`}>
+                            <small className='mt-3 mb-1 ml-3'>
+                              {checkResult['error'][item]}
+                            </small>
+                          </Row>
+                        ))
+                      ) : null}
+                      {Object.keys(checkResult).includes('AU') ? (
+                        <>
+                          <Row className='mt-4 ml-1'>
+                            <img src={require("assets/img/flag/au.png")} style={{ width: '18px', height: '18px' }}></img>
+                            <h4 className='ml-2'>AU</h4>
+                          </Row>
+                          <hr style={{borderTop: '1px solid rgba(0, 0, 0, 0.3)'}} />
+                          <Row className='mt-2 mb-1'>
+                            {Object.keys(checkResult['AU']).map(item => (
+                              <small className='mb-2 ml-3' key={`check-result-au-${item}`}>
+                                {checkResult['US'][item]}
+                              </small>
+                            ))}
+                          </Row>
+                        </>
+                      ) : null}
+                      {Object.keys(checkResult).includes('US') ? (
+                        <>
+                          <Row className='mt-4 ml-1'>
+                            <img src={require("assets/img/flag/us.png")} style={{ width: '18px', height: '18px' }}></img>
+                            <h4 className='ml-2'>US</h4>
+                          </Row>
+                          <hr style={{borderTop: '1px solid rgba(0, 0, 0, 0.3)'}} />
+                          <Row className='mt-2 mb-1'>
+                            {Object.keys(checkResult['US']).map(item => (
+                              <small className='mb-2 ml-3' key={`check-result-us-${item}`}>
+                                {checkResult['US'][item]}
+                              </small>
+                            ))}
+                          </Row>
+                        </>
+                      ) : null}
+                      {Object.keys(checkResult).includes('UK') ? (
+                        <>
+                          <Row className='mt-4 ml-1'>
+                            <img src={require("assets/img/flag/uk.png")} style={{ width: '18px', height: '18px' }}></img>
+                            <h4 className='ml-2'>UK</h4>
+                          </Row>
+                          <hr style={{borderTop: '1px solid rgba(0, 0, 0, 0.3)'}} />
+                          <Row className='mt-2 mb-1'>
+                            {Object.keys(checkResult['UK']).map(item => (
+                              <small className='mb-2 ml-3' key={`check-result-uk-${item}`}>
+                                {checkResult['US'][item]}
+                              </small>
+                            ))}
+                          </Row>
+                        </>
+                      ) : null}
                     </Col>
                     <Col md={4}>
                       <h4>Product Create Instructions</h4>
