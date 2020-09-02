@@ -425,11 +425,13 @@ class ProductCreate extends React.Component {
         .get(fetchUrl)
         .then(({ data }) => {
           let dataLength = Object.keys(data.data.result).length;
+
           if (dataLength === 1) {
             let value = Object.values(data.data.result)[0];
-            if (
-              value === 'The product with this title is already existed' ||
-              value.includes('Banned Word List')
+
+            if (typeof value === 'string' &&
+              (value === 'The product with this title is already existed' ||
+                value.includes('Banned Word List'))
             ) {
               this.setState({
                 isActive: false,
@@ -486,7 +488,7 @@ class ProductCreate extends React.Component {
     product['category'] = this.state.category;
     product['keyword'] = this.state.keyword;
     this.setState({ isShowError: true });
-    console.log(product)
+
     this.validator.validateAll(product).then((success) => {
       if (success) {
         const {
@@ -721,15 +723,18 @@ class ProductCreate extends React.Component {
                             No trademark issues found
                           </p>
                         ) : (
-                          ''
-                        )}
+                            ''
+                          )}
                         {Object.keys(checkResult).map((keyName, keyIndex) => {
                           return (
                             <p
                               className='mt-2 mb-1 ml-3 check-text'
                               key={'check-result-' + keyIndex}
                             >
-                              {keyName.toUpperCase()} - {checkResult[keyName]}
+                              {
+                                `${keyName.toUpperCase()} - ${typeof checkResult[keyName] === 'object' ?
+                                  checkResult[keyName]['US'] : checkResult[keyName]}`
+                              }
                             </p>
                           );
                         })}
