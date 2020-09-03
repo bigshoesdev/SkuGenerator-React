@@ -4,6 +4,7 @@ import ProductList from "views/pages/product/ProductList.jsx";
 import ProductCreate from "views/pages/product/ProductCreate.jsx";
 import ProductDetail from "views/pages/product/ProductDetail.jsx";
 import ProductImageSet from "views/pages/product/ProductImageSet.jsx";
+import ProductImage from 'views/pages/product/ProductImage.jsx'
 import KeywordList from "views/pages/keyword/KeywordList.jsx";
 import CategoryList from "views/pages/category/CategoryList.jsx";
 import ArtistList from "views/pages/artist/ArtistList.jsx";
@@ -56,6 +57,12 @@ export const routes = [
         path: "/product-create",
         name: "Product Create",
         component: ProductCreate,
+        layout: "/main",
+      },
+      {
+        path: "/product-image",
+        name: "Product Image",
+        component: ProductImage,
         layout: "/main",
       },
       {

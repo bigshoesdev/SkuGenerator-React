@@ -643,7 +643,10 @@ class ProductCreate extends React.Component {
       return (
         <>
           <Row className='mt-4 ml-1'>
-            <img src={require(`assets/img/flag/${name}.png`)} style={{ width: '18px', height: '18px' }}></img>
+            <img
+              src={require(`assets/img/flag/${name}.png`)}
+              style={{ width: '18px', height: '18px' }}
+            />
             <h4 className='ml-2'>{name.toUpperCase()}</h4>
           </Row>
           <hr style={{ borderTop: '1px solid rgba(0, 0, 0, 0.3)' }} />
@@ -660,7 +663,10 @@ class ProductCreate extends React.Component {
       return (
         <>
           <Row className='mt-4 ml-1'>
-            <img src={require(`assets/img/flag/${name}.png`)} style={{ width: '18px', height: '18px' }}></img>
+            <img
+              src={require(`assets/img/flag/${name}.png`)}
+              style={{ width: '18px', height: '18px' }}
+            />
             <h4 className='ml-2'>{name.toUpperCase()}</h4>
           </Row>
           <hr style={{ borderTop: '1px solid rgba(0, 0, 0, 0.3)' }} />
