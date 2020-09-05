@@ -676,7 +676,7 @@ class ProductCreate extends React.Component {
                 {`${item.toUpperCase()} -`}
                 {this.state.checkResult[name.toUpperCase()][item].map(el => (
                   <React.Fragment key={`check-result-${name}-${el.id}`}>
-                    {` ${el.number}: ${el.link} |`}<br />
+                    {` ${el.number} | ${el.link} | Registered`}<br />
                   </React.Fragment>
                 ))}
               </small>
@@ -743,7 +743,7 @@ class ProductCreate extends React.Component {
 
                         <Col md={4}>
                           <Button type='submit' color='primary'>
-                            Check
+                            {"Check"}
                           </Button>
                           <Button
                             type='button'
@@ -764,7 +764,7 @@ class ProductCreate extends React.Component {
                       {Object.keys(checkResult).length == 0 && isNext ? (
                         <Row>
                           <p className='mt-2 mb-1 ml-3 check-text'>
-                            No trademark issues found
+                            {"No trademark issues found"}
                           </p>
                         </Row>
                       ) : null}
@@ -774,7 +774,7 @@ class ProductCreate extends React.Component {
                       {Object.keys(checkResult).includes('UK') ? this.renderTradeMarkCheck('uk') : null}
                     </Col>
                     <Col md={4}>
-                      <h4>Product Create Instructions</h4>
+                      <h4>{"Product Create Instructions"}</h4>
                       <hr />
                       <small className='text-uppercase text-muted font-weight-bold' style={{
                         'whiteSpace': 'pre-wrap'

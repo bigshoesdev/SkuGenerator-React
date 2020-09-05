@@ -5,16 +5,9 @@ import { connect } from "react-redux";
 
 import NotificationAlert from "react-notification-alert";
 import {
-  UncontrolledAlert,
   Table,
   Button,
   Row,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  Input,
-  FormGroup,
-  Form,
   Col,
   Card,
   CardBody,
@@ -23,10 +16,7 @@ import {
   PaginationItem,
   PaginationLink,
   Container,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
+  Input,
 } from "reactstrap";
 
 import MainHeader from "../../components/headers/MainHeader";
@@ -203,10 +193,10 @@ class TrademarkClassWordList extends React.Component {
           <th
             scope="col"
             className="text-center"
-            style={{ width: "5%" }}
+            style={{ width: "7%" }}
             key={column}
           >
-            {"No"}
+            {"NO"}
           </th>
         );
       } else {
@@ -241,18 +231,28 @@ class TrademarkClassWordList extends React.Component {
     var self = this;
     if (this.state.entities.data.length) {
       return this.state.entities.data.map((data, index) => {
+        let current_number = (this.state.current_page - 1) * 20 + index + 1;
         return (
           <tr key={data.id}>
             {Object.keys(data).map((key) => {
               if (key == "id")
                 return (
                   <td className="text-center" key={key}>
-                    {index + 1}
+                    <div className="custom-control custom-checkbox">
+                      <input
+                        type="checkbox"
+                        className="custom-control-input"
+                        id={`class-number-${current_number}`}
+                      />
+                      <label className="custom-control-label" for={`class-number-${current_number}`}>
+                        {current_number}
+                      </label>
+                    </div>
                   </td>
                 );
               else
                 return (
-                  <td className="text-center" key={key}>
+                  <td key={key} style={{whiteSpace: 'normal'}}>
                     {data[key]}
                   </td>
                 );
@@ -270,23 +270,17 @@ class TrademarkClassWordList extends React.Component {
                     }}
                   >
                     <span className="btn-inner--icon mr-1">
-                      <i className="fas fa-edit" />
+                      <i className="fas fa-clone fa-flip-vertica" />
                     </span>
-                    <span className="btn-inner--text">EDIT</span>
-                  </Button>
-                  <Button
-                    className="btn-tbl-categorylist-delete"
-                    size="sm"
-                    color="warning"
-                    data-dz-remove
-                    onClick={(e) => {
-                      self.handleDelete(data.id);
-                    }}
-                  >
-                    <span className="btn-inner--icon mr-2">
-                      <i className="fas fa-trash" />
+                    <span className="btn-inner--text">
+                      <a
+                        href={`http://xeno.ipaustralia.gov.au/tmgns/facelets/trademarkclass.xhtml?classId=${current_number}`}
+                        target="blank"
+                        style={{ color: '#fff' }}
+                      >
+                        {"MORE INFO"}
+                      </a>
                     </span>
-                    <span className="btn-inner--text">DELETE</span>
                   </Button>
                 </Col>
               </Row>
@@ -312,14 +306,14 @@ class TrademarkClassWordList extends React.Component {
     if (column === this.state.sorted_column) {
       this.state.order === "asc"
         ? this.setState(
-            { order: "desc", current_page: this.state.first_page },
-            () => {
-              this.fetchEntities();
-            }
-          )
-        : this.setState({ order: "asc" }, () => {
+          { order: "desc", current_page: this.state.first_page },
+          () => {
             this.fetchEntities();
-          });
+          }
+        )
+        : this.setState({ order: "asc" }, () => {
+          this.fetchEntities();
+        });
     } else {
       this.setState(
         {
@@ -446,13 +440,6 @@ class TrademarkClassWordList extends React.Component {
   };
 
   render() {
-    const {
-      errors,
-      isModal,
-      isDeleteModal,
-      modalWord,
-      responseErrors,
-    } = this.state;
     return (
       <>
         <div className="rna-wrapper">
@@ -462,137 +449,7 @@ class TrademarkClassWordList extends React.Component {
         <Container className="mt--6 category-list-container" fluid>
           <Card style={{ minHeight: "700px" }}>
             <CardBody>
-              <Row>
-                <Col>
-                  <Button
-                    className="btn-createcategory"
-                    color="primary"
-                    onClick={() => {
-                      this.createWord();
-                    }}
-                  >
-                    Create Class Word
-                  </Button>
-                  <Modal
-                    isOpen={isDeleteModal}
-                    toggle={() => {
-                      this.setState({
-                        isDeleteModal: !this.state.isDeleteModal,
-                      });
-                    }}
-                  >
-                    <Form method="POST" onSubmit={this.handleSubmitDelete}>
-                      <ModalHeader>Confirm</ModalHeader>
-                      <ModalBody>
-                        {responseErrors && (
-                          <UncontrolledAlert color="warning">
-                            <span className="alert-text ml-1">
-                              <strong
-                                dangerouslySetInnerHTML={{
-                                  __html: responseErrors,
-                                }}
-                              ></strong>
-                            </span>
-                          </UncontrolledAlert>
-                        )}
-                        <FormGroup>
-                          <label>Do you really want to delete?</label>
-                        </FormGroup>
-                      </ModalBody>
-                      <ModalFooter>
-                        <Button
-                          color="secondary"
-                          onClick={(e) => {
-                            this.setState({ isDeleteModal: false });
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                        <Button color="primary" type="submit">
-                          Delete
-                        </Button>
-                      </ModalFooter>
-                    </Form>
-                  </Modal>
-                  <Modal
-                    isOpen={isModal}
-                    toggle={() => {
-                      this.setState({ isModal: !this.state.isModal });
-                    }}
-                  >
-                    <Form
-                      role="form"
-                      method="POST"
-                      onSubmit={this.handleSubmit}
-                    >
-                      <ModalHeader color="primary">Class Word Edit</ModalHeader>
-                      <ModalBody>
-                        {responseErrors && (
-                          <UncontrolledAlert color="warning">
-                            <span className="alert-text ml-1">
-                              <strong
-                                dangerouslySetInnerHTML={{
-                                  __html: responseErrors,
-                                }}
-                              ></strong>
-                            </span>
-                          </UncontrolledAlert>
-                        )}
-                        <FormGroup>
-                          <label htmlFor="tshirtsFormControlInput">Name</label>
-                          <Input
-                            name="name"
-                            ref="name"
-                            required
-                            value={modalWord.name}
-                            placeholder="e.g. Word Name"
-                            type="text"
-                            onBlur={this.handleBlur}
-                            onChange={this.handleChange}
-                            invalid={"name" in errors}
-                          />
-                          <div className="invalid-feedback">{errors.name}</div>
-                        </FormGroup>
-                      </ModalBody>
-                      <ModalFooter>
-                        <Button
-                          color="secondary"
-                          onClick={(e) => {
-                            this.setState({ isModal: false });
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                        <Button color="primary" type="submit">
-                          Save Changes
-                        </Button>
-                      </ModalFooter>
-                    </Form>
-                  </Modal>
-                </Col>
-                <Col>
-                  <div className="div-searchbar-createcategory">
-                    <Form className="navbar-search form-inline mr-sm-3 ">
-                      <FormGroup className="mb-0">
-                        <InputGroup className="input-group-alternative input-group-merge">
-                          <InputGroupAddon addonType="prepend">
-                            <InputGroupText>
-                              <i className="fas fa-search" />
-                            </InputGroupText>
-                          </InputGroupAddon>
-                          <Input
-                            placeholder="Search"
-                            type="text"
-                            name="searchKey"
-                            onKeyDown={this.searchKey}
-                          />
-                        </InputGroup>
-                      </FormGroup>
-                    </Form>
-                  </div>
-                </Col>
-              </Row>
-              <Row>
+              <Row className="mt-5">
                 <Col md={12} xl={12}>
                   <div className="div-tbl-categorylist">
                     <Table
