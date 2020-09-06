@@ -167,7 +167,7 @@ class ProductDetail extends React.Component {
     }
     let columns = this.state.columns[this.state.showDetailType].map(
       (column) => {
-        if (column == 'id') {
+        if (column === 'id') {
           return (
             <th
               scope='col'

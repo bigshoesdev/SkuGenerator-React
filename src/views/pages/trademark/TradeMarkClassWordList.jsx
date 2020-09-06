@@ -3,7 +3,6 @@ import classnames from "classnames";
 import ReeValidate from "ree-validate";
 import { connect } from "react-redux";
 
-import NotificationAlert from "react-notification-alert";
 import {
   Table,
   Button,
@@ -16,15 +15,12 @@ import {
   PaginationItem,
   PaginationLink,
   Container,
-  Input,
 } from "reactstrap";
 
 import MainHeader from "../../components/headers/MainHeader";
 import http from "../../../helper/http";
 import {
-  createClassWord,
-  updateClassWord,
-  deleteClassWord,
+  updateClassWord
 } from "../../../store/actions/trademark";
 import APP_CONST from "../../../helper/constant";
 
@@ -46,19 +42,15 @@ class TrademarkClassWordList extends React.Component {
       offset: 5,
       order: "asc",
       searchKey: "",
-      modalWord: {
-        id: 0,
-        name: "",
-      },
       message: "",
       responseErrors: "",
       errors: {},
-      isModal: false,
-      isDeleteModal: false,
     };
     this.validator = new ReeValidate({
       name: "required|min:2",
     });
+
+    this.handleChecked = this.handleChecked.bind(this);
   }
 
   componentDidMount() {
@@ -68,12 +60,9 @@ class TrademarkClassWordList extends React.Component {
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.message) {
-      this.showNotification(nextProps.message);
       this.setState(
         {
-          isModal: false,
-          isDeleteModal: false,
-          current_page: this.state.first_page,
+          current_page: this.state.current_page,
         },
         () => {
           this.fetchEntities();
@@ -88,43 +77,6 @@ class TrademarkClassWordList extends React.Component {
         responseErrors: nextProps.responseErrors,
       });
     }
-  }
-  searchKey = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const { value } = e.target;
-      this.setState(
-        { current_page: this.state.first_page, searchKey: value },
-        () => {
-          this.fetchEntities();
-        }
-      );
-    }
-  };
-
-  handleEdit(id) {
-    const { data } = this.state.entities;
-    const word = data.find((obj) => {
-      return obj.id == id;
-    });
-    this.setState({
-      modalWord: { ...word },
-      isModal: true,
-      responseErrors: "",
-      errors: {},
-    });
-  }
-
-  handleDelete(id) {
-    const { data } = this.state.entities;
-    const word = data.find((obj) => {
-      return obj.id == id;
-    });
-    this.setState({
-      modalWord: { ...word },
-      isDeleteModal: true,
-      responseErrors: "",
-    });
   }
 
   fetchEntities() {
@@ -145,6 +97,12 @@ class TrademarkClassWordList extends React.Component {
           },
         });
       });
+  }
+
+  handleChecked(event) {
+    const { id, name } = event.target;
+    var checked = document.getElementById(id).checked;
+    this.props.updateClassWord({ id: name, checked: checked });
   }
 
   changePage(pageNumber) {
@@ -181,17 +139,10 @@ class TrademarkClassWordList extends React.Component {
   }
 
   tableHeads() {
-    let icon;
-    if (this.state.order === "asc") {
-      icon = <i className="fa fa-sort-alpha-down"></i>;
-    } else {
-      icon = <i className="fa fa-sort-alpha-up"></i>;
-    }
     let columns = this.columns.map((column) => {
       if (column == "id") {
         return (
           <th
-            scope="col"
             className="text-center"
             style={{ width: "7%" }}
             key={column}
@@ -202,26 +153,22 @@ class TrademarkClassWordList extends React.Component {
       } else {
         return (
           <th
-            scope="col"
             className="text-center"
             style={{ width: "75%" }}
             key={column}
-            onClick={() => this.sortByColumn(column)}
           >
             {this.columnHead(column)}
-            {column === this.state.sorted_column && icon}
           </th>
         );
       }
     });
     columns.push(
       <th
-        scope="col"
         className="text-center"
         key="action"
-        style={{ width: "20%" }}
+        style={{ width: "12%" }}
       >
-        Action
+        {"Action"}
       </th>
     );
     return columns;
@@ -232,56 +179,60 @@ class TrademarkClassWordList extends React.Component {
     if (this.state.entities.data.length) {
       return this.state.entities.data.map((data, index) => {
         let current_number = (this.state.current_page - 1) * 20 + index + 1;
+
         return (
           <tr key={data.id}>
             {Object.keys(data).map((key) => {
-              if (key == "id")
+              if (key == "checked")
                 return (
                   <td className="text-center" key={key}>
                     <div className="custom-control custom-checkbox">
                       <input
-                        type="checkbox"
-                        className="custom-control-input"
                         id={`class-number-${current_number}`}
+                        name={current_number}
+                        className="custom-control-input"
+                        type="checkbox"
+                        checked={data[key]}
+                        onChange={this.handleChecked}
                       />
-                      <label className="custom-control-label" for={`class-number-${current_number}`}>
+                      <label
+                        className={`custom-control-label ${current_number < 10 ? 'pl-2' : ''}`}
+                        htmlFor={`class-number-${current_number}`}
+                      >
                         {current_number}
                       </label>
                     </div>
                   </td>
                 );
-              else
+              else if (key !== 'id') {
                 return (
-                  <td key={key} style={{whiteSpace: 'normal'}}>
+                  <td key={key} style={{ whiteSpace: 'normal' }}>
                     {data[key]}
                   </td>
                 );
+              }
             })}
             <td className="td-action">
               <Row>
                 <Col md={12} xl={12}>
-                  <Button
-                    className="btn-tbl-categorylist-edit"
-                    size="sm"
-                    color="primary"
-                    data-dz-remove
-                    onClick={(e) => {
-                      self.handleEdit(data.id);
-                    }}
+                  <a
+                    href={`http://xeno.ipaustralia.gov.au/tmgns/facelets/trademarkclass.xhtml?classId=${current_number}`}
+                    target="blank"
+                    style={{ color: '#fff' }}
                   >
-                    <span className="btn-inner--icon mr-1">
-                      <i className="fas fa-clone fa-flip-vertica" />
-                    </span>
-                    <span className="btn-inner--text">
-                      <a
-                        href={`http://xeno.ipaustralia.gov.au/tmgns/facelets/trademarkclass.xhtml?classId=${current_number}`}
-                        target="blank"
-                        style={{ color: '#fff' }}
-                      >
+                    <Button
+                      className="btn-tbl-categorylist-edit"
+                      size="sm"
+                      color="primary"
+                    >
+                      <span className="btn-inner--icon mr-1">
+                        <i className="fas fa-clone fa-flip-vertica" />
+                      </span>
+                      <span className="btn-inner--text">
                         {"MORE INFO"}
-                      </a>
-                    </span>
-                  </Button>
+                      </span>
+                    </Button>
+                  </a>
                 </Col>
               </Row>
             </td>
@@ -295,35 +246,9 @@ class TrademarkClassWordList extends React.Component {
             colSpan={this.columns.length + 1}
             className="text-center td-noredords"
           >
-            No Records Found.
+            {"No Records Found."}
           </td>
         </tr>
-      );
-    }
-  }
-
-  sortByColumn(column) {
-    if (column === this.state.sorted_column) {
-      this.state.order === "asc"
-        ? this.setState(
-          { order: "desc", current_page: this.state.first_page },
-          () => {
-            this.fetchEntities();
-          }
-        )
-        : this.setState({ order: "asc" }, () => {
-          this.fetchEntities();
-        });
-    } else {
-      this.setState(
-        {
-          sorted_column: column,
-          order: "asc",
-          current_page: this.state.first_page,
-        },
-        () => {
-          this.fetchEntities();
-        }
       );
     }
   }
@@ -345,106 +270,9 @@ class TrademarkClassWordList extends React.Component {
     });
   }
 
-  createWord() {
-    this.setState({
-      isModal: true,
-      modalWord: {
-        id: 0,
-        name: "",
-      },
-      responseErrors: "",
-      errors: {},
-    });
-  }
-
-  handleChange = (e) => {
-    const { name, value } = e.target;
-    const { modalWord } = this.state;
-    modalWord[name] = value;
-    this.setState({ modalWord });
-
-    const { errors } = this.state;
-    if (name in errors) {
-      const validation = this.validator.errors;
-      this.validator.validate(name, value).then(() => {
-        if (!validation.has(name)) {
-          delete errors[name];
-          this.setState({ errors });
-        }
-      });
-    }
-  };
-
-  handleBlur = (e) => {
-    const { name, value } = e.target;
-    const validation = this.validator.errors;
-
-    if (value === "") {
-      return;
-    }
-
-    this.validator.validate(name, value).then(() => {
-      if (validation.has(name)) {
-        const { errors } = this.state;
-        errors[name] = validation.first(name);
-        this.setState({ errors });
-      }
-    });
-  };
-
-  handleSubmitDelete = (e) => {
-    e.preventDefault();
-    const { modalWord } = this.state;
-    const { id } = modalWord;
-    this.props.deleteClassWord(id);
-  };
-
-  handleSubmit = (e) => {
-    e.preventDefault();
-    const { modalWord } = this.state;
-    this.validator.validateAll(modalWord).then((success) => {
-      if (success) {
-        if (modalWord.id === 0) {
-          const { name } = modalWord;
-          this.props.createClassWord({
-            name,
-          });
-        } else {
-          const { id, name } = modalWord;
-          this.props.updateClassWord({
-            id,
-            name,
-          });
-        }
-      }
-    });
-  };
-
-  showNotification = (message) => {
-    let options = {
-      place: "tr",
-      message: (
-        <div className="alert-text">
-          <span
-            className="alert-title"
-            data-notify="title"
-            dangerouslySetInnerHTML={{ __html: message }}
-          ></span>
-        </div>
-      ),
-      type: "success",
-      icon: "ni ni-bell-55",
-      autoDismiss: 7,
-    };
-    this.refs.notificationAlert.notificationAlert(options);
-  };
-
   render() {
     return (
       <>
-        <div className="rna-wrapper">
-          <NotificationAlert ref="notificationAlert" />
-        </div>
         <MainHeader name="Trademark Class Word List" parentName="Trademark" />
         <Container className="mt--6 category-list-container" fluid>
           <Card style={{ minHeight: "700px" }}>
@@ -521,7 +349,5 @@ const mapStateToProps = ({ trademark }) => ({
 });
 
 export default connect(mapStateToProps, {
-  createClassWord,
-  updateClassWord,
-  deleteClassWord,
+  updateClassWord
 })(TrademarkClassWordList);

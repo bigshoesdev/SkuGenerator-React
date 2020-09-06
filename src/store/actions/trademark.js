@@ -3,9 +3,7 @@ import {
   TRADEMARK_CREATE_WORD,
   TRADEMARK_UPDATE_WORD,
   TRADEMARK_DELETE_WORD,
-  TRADEMARK_CREATE_CLASS_WORD,
   TRADEMARK_UPDATE_CLASS_WORD,
-  TRADEMARK_DELETE_CLASS_WORD,
   TRADEMARK_ERROR,
 } from "./types";
 
@@ -88,31 +86,6 @@ export function deleteWord(id) {
   };
 }
 
-export function createClassWord(obj) {
-  return function (dispatch) {
-    dispatch({ type: CLEAN_TRADEMARK });
-    http
-      .post(`${APP_CONST.API_URL}/trademark/classword/create`, obj)
-      .then(() => {
-        dispatch({
-          type: TRADEMARK_CREATE_CLASS_WORD,
-          message: "The class word is created successfully!",
-        });
-      })
-      .catch((err) => {
-        if (err.response) {
-          let { errors } = err.response.data;
-          dispatch({ type: TRADEMARK_ERROR, errors: errorHandler(errors) });
-        } else {
-          dispatch({
-            type: TRADEMARK_ERROR,
-            errors: "There is a server connection Error, Try Later.",
-          });
-        }
-      });
-  };
-}
-
 export function updateClassWord(obj) {
   return function (dispatch) {
     dispatch({ type: CLEAN_TRADEMARK });
@@ -122,31 +95,6 @@ export function updateClassWord(obj) {
         dispatch({
           type: TRADEMARK_UPDATE_CLASS_WORD,
           message: "The class word is updated successfully!",
-        });
-      })
-      .catch((err) => {
-        if (err.response) {
-          let { errors } = err.response.data;
-          dispatch({ type: TRADEMARK_ERROR, errors: errorHandler(errors) });
-        } else {
-          dispatch({
-            type: TRADEMARK_ERROR,
-            errors: "There is a server connection Error, Try Later.",
-          });
-        }
-      });
-  };
-}
-
-export function deleteClassWord(id) {
-  return function (dispatch) {
-    dispatch({ type: CLEAN_TRADEMARK });
-    http
-      .post(`${APP_CONST.API_URL}/trademark/classword/delete/${id}`)
-      .then(() => {
-        dispatch({
-          type: TRADEMARK_DELETE_CLASS_WORD,
-          message: "The class word is deleted successfully!",
         });
       })
       .catch((err) => {

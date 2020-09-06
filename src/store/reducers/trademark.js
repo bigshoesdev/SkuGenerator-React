@@ -25,11 +25,7 @@ export default function (state = initialState, action) {
       return { ...state, message: action.message, errors: "" };
     case TRADEMARK_DELETE_WORD:
       return { ...state, message: action.message, errors: "" };
-    case TRADEMARK_CREATE_CLASS_WORD:
-      return { ...state, message: action.message, errors: "" };
     case TRADEMARK_UPDATE_CLASS_WORD:
-      return { ...state, message: action.message, errors: "" };
-    case TRADEMARK_DELETE_CLASS_WORD:
       return { ...state, message: action.message, errors: "" };
     case TRADEMARK_ERROR:
       return { ...state, words: [], message: "", errors: action.errors };
