@@ -628,68 +628,6 @@ class ProductCreate extends React.Component {
     }
   };
 
-  renderTradeMarkCheck = (name) => {
-    if (name === 'error') {
-      return (
-        Object.keys(this.state.checkResult['error']).map(item => (
-          <Row key={`check-result-error-${item}`}>
-            <small className='mt-3 mb-1 ml-3'>
-              {this.state.checkResult['error'][item]}
-            </small>
-          </Row>
-        ))
-      );
-    } else if (name === 'us') {
-      return (
-        <>
-          <Row className='mt-4 ml-1'>
-            <img
-              src={require(`assets/img/flag/${name}.png`)}
-              style={{ width: '18px', height: '18px' }}
-            />
-            <h4 className='ml-2'>{name.toUpperCase()}</h4>
-          </Row>
-          <hr style={{ borderTop: '1px solid rgba(0, 0, 0, 0.3)' }} />
-          <Row className='mt-2 mb-1'>
-            {Object.keys(this.state.checkResult[name.toUpperCase()]).map(item => (
-              <small className='mb-2 ml-3' key={`check-result-${name}-${item}`}>
-                {this.state.checkResult[name.toUpperCase()][item]}
-              </small>
-            ))}
-          </Row>
-        </>
-      );
-    } else if (name === 'uk') {
-      return (
-        <>
-          <Row className='mt-4 ml-1'>
-            <img
-              src={require(`assets/img/flag/${name}.png`)}
-              style={{ width: '18px', height: '18px' }}
-            />
-            <h4 className='ml-2'>{name.toUpperCase()}</h4>
-          </Row>
-          <hr style={{ borderTop: '1px solid rgba(0, 0, 0, 0.3)' }} />
-          <Row className='mt-2 mb-1'>
-            {Object.keys(this.state.checkResult[name.toUpperCase()]).map(item => (
-              <small className='mb-2 ml-3' key={`check-result-${name}-${item}`}>
-                {`${item.toUpperCase()} -`}
-                {this.state.checkResult[name.toUpperCase()][item].map(el => (
-                  <React.Fragment key={`check-result-${name}-${el.id}`}>
-                    <a href={el.link} target="blank" style={{ color: '#525f7f' }}>
-                      {` ${el.number}`}
-                    </a>
-                    {"| Registered"}<br />
-                  </React.Fragment>
-                ))}
-              </small>
-            ))}
-          </Row>
-        </>
-      );
-    }
-  }
-
   render() {
     const {
       errors,
@@ -743,7 +681,6 @@ class ProductCreate extends React.Component {
                             required
                           />
                         </Col>
-
                         <Col md={4}>
                           <Button type='submit' color='primary'>
                             {"Check"}
@@ -771,10 +708,65 @@ class ProductCreate extends React.Component {
                           </p>
                         </Row>
                       ) : null}
-                      {Object.keys(checkResult).includes('error') ? this.renderTradeMarkCheck('error') : null}
-                      {Object.keys(checkResult).includes('AU') ? this.renderTradeMarkCheck('au') : null}
-                      {Object.keys(checkResult).includes('US') ? this.renderTradeMarkCheck('us') : null}
-                      {Object.keys(checkResult).includes('UK') ? this.renderTradeMarkCheck('uk') : null}
+
+                      {Object.keys(checkResult).includes('error') ?
+                        Object.keys(this.state.checkResult['error']).map(item => (
+                          <Row key={`check-result-error-${item}`}>
+                            <small className='mt-3 mb-1 ml-3'>
+                              {this.state.checkResult['error'][item]}
+                            </small>
+                          </Row>
+                        )) : null}
+
+                      {Object.keys(checkResult).includes('US') ? <>
+                        <Row className='mt-4 ml-1'>
+                          <img
+                            src={require(`assets/img/flag/us.png`)}
+                            style={{ width: '18px', height: '18px' }}
+                          />
+                          <h4 className='ml-2'>{"US"}</h4>
+                        </Row>
+                        <hr style={{ borderTop: '1px solid rgba(0, 0, 0, 0.3)' }} />
+                        <Row className='mt-2 mb-1'>
+                          {Object.keys(this.state.checkResult['US']).map(item => (
+                            <small className='mb-2 ml-3' key={`check-result-us-${item}`}>
+                              {this.state.checkResult['US'][item]}
+                            </small>
+                          ))}
+                        </Row>
+                      </> : null}
+
+                      {Object.keys(checkResult).includes('UK') ? <>
+                        <Row className='mt-4 ml-1'>
+                          <img
+                            src={require(`assets/img/flag/uk.png`)}
+                            style={{ width: '18px', height: '18px' }}
+                          />
+                          <h4 className='ml-2'>{'UK'}</h4>
+                        </Row>
+                        <hr style={{ borderTop: '1px solid rgba(0, 0, 0, 0.3)' }} />
+                        <Row className='mt-2 mb-1'>
+                          {Object.keys(this.state.checkResult['UK']).map(item => {
+                            console.log(item)
+                            return (
+                              <small className='mb-2 ml-3' key={`check-result-uk-${item}`}>
+                                {`${item.toUpperCase()} -`}
+                                {this.state.checkResult['UK'][item].map(el => (
+                                  <React.Fragment key={`check-result-uk-${el.id}`}>
+                                    <a href={el.link} target="blank">
+                                      {` ${el.number} | `}
+                                    </a>
+                                    {el.description.map(d => (
+                                      d + " | "
+                                    ))}
+                                    {"Registered"}<br />
+                                  </React.Fragment>
+                                ))}
+                              </small>
+                            );
+                          })}
+                        </Row>
+                      </> : null}
                     </Col>
                     <Col md={4}>
                       <h4>{"Product Create Instructions"}</h4>
