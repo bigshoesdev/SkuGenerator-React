@@ -197,7 +197,7 @@ class ProductCreate extends React.Component {
     if (nextProps.price_tshirt) {
       if (nextProps.price_tshirt.length > 0) {
         nextProps.price_tshirt.map((item) => {
-          if (item.default === 1) {
+          if (item.default == 1) {
             this.setState({
               price_tshirt: nextProps.price_tshirt,
               p_tshirt: item.id,
@@ -209,7 +209,7 @@ class ProductCreate extends React.Component {
     if (nextProps.price_sticker) {
       if (nextProps.price_sticker.length > 0) {
         nextProps.price_sticker.map((item) => {
-          if (item.default === 1) {
+          if (item.default == 1) {
             this.setState({
               price_sticker: nextProps.price_sticker,
               p_sticker: item.id,
@@ -221,7 +221,7 @@ class ProductCreate extends React.Component {
     if (nextProps.price_msg) {
       if (nextProps.price_msg.length > 0) {
         nextProps.price_msg.map((item) => {
-          if (item.default === 1) {
+          if (item.default == 1) {
             this.setState({ price_msg: nextProps.price_msg, p_msg: item.id });
           }
         });
@@ -230,7 +230,7 @@ class ProductCreate extends React.Component {
     if (nextProps.price_cushioncover) {
       if (nextProps.price_cushioncover.length > 0) {
         nextProps.price_cushioncover.map((item) => {
-          if (item.default === 1) {
+          if (item.default == 1) {
             this.setState({
               price_cushioncover: nextProps.price_cushioncover,
               p_cushioncover: item.id,
@@ -242,7 +242,7 @@ class ProductCreate extends React.Component {
     if (nextProps.price_totebag) {
       if (nextProps.price_totebag.length > 0) {
         nextProps.price_totebag.map((item) => {
-          if (item.default === 1) {
+          if (item.default == 1) {
             this.setState({
               price_totebag: nextProps.price_totebag,
               p_totebag: item.id,
@@ -254,7 +254,7 @@ class ProductCreate extends React.Component {
     if (nextProps.price_Hoodies) {
       if (nextProps.price_Hoodies.length > 0) {
         nextProps.price_Hoodies.map((item) => {
-          if (item.default === 1) {
+          if (item.default == 1) {
             this.setState({
               price_Hoodies: nextProps.price_Hoodies,
               p_Hoodies: item.id,
@@ -266,7 +266,7 @@ class ProductCreate extends React.Component {
     if (nextProps.price_kid) {
       if (nextProps.price_kid.length > 0) {
         nextProps.price_kid.map((item) => {
-          if (item.default === 1) {
+          if (item.default == 1) {
             this.setState({ price_kid: nextProps.price_kid, p_kid: item.id });
           }
         });
@@ -283,7 +283,7 @@ class ProductCreate extends React.Component {
     if (nextProps.price_mxg) {
       if (nextProps.price_mxg.length > 0) {
         nextProps.price_mxg.map((item) => {
-          if (item.default === 1) {
+          if (item.default == 1) {
             this.setState({ price_mxg: nextProps.price_mxg, p_mxg: item.id });
           }
         });
@@ -747,7 +747,6 @@ class ProductCreate extends React.Component {
                         <hr style={{ borderTop: '1px solid rgba(0, 0, 0, 0.3)' }} />
                         <Row className='mt-2 mb-1'>
                           {Object.keys(this.state.checkResult['UK']).map(item => {
-                            console.log(item)
                             return (
                               <small className='mb-2 ml-3' key={`check-result-uk-${item}`}>
                                 {`${item.toUpperCase()} -`}
@@ -756,9 +755,9 @@ class ProductCreate extends React.Component {
                                     <a href={el.link} target="blank">
                                       {` ${el.number} | `}
                                     </a>
-                                    {el.description.map(d => (
-                                      d + " | "
-                                    ))}
+                                    {el.description.map(d => {
+                                      if (d) return d + " | "
+                                    })}
                                     {"Registered"}<br />
                                   </React.Fragment>
                                 ))}

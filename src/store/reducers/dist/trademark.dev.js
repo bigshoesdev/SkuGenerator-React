@@ -54,6 +54,12 @@ function _default() {
         errors: ""
       });
 
+    case _types.TRADEMARK_UPDATE_CLASS_WORDS_LIST:
+      return _objectSpread({}, state, {
+        message: action.message,
+        errors: ""
+      });
+
     case _types.TRADEMARK_ERROR:
       return _objectSpread({}, state, {
         words: [],

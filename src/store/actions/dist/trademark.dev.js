@@ -7,6 +7,7 @@ exports.createWord = createWord;
 exports.updateWord = updateWord;
 exports.deleteWord = deleteWord;
 exports.updateClassWord = updateClassWord;
+exports.updateClassWordsList = updateClassWordsList;
 
 var _types = require("./types");
 
@@ -108,10 +109,38 @@ function updateClassWord(obj) {
       type: _types.CLEAN_TRADEMARK
     });
 
-    _http["default"].post("".concat(_constant["default"].API_URL, "/trademark/classword/update/").concat(obj.id), obj).then(function () {
+    _http["default"].post("".concat(_constant["default"].API_URL, "/trademark/classword/update"), obj).then(function () {
       dispatch({
         type: _types.TRADEMARK_UPDATE_CLASS_WORD,
         message: "The class word is updated successfully!"
+      });
+    })["catch"](function (err) {
+      if (err.response) {
+        var errors = err.response.data.errors;
+        dispatch({
+          type: _types.TRADEMARK_ERROR,
+          errors: (0, _util.errorHandler)(errors)
+        });
+      } else {
+        dispatch({
+          type: _types.TRADEMARK_ERROR,
+          errors: "There is a server connection Error, Try Later."
+        });
+      }
+    });
+  };
+}
+
+function updateClassWordsList(obj) {
+  return function (dispatch) {
+    dispatch({
+      type: _types.CLEAN_TRADEMARK
+    });
+
+    _http["default"].post("".concat(_constant["default"].API_URL, "/trademark/classwordlist/update"), obj).then(function () {
+      dispatch({
+        type: _types.TRADEMARK_UPDATE_CLASS_WORDS_LIST,
+        message: "The class words list is updated successfully!"
       });
     })["catch"](function (err) {
       if (err.response) {

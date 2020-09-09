@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import classnames from "classnames";
-import ReeValidate from "ree-validate";
-import { connect } from "react-redux";
 
 import {
   Table,
@@ -15,339 +14,336 @@ import {
   PaginationItem,
   PaginationLink,
   Container,
+  Input,
 } from "reactstrap";
 
 import MainHeader from "../../components/headers/MainHeader";
 import http from "../../../helper/http";
 import {
-  updateClassWord
+  updateClassWord,
+  updateClassWordsList
 } from "../../../store/actions/trademark";
 import APP_CONST from "../../../helper/constant";
+import { useEffect } from "react";
 
-class TrademarkClassWordList extends React.Component {
-  constructor(props) {
-    super(props);
-    this.columns = ["id", "name"];
-    this.state = {
-      entities: {
-        data: [],
-        current_page: 1,
-        last_page: 1,
-        per_page: 20,
-        total: 1,
-      },
-      first_page: 1,
-      current_page: 1,
-      sorted_column: this.columns[0],
-      offset: 5,
-      order: "asc",
-      searchKey: "",
-      message: "",
-      responseErrors: "",
-      errors: {},
-    };
-    this.validator = new ReeValidate({
-      name: "required|min:2",
-    });
+const INIT_ENTITIES = {
+  data: [],
+  page: 1,
+  last_page: 1,
+  per_page: 20,
+  total: 1,
+};
 
-    this.handleChecked = this.handleChecked.bind(this);
-  }
+const columns = [
+  { name: "no", width: "6%" },
+  { name: "words", width: "20%" },
+  { name: "description", width: "54%" },
+  { name: "action", width: "12%" }
+];
 
-  componentDidMount() {
-    this.setState({ current_page: this.state.entities.current_page }, () => {
-      this.fetchEntities();
-    });
-  }
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.message) {
-      this.setState(
-        {
-          current_page: this.state.current_page,
-        },
-        () => {
-          this.fetchEntities();
-        }
-      );
-    }
-    if (
-      nextProps.responseErrors &&
-      nextProps.responseErrors != this.state.responseErrors
-    ) {
-      this.setState({
-        responseErrors: nextProps.responseErrors,
-      });
-    }
-  }
+function TrademarkClassWordList() {
+  const [page, setPage] = useState(1);
+  const [entities, setEntities] = useState(INIT_ENTITIES);
+  const [checkedItems, setCheckedItems] = useState({});
+  const [isEdit, setIsEdit] = useState({});
+  const [searchKey, setSearchKey] = useState("");
+  const dispatch = useDispatch();
+  const offset = 5;
 
-  fetchEntities() {
-    let fetchUrl = `${APP_CONST.API_URL}/trademark/classword/list/?&page=${this.state.current_page}&column=${this.state.sorted_column}&order=${this.state.order}&per_page=${this.state.entities.per_page}&search_key=${this.state.searchKey}`;
+  useEffect(() => {
+    let fetchUrl = `${APP_CONST.API_URL}/trademark/classword/list/?&page=${page}&per_page=${entities.per_page}&search_key=${searchKey}`;
     http
       .get(fetchUrl)
       .then((response) => {
-        this.setState({ entities: response.data.data });
+        setEntities(response.data.data);
+        response.data.data.data.map((item, idx) => {
+          setCheckedItems(prevState => (
+            { ...prevState, [idx + 1]: item.checked === 1 ? true : false }
+          ));
+        })
       })
       .catch((e) => {
-        this.setState({
-          entities: {
-            data: [],
-            current_page: 1,
-            last_page: 1,
-            per_page: 20,
-            total: 1,
-          },
-        });
+        setEntities(INIT_ENTITIES);
       });
-  }
+  }, [page]);
 
-  handleChecked(event) {
+  const handleChecked = (event) => {
     const { id, name } = event.target;
     var checked = document.getElementById(id).checked;
-    this.props.updateClassWord({ id: name, checked: checked });
+    setCheckedItems(prevState => ({ ...prevState, [name]: checked }));
   }
 
-  changePage(pageNumber) {
-    this.setState({ current_page: pageNumber }, () => {
-      this.fetchEntities();
-    });
-  }
-
-  pagesNumbers() {
-    if (!this.state.entities.to) {
+  const pagesNumbers = () => {
+    if (!entities.to) {
       return [];
     }
-    let from = this.state.entities.current_page - this.state.offset;
-    if (from < 1) {
-      from = 1;
-    }
-    let to = from + this.state.offset * 2 - 1;
-    if (to >= this.state.entities.last_page) {
-      to = this.state.entities.last_page;
-      from = this.state.entities.last_page - this.state.offset * 2;
-      if (from < 1) {
-        from = 1;
-      }
-    }
+
+    let from = entities.current_page - offset >= 1 ? entities.current_page - offset : 1;
+    let to = from + offset * 2 - 1;
     let pagesArray = [];
+
+    if (to >= entities.last_page) {
+      to = entities.last_page;
+      from = entities.last_page - offset * 2 >= 1 ? entities.last_page - offset * 2 : 1;
+    }
+
     for (let page = from; page <= to; page++) {
       pagesArray.push(page);
     }
+
     return pagesArray;
   }
 
-  columnHead(value) {
-    return value.split("_").join(" ").toUpperCase();
-  }
+  const handleSubmit = () => {
+    let data = [];
 
-  tableHeads() {
-    let columns = this.columns.map((column) => {
-      if (column == "id") {
-        return (
-          <th
-            className="text-center"
-            style={{ width: "7%" }}
-            key={column}
-          >
-            {"NO"}
-          </th>
-        );
-      } else {
-        return (
-          <th
-            className="text-center"
-            style={{ width: "75%" }}
-            key={column}
-          >
-            {this.columnHead(column)}
-          </th>
-        );
-      }
+    Object.keys(checkedItems).map(item => {
+      data.push({ id: parseInt(item), checked: checkedItems[item] });
     });
-    columns.push(
-      <th
-        className="text-center"
-        key="action"
-        style={{ width: "12%" }}
-      >
-        {"Action"}
-      </th>
-    );
-    return columns;
+    dispatch(updateClassWord({ data }));
   }
 
-  dataList() {
-    var self = this;
-    if (this.state.entities.data.length) {
-      return this.state.entities.data.map((data, index) => {
-        let current_number = (this.state.current_page - 1) * 20 + index + 1;
+  const handleEditChange = (event) => {
+    const name = parseInt(event.target.getAttribute('name'));
+    entities.data[name - 1].words = event.target.innerText;
+  }
 
-        return (
-          <tr key={data.id}>
-            {Object.keys(data).map((key) => {
-              if (key == "checked")
-                return (
-                  <td className="text-center" key={key}>
-                    <div className="custom-control custom-checkbox">
-                      <input
-                        id={`class-number-${current_number}`}
-                        name={current_number}
-                        className="custom-control-input"
-                        type="checkbox"
-                        checked={data[key]}
-                        onChange={this.handleChecked}
-                      />
-                      <label
-                        className={`custom-control-label ${current_number < 10 ? 'pl-2' : ''}`}
-                        htmlFor={`class-number-${current_number}`}
-                      >
-                        {current_number}
-                      </label>
-                    </div>
-                  </td>
-                );
-              else if (key !== 'id') {
-                return (
-                  <td key={key} style={{ whiteSpace: 'normal' }}>
-                    {data[key]}
-                  </td>
-                );
-              }
-            })}
-            <td className="td-action">
-              <Row>
-                <Col md={12} xl={12}>
-                  <a
-                    href={`http://xeno.ipaustralia.gov.au/tmgns/facelets/trademarkclass.xhtml?classId=${current_number}`}
-                    target="blank"
-                    style={{ color: '#fff' }}
-                  >
-                    <Button
-                      className="btn-tbl-categorylist-edit"
-                      size="sm"
-                      color="primary"
-                    >
-                      <span className="btn-inner--icon mr-1">
-                        <i className="fas fa-clone fa-flip-vertica" />
-                      </span>
-                      <span className="btn-inner--text">
-                        {"MORE INFO"}
-                      </span>
-                    </Button>
-                  </a>
-                </Col>
-              </Row>
-            </td>
-          </tr>
-        );
-      });
-    } else {
-      return (
-        <tr>
-          <td
-            colSpan={this.columns.length + 1}
-            className="text-center td-noredords"
-          >
-            {"No Records Found."}
-          </td>
-        </tr>
-      );
+  const handleSaveEdit = (event) => {
+    const { id, name } = event.currentTarget;
+
+    if (isEdit[id]) {
+      dispatch(updateClassWordsList({ id: name, words: entities.data[name - 1].words }));
     }
+    setIsEdit(prevState => ({ ...prevState, [id]: isEdit[id] ? false : true }));
   }
 
-  pageList() {
-    return this.pagesNumbers().map((page) => {
-      return (
-        <PaginationItem
-          className={classnames({
-            active: page === this.state.entities.current_page,
-          })}
-          key={"pagination-" + page}
-        >
-          <PaginationLink onClick={() => this.changePage(page)}>
-            {page}
-          </PaginationLink>
-        </PaginationItem>
-      );
-    });
-  }
-
-  render() {
-    return (
-      <>
-        <MainHeader name="Trademark Class Word List" parentName="Trademark" />
-        <Container className="mt--6 category-list-container" fluid>
-          <Card style={{ minHeight: "700px" }}>
-            <CardBody>
-              <Row className="mt-5">
-                <Col md={12} xl={12}>
-                  <div className="div-tbl-categorylist">
-                    <Table
-                      className="align-items-center"
-                      style={{ tableLayout: "fixed" }}
-                      hover
-                      bordered
-                      responsive
-                    >
-                      <thead className="thead-light">
-                        <tr>{this.tableHeads()}</tr>
-                      </thead>
-                      <tbody>{this.dataList()}</tbody>
-                    </Table>
-                  </div>
-                </Col>
-              </Row>
-            </CardBody>
-            <CardFooter className="py-4">
-              <nav aria-label="...">
-                <Pagination
-                  className="pagination justify-content-end mb-0"
-                  listClassName="justify-content-end mb-0"
+  return (
+    <>
+      <MainHeader name="Trademark Class Word List" parentName="Trademark" />
+      <Container className="mt--6 category-list-container" fluid>
+        <Card style={{ minHeight: "700px" }}>
+          <CardBody>
+            <Row>
+              <Col md={12} xl={12}>
+                <Button
+                  className="btn-createcategory"
+                  color="primary"
+                  onClick={handleSubmit}
                 >
-                  <PaginationItem
-                    className={classnames({
-                      disabled: 1 == this.state.entities.current_page,
-                    })}
+                  {"Add Class Words"}
+                </Button>
+              </Col>
+              <Col md={12} xl={12}>
+                <div className="div-tbl-categorylist">
+                  <Table
+                    className="align-items-center"
+                    style={{ tableLayout: "fixed" }}
+                    hover
+                    bordered
+                    responsive
                   >
-                    <PaginationLink
-                      onClick={() =>
-                        this.changePage(this.state.entities.current_page - 1)
+                    <thead className="thead-light">
+                      <tr>
+                        {columns.map(item => (
+                          <th
+                            className="text-center"
+                            style={{ width: item.width }}
+                            key={item.name}
+                          >
+                            {item.name.toUpperCase()}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {entities.data.length > 0 &&
+                        entities.data.map((data, index) => {
+                          let current_number = (page - 1) * 20 + index + 1;
+                          return (
+                            <tr key={data.id}>
+                              {Object.keys(data).map((key) => {
+                                if (key == "checked") {
+                                  return (
+                                    <td className="text-center" key={key}>
+                                      <div className="custom-control custom-checkbox">
+                                        <Input
+                                          id={`class-number-${current_number}`}
+                                          name={current_number}
+                                          className="custom-control-input"
+                                          type="checkbox"
+                                          checked={Object.keys(checkedItems).includes(current_number.toString()) ?
+                                            checkedItems[current_number.toString()] : false
+                                          }
+                                          onChange={handleChecked}
+                                        />
+                                        <label
+                                          className={`custom-control-label ${current_number < 10 ? 'pl-2' : ''}`}
+                                          htmlFor={`class-number-${current_number}`}
+                                        >
+                                          {current_number}
+                                        </label>
+                                      </div>
+                                    </td>
+                                  )
+                                }
+                                else if (key === 'words') {
+                                  return (
+                                    <td
+                                      key={`class-edit-${current_number}`}
+                                      id={`class-edit-${current_number}`}
+                                      name={current_number}
+                                      className='text-center'
+                                      contentEditable={
+                                        Object.keys(isEdit).includes(`class-word-${current_number}`) ?
+                                          isEdit[`class-word-${current_number}`] : false
+                                      }
+                                      onInput={handleEditChange}
+                                      onBlur={handleEditChange}
+                                      suppressContentEditableWarning={true}
+                                      style={{
+                                        width: '40px',
+                                        height: '40px',
+                                        textOverflow: 'inherit',
+                                        whiteSpace: 'pre-wrap',
+                                        border: Object.keys(isEdit).includes(`class-word-${current_number}`) &&
+                                          isEdit[`class-word-${current_number}`] ?
+                                          '2px solid' : '1px solid rgb(233, 236, 239)'
+                                      }}
+                                    >
+                                      {data[key]}
+                                    </td>
+                                  );
+                                } else if (key !== 'id') {
+                                  return (
+                                    <td key={key} style={{ whiteSpace: 'normal' }}>
+                                      {data[key]}
+                                    </td>
+                                  );
+                                }
+                              })}
+                              <td className="td-action">
+                                <Row className="mt-1 mb-1">
+                                  <Col md={12} xl={12} className="mb-2">
+                                    <Button
+                                      id={`class-word-${current_number}`}
+                                      name={current_number}
+                                      className="btn-tbl-categorylist-edit"
+                                      size="sm"
+                                      color="primary"
+                                      onClick={handleSaveEdit}
+                                      style={{ width: '100%' }}
+                                    >
+                                      <span className="btn-inner--icon mr-1">
+                                        <i
+                                          className={
+                                            Object.keys(isEdit).includes(`class-word-${current_number}`) &&
+                                              isEdit[`class-word-${current_number}`] ?
+                                              "fas fa-save" : "fas fa-edit"
+                                          }
+                                          aria-hidden="true"
+                                        />
+                                      </span>
+                                      <span className="btn-inner--text">
+                                        {Object.keys(isEdit).includes(`class-word-${current_number}`) &&
+                                          isEdit[`class-word-${current_number}`] ?
+                                          "SAVE" : "UPDATE"
+                                        }
+                                      </span>
+                                    </Button>
+                                  </Col>
+                                  <Col md={12} xl={12}>
+                                    <a
+                                      href={`http://xeno.ipaustralia.gov.au/tmgns/facelets/trademarkclass.xhtml?classId=${current_number}`}
+                                      target="blank"
+                                      style={{ color: '#fff' }}
+                                    >
+                                      <Button
+                                        className="btn-tbl-categorylist-edit"
+                                        size="sm"
+                                        color="primary"
+                                        style={{ width: '100%' }}
+                                      >
+                                        <span className="btn-inner--icon mr-1">
+                                          <i className="fas fa-clone fa-flip-vertica" />
+                                        </span>
+                                        <span className="btn-inner--text">
+                                          {"MORE INFO"}
+                                        </span>
+                                      </Button>
+                                    </a>
+                                  </Col>
+                                </Row>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      {!entities.data.length &&
+                        <tr>
+                          <td
+                            colSpan={columns.length + 1}
+                            className="text-center td-noredords"
+                          >
+                            {"No Records Found."}
+                          </td>
+                        </tr>
                       }
-                    >
-                      <i className="fas fa-angle-left" />
-                      <span className="sr-only">Previous</span>
-                    </PaginationLink>
-                  </PaginationItem>
-                  {this.pageList()}
-                  <PaginationItem
-                    className={classnames({
-                      disabled:
-                        this.state.entities.last_page ===
-                        this.state.entities.current_page,
-                    })}
+                    </tbody>
+                  </Table>
+                </div>
+              </Col>
+            </Row>
+          </CardBody>
+          <CardFooter className="py-4">
+            <nav aria-label="...">
+              <Pagination
+                className="pagination justify-content-end mb-0"
+                listClassName="justify-content-end mb-0"
+              >
+                <PaginationItem
+                  className={classnames({
+                    disabled: 1 == entities.page,
+                  })}
+                >
+                  <PaginationLink
+                    onClick={() => setPage(entities.page - 1)}
                   >
-                    <PaginationLink
-                      onClick={() =>
-                        this.changePage(this.state.entities.current_page + 1)
-                      }
+                    <i className="fas fa-angle-left" />
+                    <span className="sr-only">{"Previous"}</span>
+                  </PaginationLink>
+                </PaginationItem>
+                {pagesNumbers().map((page) =>
+                  (
+                    <PaginationItem
+                      className={classnames({
+                        active: page === entities.page,
+                      })}
+                      key={"pagination-" + page}
                     >
-                      <i className="fas fa-angle-right" />
-                      <span className="sr-only">Next</span>
-                    </PaginationLink>
-                  </PaginationItem>
-                </Pagination>
-              </nav>
-            </CardFooter>
-          </Card>
-        </Container>
-      </>
-    );
-  }
+                      <PaginationLink onClick={() => setPage(page)}>
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                <PaginationItem
+                  className={classnames({
+                    disabled:
+                      entities.last_page === entities.page
+                  })}
+                >
+                  <PaginationLink
+                    onClick={() => setPage(entities.page + 1)}
+                  >
+                    <i className="fas fa-angle-right" />
+                    <span className="sr-only">Next</span>
+                  </PaginationLink>
+                </PaginationItem>
+              </Pagination>
+            </nav>
+          </CardFooter>
+        </Card>
+      </Container>
+    </>
+  );
 }
 
-const mapStateToProps = ({ trademark }) => ({
-  responseErrors: trademark.errors,
-  message: trademark.message,
-});
-
-export default connect(mapStateToProps, {
-  updateClassWord
-})(TrademarkClassWordList);
+export default TrademarkClassWordList;

@@ -3,9 +3,8 @@ import {
   TRADEMARK_CREATE_WORD,
   TRADEMARK_UPDATE_WORD,
   TRADEMARK_DELETE_WORD,
-  TRADEMARK_CREATE_CLASS_WORD,
   TRADEMARK_UPDATE_CLASS_WORD,
-  TRADEMARK_DELETE_CLASS_WORD,
+  TRADEMARK_UPDATE_CLASS_WORDS_LIST,
   TRADEMARK_ERROR,
 } from "../actions/types";
 
@@ -27,6 +26,8 @@ export default function (state = initialState, action) {
       return { ...state, message: action.message, errors: "" };
     case TRADEMARK_UPDATE_CLASS_WORD:
       return { ...state, message: action.message, errors: "" };
+    case TRADEMARK_UPDATE_CLASS_WORDS_LIST: 
+      return {...state, message: action.message, errors: ""};
     case TRADEMARK_ERROR:
       return { ...state, words: [], message: "", errors: action.errors };
     default:
