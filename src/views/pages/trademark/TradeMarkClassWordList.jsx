@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import classnames from "classnames";
 
@@ -24,7 +24,6 @@ import {
   updateClassWordsList
 } from "../../../store/actions/trademark";
 import APP_CONST from "../../../helper/constant";
-import { useEffect } from "react";
 
 const INIT_ENTITIES = {
   data: [],

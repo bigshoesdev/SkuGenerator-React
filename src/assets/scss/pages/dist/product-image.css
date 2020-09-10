@@ -21,6 +21,12 @@
   border: 1px solid #595959;
   background-color: #f8f9fe;
 }
+.product-image-container .custom-procut-image-card .image-upload {
+  margin: auto;
+  width: auto;
+  height: 10vh;
+  background-color: #f8f9fe;
+}
 .product-image-container .custom-procut-image-card .custom-color-picker {
   display: flex;
 }
