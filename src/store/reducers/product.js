@@ -5,6 +5,7 @@ import {
   UPDATE_PRODUCT_IMAGESET,
   CREATE_PRODUCT,
   DELETE_PRODUCT,
+  UPLOAD_PRODUCT_IMAGE,
   CLEAN_PRODUCT,
 } from '../actions/types';
 
@@ -33,6 +34,8 @@ export default function (state = initialState, action) {
     case CREATE_PRODUCT:
       return { ...state, message: action.message, errors: action.errors };
     case DELETE_PRODUCT:
+      return { ...state, message: action.message };
+    case UPLOAD_PRODUCT_IMAGE:
       return { ...state, message: action.message };
     default:
       return state;

@@ -4,11 +4,12 @@ import {
   DELETE_PRODUCT,
   LIST_ALL_PRODUCT_INFO,
   PRODUCT_DETAIL,
-  LIST_ARTIST, 
-  LIST_STICKER_TYPE, 
+  LIST_ARTIST,
+  LIST_STICKER_TYPE,
   LIST_PRINT_MODE,
   LIST_PRODUCT_IMAGESET,
   UPDATE_PRODUCT_IMAGESET,
+  UPLOAD_PRODUCT_IMAGE,
   CLEAN_PRODUCT
 } from './types';
 
@@ -19,20 +20,20 @@ import { errorHandler } from "../../helper/util";
 export function createProduct(obj) {
   return dispatch => (
     new Promise((resolve, reject) => {
-      dispatch({type: CLEAN_PRODUCT});
+      dispatch({ type: CLEAN_PRODUCT });
       http.post(`${APP_CONST.API_URL}/product/create`, obj)
         .then((res) => {
-          dispatch({ 
-            type: CREATE_PRODUCT, 
+          dispatch({
+            type: CREATE_PRODUCT,
             payload: res.data.data,
-            message:"The Product is created successfully!" 
+            message: "The Product is created successfully!"
           });
           return resolve();
         })
         .catch(err => {
           if (err.response) {
             let { errors } = err.response.data;
-            dispatch({ 
+            dispatch({
               type: CREATE_PRODUCT,
               errors: errorHandler(errors)
             });
@@ -46,9 +47,10 @@ export function createProduct(obj) {
     })
   );
 }
-export function productDetail(id){
+
+export function productDetail(id) {
   return function (dispatch) {
-    dispatch({type: CLEAN_PRODUCT});
+    dispatch({ type: CLEAN_PRODUCT });
     http
       .post(`${APP_CONST.API_URL}/product/detail`, id)
       .then((response) => {
@@ -70,9 +72,10 @@ export function productDetail(id){
       });
   };
 }
-export function allProductInfo(){
+
+export function allProductInfo() {
   return function (dispatch) {
-    dispatch({type: CLEAN_PRODUCT});
+    dispatch({ type: CLEAN_PRODUCT });
     http
       .post(`${APP_CONST.API_URL}/product/allProductInfo`)
       .then((response) => {
@@ -94,9 +97,10 @@ export function allProductInfo(){
       });
   };
 }
-export function productDelete(obj){
+
+export function productDelete(obj) {
   return function (dispatch) {
-    dispatch({type: CLEAN_PRODUCT});
+    dispatch({ type: CLEAN_PRODUCT });
     http
       .post(`${APP_CONST.API_URL}/product/deleteProduct`, obj)
       .then((response) => {
@@ -121,7 +125,7 @@ export function productDelete(obj){
 
 export function artistList() {
   return function (dispatch) {
-    dispatch({type: CLEAN_PRODUCT});
+    dispatch({ type: CLEAN_PRODUCT });
     http
       .post(`${APP_CONST.API_URL}/product/artist`)
       .then((response) => {
@@ -146,7 +150,7 @@ export function artistList() {
 
 export function stickertypeList() {
   return function (dispatch) {
-    dispatch({type: CLEAN_PRODUCT});
+    dispatch({ type: CLEAN_PRODUCT });
     http
       .post(`${APP_CONST.API_URL}/product/stickertype`)
       .then((response) => {
@@ -171,7 +175,7 @@ export function stickertypeList() {
 
 export function printmodeList() {
   return function (dispatch) {
-    dispatch({type: CLEAN_PRODUCT});
+    dispatch({ type: CLEAN_PRODUCT });
     http
       .post(`${APP_CONST.API_URL}/product/printmode`)
       .then((response) => {
@@ -194,9 +198,9 @@ export function printmodeList() {
   };
 }
 
-export function productImageSetList(){
-  return function (dispatch){
-    dispatch({type: CLEAN_PRODUCT});
+export function productImageSetList() {
+  return function (dispatch) {
+    dispatch({ type: CLEAN_PRODUCT });
     http
       .get(`${APP_CONST.API_URL}/product/imagesets`)
       .then((response) => {
@@ -219,10 +223,9 @@ export function productImageSetList(){
   }
 }
 
-
 export function updateProductImageSets(obj) {
   return function (dispatch) {
-    dispatch({type: CLEAN_PRODUCT});
+    dispatch({ type: CLEAN_PRODUCT });
     http
       .post(`${APP_CONST.API_URL}/product/imagesets/update`, obj)
       .then((response) => {
@@ -239,6 +242,31 @@ export function updateProductImageSets(obj) {
         } else {
           dispatch({
             type: UPDATE_PRODUCT_IMAGESET,
+            errors: "There is a server connection Error, Try Later."
+          });
+        }
+      });
+  };
+}
+
+export function uploadProductImage(obj) {
+  return function (dispatch) {
+    dispatch({ type: CLEAN_PRODUCT });
+    http
+      .post(`${APP_CONST.API_URL}/product/image/upload`, obj)
+      .then(() => {
+        dispatch({
+          type: UPLOAD_PRODUCT_IMAGE,
+          message: "The product image set is uploaded successfully!",
+        });
+      })
+      .catch(err => {
+        if (err.response) {
+          let { errors } = err.response.data;
+          dispatch({ type: UPLOAD_PRODUCT_IMAGE, errors: errorHandler(errors) });
+        } else {
+          dispatch({
+            type: UPLOAD_PRODUCT_IMAGE,
             errors: "There is a server connection Error, Try Later."
           });
         }

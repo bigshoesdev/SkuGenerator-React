@@ -80,6 +80,7 @@ class TshirtVariant extends React.Component {
         color: "",
         size: "",
         type: "",
+        url: "",
       },
       responseErrors: "",
       errors: {},
@@ -99,6 +100,7 @@ class TshirtVariant extends React.Component {
   }
   componentWillReceiveProps(nextProps) {
     const { modalTshirt } = this.state;
+
     if (nextProps.sizes) {
       if (
         nextProps.sizes.length > 0 &&
@@ -160,6 +162,7 @@ class TshirtVariant extends React.Component {
     const tshirt = data.find((obj) => {
       return obj.id === id;
     });
+    
     this.setState({
       modalTshirt: { ...tshirt },
       isModal: true,
@@ -396,14 +399,14 @@ class TshirtVariant extends React.Component {
     if (column === this.state.sorted_column) {
       this.state.order === "asc"
         ? this.setState(
-            { order: "desc", current_page: this.state.first_page },
-            () => {
-              this.fetchEntities();
-            }
-          )
-        : this.setState({ order: "asc" }, () => {
+          { order: "desc", current_page: this.state.first_page },
+          () => {
             this.fetchEntities();
-          });
+          }
+        )
+        : this.setState({ order: "asc" }, () => {
+          this.fetchEntities();
+        });
     } else {
       this.setState(
         {
@@ -442,6 +445,7 @@ class TshirtVariant extends React.Component {
       responseErrors: "",
     });
     const { modalTshirt } = this.state;
+    
     this.genderstring = this.state.gender[0]["name"];
     this.colorstring = this.state.colors[0]["name"];
     this.sizestring = this.state.sizes[0]["name"];
@@ -453,6 +457,7 @@ class TshirtVariant extends React.Component {
     modalTshirt["size"] = this.state.sizes[0]["key"];
     this.setState({ modalTshirt });
   }
+
   handleChangeSelect = (e) => {
     const { name, value } = e.target;
     const { modalTshirt } = this.state;
@@ -481,6 +486,7 @@ class TshirtVariant extends React.Component {
         if (item.key === value) this.sizestring = item.name;
       });
     }
+
     var namestring =
       this.genderstring + " " + this.colorstring + " " + this.sizestring;
     modalTshirt[name] = value;
@@ -528,6 +534,7 @@ class TshirtVariant extends React.Component {
     const { id } = modalTshirt;
     this.props.deleteVariant(id);
   };
+
   handleSubmit = (e) => {
     e.preventDefault();
     const { modalTshirt } = this.state;
@@ -540,6 +547,7 @@ class TshirtVariant extends React.Component {
             color,
             size,
             type = "",
+            url,
             master_type = "tshirts",
           } = modalTshirt;
           this.props.createVariant({
@@ -548,6 +556,7 @@ class TshirtVariant extends React.Component {
             color,
             type,
             size,
+            url,
             master_type,
           });
         } else {
@@ -557,6 +566,7 @@ class TshirtVariant extends React.Component {
             name,
             color,
             size,
+            url,
             type = "",
             master_type = "tshirts",
           } = modalTshirt;
@@ -567,6 +577,7 @@ class TshirtVariant extends React.Component {
             color,
             type,
             size,
+            url,
             master_type,
           });
         }
@@ -760,6 +771,17 @@ class TshirtVariant extends React.Component {
                               );
                             })}
                           </Input>
+                        </FormGroup>
+                        <FormGroup>
+                          <label htmlFor="genderFormControlInput">URL</label>
+                          <Input
+                            name="url"
+                            ref="url"
+                            required
+                            type="text"
+                            value={modalTshirt.url}
+                            onChange={this.handleChangeSelect}
+                          />
                         </FormGroup>
                       </ModalBody>
                       <ModalFooter>

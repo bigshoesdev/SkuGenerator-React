@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import LoadingOverlay from 'react-loading-overlay';
+import NotificationAlert from "react-notification-alert";
 
 import {
     Container,
@@ -15,11 +17,20 @@ import ImageDoubleItem from './ImageDoubleItem';
 import ImageSingleItem from './ImageSingleItem';
 import http from "../../../../helper/http";
 import APP_CONST from "../../../../helper/constant";
+import { uploadProductImage } from '../../../../store/actions/product';
 
 
 function ProductImage() {
     const [source, setSource] = useState({});
     const [skuNumber, setSkuNumber] = useState();
+    const [isActive, setIsActive] = useState(false);
+    const dispatch = useDispatch();
+
+
+    const message = useSelector(
+        state => { return state['product']['message'] },
+        shallowEqual
+    );
 
     useEffect(() => {
         let fetchUrl = `${APP_CONST.API_URL}/product/image/list`;
@@ -34,6 +45,11 @@ function ProductImage() {
             });
     }, [])
 
+    useEffect(() => {
+        if (message !== '')
+            setIsActive(false);
+    }, [message])
+
     const handleUploadFile = (event) => {
         event.preventDefault();
         const { name } = event.currentTarget;
@@ -45,30 +61,25 @@ function ProductImage() {
     const handleUploadedFile = (event) => {
         event.preventDefault();
         const { id } = event.target;
-        const formData = new FormData();
         const artworkFile = document.getElementById(id);
+        let reader = new FileReader();
+        let file;
 
-        formData.append('file', artworkFile.files[0]);
-        formData.append('upload_preset', 'v2wd9hdn');
-        formData.append('public_id', id);
+        reader.onloadend = function () {
+            file = reader.result;
+            dispatch(uploadProductImage({ id, file }));
+        }
 
-        const options = {
-            method: 'POST',
-            body: formData,
-        };
-
-        fetch('https://api.Cloudinary.com/v1_1/umbrellaink/image/upload', options)
-            .then(res => res.json())
-            .then(res => console.log(res))
-            .catch(err => console.log(err))
+        reader.readAsDataURL(artworkFile.files[0]);
+        setIsActive(true);
     }
-    
+
     return (
         <>
             <MainHeader name='Product Image' parentName='Product' />
             <Container className='mt--6 product-image-container' fluid>
                 <LoadingOverlay
-                    active={false}
+                    active={isActive}
                     text='Uploading your image. Just a wait'
                     spinner
                 >
@@ -92,7 +103,7 @@ function ProductImage() {
                                                 {"Original PDF"}
                                             </Button>
                                             <Button
-                                                name={`${skuNumber}-artwork-light-10`}
+                                                name={`${skuNumber}-artwork-light`}
                                                 type='button'
                                                 color='primary'
                                                 onClick={handleUploadFile}
@@ -100,14 +111,14 @@ function ProductImage() {
                                                 {"For Light"}
                                             </Button>
                                             <input
-                                                id={`${skuNumber}-artwork-light-10`}
+                                                id={`${skuNumber}-artwork-light`}
                                                 type="file"
                                                 accept="*"
                                                 onChange={handleUploadedFile}
                                                 style={{ display: 'none' }}
                                             />
                                             <Button
-                                                name={`${skuNumber}-artwork-dark-10`}
+                                                name={`${skuNumber}-artwork-dark`}
                                                 type='button'
                                                 color='primary'
                                                 onClick={handleUploadFile}
@@ -115,7 +126,7 @@ function ProductImage() {
                                                 {"For Dark"}
                                             </Button>
                                             <input
-                                                id={`${skuNumber}-artwork-dark-10`}
+                                                id={`${skuNumber}-artwork-dark`}
                                                 type="file"
                                                 accept="*"
                                                 onChange={handleUploadedFile}
@@ -128,8 +139,7 @@ function ProductImage() {
                             <Row>
                                 {Object.keys(source).map(item => (
                                     <React.Fragment key={item}>
-                                        {
-                                            source[item]['type'] === 2 &&
+                                        {source[item]['type'] === 2 &&
                                             <Col md={7}>
                                                 <ImageDoubleItem
                                                     source={source[item]}
@@ -139,8 +149,7 @@ function ProductImage() {
                                                 />
                                             </Col>
                                         }
-                                        {
-                                            source[item]['type'] === 1 &&
+                                        {source[item]['type'] === 1 &&
                                             <Col md={5}>
                                                 <ImageSingleItem source={source[item]} />
                                             </Col>

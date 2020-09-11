@@ -10,7 +10,6 @@ import {
 
 
 function ImageDoubleItem(props) {
-    
     return (
         <Card>
             <CardBody className="custom-procut-image-card image-process-panel pb-1">
@@ -24,7 +23,7 @@ function ImageDoubleItem(props) {
                             />
                         </div>
                         <Button
-                            name={`${props.skuNumber}-${props.source.masterType}-artwork-light-10`}
+                            name={`${props.skuNumber}-${props.source.masterType}-artwork-light`}
                             type='button'
                             color='primary'
                             className="custom-upload-button"
@@ -34,7 +33,7 @@ function ImageDoubleItem(props) {
                             {"Upload"}
                         </Button>
                         <input
-                            id={`${props.skuNumber}-${props.source.masterType}-artwork-light-10`}
+                            id={`${props.skuNumber}-${props.source.masterType}-artwork-light`}
                             type="file"
                             accept="*"
                             onChange={props.onUploadedFile}
