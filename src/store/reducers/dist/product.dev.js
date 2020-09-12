@@ -66,11 +66,6 @@ function _default() {
         message: action.message
       });
 
-    case _types.UPLOAD_PRODUCT_IMAGE:
-      return _objectSpread({}, state, {
-        message: action.message
-      });
-
     default:
       return state;
   }

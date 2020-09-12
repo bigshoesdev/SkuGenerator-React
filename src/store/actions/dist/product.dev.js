@@ -12,7 +12,6 @@ exports.stickertypeList = stickertypeList;
 exports.printmodeList = printmodeList;
 exports.productImageSetList = productImageSetList;
 exports.updateProductImageSets = updateProductImageSets;
-exports.uploadProductImage = uploadProductImage;
 
 var _types = require("./types");
 
@@ -274,34 +273,6 @@ function updateProductImageSets(obj) {
       } else {
         dispatch({
           type: _types.UPDATE_PRODUCT_IMAGESET,
-          errors: "There is a server connection Error, Try Later."
-        });
-      }
-    });
-  };
-}
-
-function uploadProductImage(obj) {
-  return function (dispatch) {
-    dispatch({
-      type: _types.CLEAN_PRODUCT
-    });
-
-    _http["default"].post("".concat(_constant["default"].API_URL, "/product/image/upload"), obj).then(function () {
-      dispatch({
-        type: _types.UPLOAD_PRODUCT_IMAGE,
-        message: "The product image set is uploaded successfully!"
-      });
-    })["catch"](function (err) {
-      if (err.response) {
-        var errors = err.response.data.errors;
-        dispatch({
-          type: _types.UPLOAD_PRODUCT_IMAGE,
-          errors: (0, _util.errorHandler)(errors)
-        });
-      } else {
-        dispatch({
-          type: _types.UPLOAD_PRODUCT_IMAGE,
           errors: "There is a server connection Error, Try Later."
         });
       }

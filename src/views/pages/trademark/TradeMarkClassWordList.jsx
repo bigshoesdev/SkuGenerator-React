@@ -57,7 +57,7 @@ function TrademarkClassWordList() {
         setEntities(response.data.data);
         response.data.data.data.map((item, idx) => {
           setCheckedItems(prevState => (
-            { ...prevState, [idx + 1]: item.checked === 1 ? true : false }
+            { ...prevState, [(page - 1) * 20 + idx + 1]: item.checked === 1 ? true : false }
           ));
         })
       })
@@ -103,15 +103,16 @@ function TrademarkClassWordList() {
   }
 
   const handleEditChange = (event) => {
-    const name = parseInt(event.target.getAttribute('name'));
-    entities.data[name - 1].words = event.target.innerText;
+    const index = parseInt(event.target.getAttribute('data'));
+    entities.data[index].words = event.target.innerText;
   }
 
   const handleSaveEdit = (event) => {
     const { id, name } = event.currentTarget;
+    const index = event.currentTarget.getAttribute('data');
 
     if (isEdit[id]) {
-      dispatch(updateClassWordsList({ id: name, words: entities.data[name - 1].words }));
+      dispatch(updateClassWordsList({ id: name, words: entities.data[index].words }));
     }
     setIsEdit(prevState => ({ ...prevState, [id]: isEdit[id] ? false : true }));
   }
@@ -129,7 +130,7 @@ function TrademarkClassWordList() {
                   color="primary"
                   onClick={handleSubmit}
                 >
-                  {"Add Class Words"}
+                  {"Update"}
                 </Button>
               </Col>
               <Col md={12} xl={12}>
@@ -191,6 +192,7 @@ function TrademarkClassWordList() {
                                       key={`class-edit-${current_number}`}
                                       id={`class-edit-${current_number}`}
                                       name={current_number}
+                                      data={index}
                                       className='text-center'
                                       contentEditable={
                                         Object.keys(isEdit).includes(`class-word-${current_number}`) ?
@@ -226,6 +228,7 @@ function TrademarkClassWordList() {
                                     <Button
                                       id={`class-word-${current_number}`}
                                       name={current_number}
+                                      data={index}
                                       className="btn-tbl-categorylist-edit"
                                       size="sm"
                                       color="primary"
