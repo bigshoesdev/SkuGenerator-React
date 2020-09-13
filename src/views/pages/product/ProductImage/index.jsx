@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 
 import {
@@ -50,27 +50,26 @@ function ProductImage() {
             upload_preset: APP_CONST.UPLOAD_PRESET,
             tags: ['artwork'],
             public_id: `${id}_${number}`
-        }, function (err, res) {
-            if (!err) {
+        }, (err, res) => {
+            if (!err && res && res.event === "success" && Object.keys(res.info).includes('secure_url')) {
                 if (variant === 'master') {
-                    setThemeUrl(prevState => ({ ...prevState, [name]: res[0].secure_url }))
+                    setThemeUrl(prevState => ({ ...prevState, [name]: res.info.secure_url }))
                 } else {
                     setImageUrl(prevState => ({
                         ...prevState, [variant]: {
                             ...prevState[variant],
-                            [name]: res[0].secure_url
+                            [name]: res.info.secure_url
                         }
                     }));
                 }
             }
         });
     }
-    
+
     return (
         <>
             <MainHeader name='Product Image' parentName='Product' />
             <Container className='mt--6 product-image-container' fluid>
-
                 <Card style={{ minHeight: '700px' }}>
                     <CardBody className="pl-6 pr-6">
                         <Row>
