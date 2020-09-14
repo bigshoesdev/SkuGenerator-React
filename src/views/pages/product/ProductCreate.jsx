@@ -22,6 +22,7 @@ import {
 } from 'reactstrap';
 
 import MainHeader from '../../components/headers/MainHeader';
+import ProductImage from '../product/ProductImage';
 import { allCategories } from '../../../store/actions/category';
 import { allKeywords } from '../../../store/actions/keyword';
 import { createProduct, allProductInfo } from '../../../store/actions/product';
@@ -113,6 +114,7 @@ class ProductCreate extends React.Component {
     isCheckWin: true,
     checkResult: {},
     isNext: false,
+    isProductImage: false,
   };
 
   constructor(props) {
@@ -153,7 +155,7 @@ class ProductCreate extends React.Component {
       icon: 'ni ni-bell-55',
       autoDismiss: 7,
     };
-    this.refs.notificationAlert.notificationAlert(options);
+    // this.refs.notificationAlert.notificationAlert(options);
   };
 
   componentWillReceiveProps(nextProps) {
@@ -295,8 +297,6 @@ class ProductCreate extends React.Component {
 
     if (nextProps.message) {
       this.setState({ isActive: false, isButtonActive: false });
-
-      this.myFormRef.reset();
       this.showNotification(nextProps.message);
     }
     if (nextProps.responseErrors) {
@@ -503,7 +503,7 @@ class ProductCreate extends React.Component {
           hoodie_weight,
           kid_weight,
         } = this.state.product;
-        this.setState({ isActive: true, isButtonActive: true });
+        this.setState({ isActive: true, isButtonActive: true, isProductImage: true });
         this.setState((state) => {
           const searchCategories = state.categories;
           const searchKeywords = state.keywords;
@@ -636,786 +636,809 @@ class ProductCreate extends React.Component {
       isNext,
       isCheckWin,
       checkResult,
+      product,
+      isProductImage,
     } = this.state;
     const self = this;
-
+    console.log(isProductImage)
     return (
       <>
-        <MainHeader name='Product Create' parentName='Product' />
-        <Container className='mt--6 product-create-container' fluid>
-          <LoadingOverlay
-            active={isActive}
-            spinner
-            text={
-              isCheckWin
-                ? 'Checking trademark. Just a wait.'
-                : 'Creating your product. Just a wait. It takes several minutes ...'
-            }
-          >
-            <Card style={{ minHeight: '700px' }}>
-              <CardBody>
-                <div className='rna-wrapper'>
-                  <NotificationAlert ref='notificationAlert' />
-                </div>
-                <Form
-                  role='form'
-                  method='POST'
-                  onSubmit={this.handleSearchTitleSubmit}
-                  hidden={!isCheckWin}
-                >
-                  <Row>
-                    <Col md={7}>
-                      <h4>Product Title</h4>
-                      <hr />
+        {!isProductImage &&
+          <>
+            <MainHeader name='Product Create' parentName='Product' />
+            <Container className='mt--6 product-create-container' fluid>
+              <LoadingOverlay
+                active={isActive}
+                spinner
+                text={
+                  isCheckWin
+                    ? 'Checking trademark. Just a wait.'
+                    : 'Creating your product. Just a wait. It takes several minutes ...'
+                }
+              >
+                <Card style={{ minHeight: '700px' }}>
+                  <CardBody>
+                    {/* <div className='rna-wrapper'>
+                    <NotificationAlert ref='notificationAlert' />
+                  </div> */}
+                    <Form
+                      role='form'
+                      method='POST'
+                      onSubmit={this.handleSearchTitleSubmit}
+                      hidden={!isCheckWin}
+                    >
                       <Row>
-                        <Col md={8}>
-                          <Input
-                            type='text'
-                            name='product_title'
-                            onBlur={this.handleBlur}
-                            onChange={this.handleChange}
-                            maxLength={25}
-                            invalid={'product_title' in errors}
-                            placeholder='Enter Product Title'
-                            className='form-control form-control'
-                            required
-                          />
-                        </Col>
-                        <Col md={4}>
-                          <Button type='submit' color='primary'>
-                            {"Check"}
-                          </Button>
-                          <Button
-                            type='button'
-                            color='warning'
-                            disabled={!isNext}
-                            onClick={() => {
-                              this.setState({
-                                isCheckWin: false,
-                                isNext: false,
-                                checkResult: {},
-                              });
-                            }}
-                          >
-                            Next
-                          </Button>
-                        </Col>
-                      </Row>
-                      {Object.keys(checkResult).length == 0 && isNext ? (
-                        <Row>
-                          <p className='mt-2 mb-1 ml-3 check-text'>
-                            {"No trademark issues found"}
-                          </p>
-                        </Row>
-                      ) : null}
-
-                      {Object.keys(checkResult).includes('error') ?
-                        Object.keys(this.state.checkResult['error']).map(item => (
-                          <Row key={`check-result-error-${item}`}>
-                            <small className='mt-3 mb-1 ml-3'>
-                              {this.state.checkResult['error'][item]}
-                            </small>
-                          </Row>
-                        )) : null}
-
-                      {Object.keys(checkResult).includes('US') ? <>
-                        <Row className='mt-4 ml-1'>
-                          <img
-                            src={require(`assets/img/flag/us.png`)}
-                            style={{ width: '18px', height: '18px' }}
-                          />
-                          <h4 className='ml-2'>{"US"}</h4>
-                        </Row>
-                        <hr style={{ borderTop: '1px solid rgba(0, 0, 0, 0.3)' }} />
-                        <Row className='mt-2 mb-1'>
-                          {Object.keys(this.state.checkResult['US']).map(item => (
-                            <small className='mb-2 ml-3' key={`check-result-us-${item}`}>
-                              {this.state.checkResult['US'][item]}
-                            </small>
-                          ))}
-                        </Row>
-                      </> : null}
-
-                      {Object.keys(checkResult).includes('UK') ? <>
-                        <Row className='mt-4 ml-1'>
-                          <img
-                            src={require(`assets/img/flag/uk.png`)}
-                            style={{ width: '18px', height: '18px' }}
-                          />
-                          <h4 className='ml-2'>{'UK'}</h4>
-                        </Row>
-                        <hr style={{ borderTop: '1px solid rgba(0, 0, 0, 0.3)' }} />
-                        <Row className='mt-2 mb-1'>
-                          {Object.keys(this.state.checkResult['UK']).map(item => {
-                            return (
-                              <small className='mb-2 ml-3' key={`check-result-uk-${item}`}>
-                                {`${item.toUpperCase()} -`}
-                                {this.state.checkResult['UK'][item].map(el => (
-                                  <React.Fragment key={`check-result-uk-${el.id}`}>
-                                    <a href={el.link} target="blank">
-                                      {` ${el.number} | `}
-                                    </a>
-                                    {el.description.map(d => {
-                                      if (d) return d + " | "
-                                    })}
-                                    {"Registered"}<br />
-                                  </React.Fragment>
-                                ))}
-                              </small>
-                            );
-                          })}
-                        </Row>
-                      </> : null}
-                    </Col>
-                    <Col md={4}>
-                      <h4>{"Product Create Instructions"}</h4>
-                      <hr />
-                      <small className='text-uppercase text-muted font-weight-bold' style={{
-                        'whiteSpace': 'pre-wrap'
-                      }}>
-                        {this.state.setting.product_create_guide}
-                      </small>
-                    </Col>
-                  </Row>
-                </Form>
-                <form
-                  method='POST'
-                  onSubmit={this.handleSubmit}
-                  ref={(el) => (this.myFormRef = el)}
-                  hidden={isCheckWin}
-                >
-                  <Row>
-                    <Col md={7}>
-                      <Row>
-                        <Col md={8}>
+                        <Col md={7}>
                           <h4>Product Title</h4>
                           <hr />
-                          <FormGroup>
-                            <Input
-                              type='text'
-                              name='product_title'
-                              value={this.state.product_title}
-                              readOnly={true}
-                              maxLength={25}
-                              invalid={'product_title' in errors}
-                              placeholder='Enter Product Title'
-                              className='form-control form-control'
-                              required
-                            />
-                            <div className='invalid-feedback ml-2'>
-                              {errors.product_title}
-                            </div>
-                          </FormGroup>
-                        </Col>
-                        <Col md={4}>
-                          <h4>Artist</h4>
-                          <hr></hr>
-                          <FormGroup>
-                            <Input
-                              type='select'
-                              name='artist'
-                              value={this.state.artist}
-                              onChange={this.handleSelect}
-                              className='form-control form-control'
-                            >
-                              {this.state.artist_list.map(function (item) {
-                                return (
-                                  <option key={item.key} value={item.id}>
-                                    {item.name}
-                                  </option>
-                                );
-                              })}
-                            </Input>
-                          </FormGroup>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col md={12}>
-                          <h4>Source</h4>
-                          <hr className='label-hr' />
-                          <FormGroup>
-                            <Input
-                              type='textarea'
-                              name='source'
-                              onBlur={this.handleBlur}
-                              onChange={this.handleChange}
-                              invalid={'source' in errors}
-                              value={this.state.source}
-                              className='form-control form-control'
-                              placeholder='Enter Source'
-                              required
-                            ></Input>
-                            <div className='invalid-feedback ml-2'>
-                              {errors.source}
-                            </div>
-                          </FormGroup>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col md={4}>
-                          <h4>Adult Tshirts</h4>
-                          <hr className='label-hr' />
                           <Row>
-                            <Col md={6}>
-                              <FormGroup>
-                                <Label>Price</Label>
-                                <Input
-                                  type='select'
-                                  name='price_tshirt'
-                                  onChange={this.handleSelect}
-                                  value={this.state.p_tshirt}
-                                  className='form-control form-control'
-                                  placeholder='Enter Price'
-                                  required
-                                >
-                                  {this.state.price_tshirt.map((item) => {
-                                    return (
-                                      <option key={item.key} value={item.id}>
-                                        {item.name}
-                                      </option>
-                                    );
-                                  })}
-                                </Input>
-                              </FormGroup>
-                            </Col>
-                            <Col md={6}>
-                              <FormGroup>
-                                <Label>Weight</Label>
-                                <Input
-                                  type='number'
-                                  name='tshirt_weight'
-                                  onBlur={this.handleBlur}
-                                  onChange={this.handleChange}
-                                  invalid={'tshirt_weight' in errors}
-                                  className='form-control form-control'
-                                  value={this.state.tshirt_weight}
-                                  placeholder=''
-                                  step='0.1'
-                                  required
-                                />
-                                <div className='invalid-feedback ml-2'>
-                                  {errors.tshirt_weight}
-                                </div>
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                        </Col>
-                        <Col md={4}>
-                          <h4>Print Mode</h4>
-                          <hr className='label-hr' />
-                          <Label>&nbsp;</Label>
-                          <FormGroup>
-                            <Input
-                              type='select'
-                              name='tshirt_print'
-                              value={this.state.tshirt_print}
-                              className='form-control form-control'
-                              onChange={this.handleSelect}
-                            >
-                              {this.state.printMode_list.map(function (item) {
-                                return (
-                                  <option key={item.key} value={item.key}>
-                                    {item.name}
-                                  </option>
-                                );
-                              })}
-                            </Input>
-                          </FormGroup>
-                        </Col>
-                        <Col md={4}>
-                          <h4>Product Image</h4>
-                          <hr className='label-hr' />
-                          <Label>&nbsp;</Label>
-                          <FormGroup>
-                            <Input
-                              type='select'
-                              name='tshirt_image'
-                              value={this.state.tshirt_image}
-                              onChange={this.handleSelect}
-                              className='form-control form-control'
-                            >
-                              {this.state.product_image.map(function (item) {
-                                return (
-                                  <option key={item.key} value={item.name}>
-                                    {item.name}
-                                  </option>
-                                );
-                              })}
-                            </Input>
-                          </FormGroup>
-                        </Col>
-                      </Row>
-                      <h4>Stickers</h4>
-                      <hr className='label-hr' />
-                      <Row>
-                        <Col md={3}>
-                          <FormGroup>
-                            <Label>Width</Label>
-                            <Input
-                              type='number'
-                              name='stickers_width'
-                              onBlur={this.handleBlur}
-                              onChange={this.handleChange}
-                              invalid={'stickers_width' in errors}
-                              className='form-control form-control'
-                              placeholder='Enter Width'
-                              required
-                            />
-                            <div className='invalid-feedback ml-2'>
-                              {errors.stickers_width}
-                            </div>
-                          </FormGroup>
-                        </Col>
-                        <Col md={3}>
-                          <FormGroup>
-                            <Label>Height</Label>
-                            <Input
-                              type='number'
-                              name='stickers_height'
-                              onBlur={this.handleBlur}
-                              onChange={this.handleChange}
-                              invalid={'stickers_height' in errors}
-                              className='form-control form-control'
-                              placeholder='Enter Height'
-                              required
-                              min='0'
-                            />
-                            <div className='invalid-feedback ml-2'>
-                              {errors.stickers_height}
-                            </div>
-                          </FormGroup>
-                        </Col>
-                        <Col md={2}>
-                          <FormGroup>
-                            <Label>Type</Label>
-                            <Input
-                              type='select'
-                              name='stickers_type'
-                              value={this.state.sticker_type}
-                              onChange={this.handleSelect}
-                              className='form-control form-control'
-                            >
-                              {this.state.stickerType_list.map(function (item) {
-                                return (
-                                  <option key={item.key} value={item.key}>
-                                    {item.key}
-                                  </option>
-                                );
-                              })}
-                            </Input>
-                          </FormGroup>
-                        </Col>
-                        <Col md={2}>
-                          <FormGroup>
-                            <Label>Price</Label>
-                            <Input
-                              type='select'
-                              name='price_sticker'
-                              value={this.state.p_sticker}
-                              onChange={this.handleSelect}
-                              className='form-control form-control'
-                            >
-                              {this.state.price_sticker.map((item) => {
-                                return (
-                                  <option key={item.key} value={item.id}>
-                                    {item.name}
-                                  </option>
-                                );
-                              })}
-                            </Input>
-                          </FormGroup>
-                        </Col>
-                        <Col md={2}>
-                          <FormGroup>
-                            <Label>Weight</Label>
-                            <Input
-                              type='number'
-                              name='stickers_weight'
-                              onBlur={this.handleBlur}
-                              onChange={this.handleChange}
-                              invalid={'stickers_weight' in errors}
-                              value={this.state.stickers_weight}
-                              className='form-control form-control'
-                              placeholder=''
-                              step='0.1'
-                              required
-                            />
-                            <div className='invalid-feedback ml-2'>
-                              {errors.stickers_weight}
-                            </div>
-                          </FormGroup>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col md={6}>
-                          <h4>Mugs</h4>
-                          <hr />
-                          <Row>
-                            <Col md={4}>
-                              <FormGroup>
-                                <Label>11oz Price</Label>
-                                <Input
-                                  type='select'
-                                  name='price_msg'
-                                  value={this.state.p_msg}
-                                  onChange={this.handleSelect}
-                                  className='form-control form-control'
-                                >
-                                  {this.state.price_msg.map((item) => {
-                                    return (
-                                      <option key={item.key} value={item.id}>
-                                        {item.name}
-                                      </option>
-                                    );
-                                  })}
-                                </Input>
-                              </FormGroup>
+                            <Col md={8}>
+                              <Input
+                                type='text'
+                                name='product_title'
+                                onBlur={this.handleBlur}
+                                onChange={this.handleChange}
+                                maxLength={25}
+                                invalid={'product_title' in errors}
+                                placeholder='Enter Product Title'
+                                className='form-control form-control'
+                                required
+                              />
                             </Col>
                             <Col md={4}>
-                              <FormGroup>
-                                <Label>15oz Price</Label>
-                                <Input
-                                  type='select'
-                                  name='price_mxg'
-                                  value={this.state.p_mxg}
-                                  onChange={this.handleSelect}
-                                  className='form-control form-control'
-                                >
-                                  {this.state.price_mxg.map((item) => {
-                                    return (
-                                      <option key={item.key} value={item.id}>
-                                        {item.name}
-                                      </option>
-                                    );
-                                  })}
-                                </Input>
-                              </FormGroup>
-                            </Col>
-                            <Col md={4}>
-                              <FormGroup>
-                                <Label>Weight</Label>
-                                <Input
-                                  type='number'
-                                  name='mug_weight'
-                                  onBlur={this.handleBlur}
-                                  onChange={this.handleChange}
-                                  invalid={'mug_weight' in errors}
-                                  value={this.state.mug_weight}
-                                  className='form-control form-control'
-                                  placeholder=''
-                                  step='0.1'
-                                  required
-                                />
-                                <div className='invalid-feedback ml-2'>
-                                  {errors.mug_weight}
-                                </div>
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                        </Col>
-                        <Col md={6}>
-                          <h4>Tote Bags</h4>
-                          <hr />
-                          <Row>
-                            <Col md={6}>
-                              <FormGroup>
-                                <Label>Price</Label>
-                                <Input
-                                  type='select'
-                                  name='price_totebag'
-                                  onChange={this.handleSelect}
-                                  value={this.state.p_totebag}
-                                  className='form-control form-control'
-                                >
-                                  {this.state.price_totebag.map((item) => {
-                                    return (
-                                      <option key={item.key} value={item.id}>
-                                        {item.name}
-                                      </option>
-                                    );
-                                  })}
-                                </Input>
-                              </FormGroup>
-                            </Col>
-                            <Col md={6}>
-                              <FormGroup>
-                                <Label>Weight</Label>
-                                <Input
-                                  type='number'
-                                  name='totebag_weight'
-                                  onBlur={this.handleBlur}
-                                  onChange={this.handleChange}
-                                  invalid={'totebag_weight' in errors}
-                                  value={this.state.totebag_weight}
-                                  className='form-control form-control'
-                                  placeholder=''
-                                  step='0.1'
-                                  required
-                                />
-                                <div className='invalid-feedback ml-2'>
-                                  {errors.totebag_weight}
-                                </div>
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col md={6}>
-                          <h4>Cushion Covers</h4>
-                          <hr />
-                          <Row>
-                            <Col md={6}>
-                              <Label>Price</Label>
-                              <FormGroup>
-                                <Input
-                                  type='select'
-                                  name='price_cushioncover'
-                                  value={this.state.p_cushioncover}
-                                  onChange={this.handleSelect}
-                                  className='form-control form-control'
-                                >
-                                  {this.state.price_cushioncover.map((item) => {
-                                    return (
-                                      <option key={item.key} value={item.id}>
-                                        {item.name}
-                                      </option>
-                                    );
-                                  })}
-                                </Input>
-                              </FormGroup>
-                            </Col>
-                            <Col md={6}>
-                              <FormGroup>
-                                <Label>Weight</Label>
-                                <Input
-                                  type='number'
-                                  name='cushioncover_weight'
-                                  onBlur={this.handleBlur}
-                                  onChange={this.handleChange}
-                                  value={this.state.cushioncover_weight}
-                                  invalid={'cushioncover_weight' in errors}
-                                  className='form-control form-control'
-                                  placeholder=''
-                                  step='0.1'
-                                  required
-                                />
-                                <div className='invalid-feedback ml-2'>
-                                  {errors.cushioncover_weight}
-                                </div>
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                        </Col>
-                        <Col md={6}>
-                          <h4>Hoodies</h4>
-                          <hr />
-                          <Row>
-                            <Col md={6}>
-                              <FormGroup>
-                                <Label>Price</Label>
-                                <Input
-                                  type='select'
-                                  name='price_Hoodies'
-                                  value={this.state.p_Hoodies}
-                                  onChange={this.handleSelect}
-                                  className='form-control form-control'
-                                  required
-                                >
-                                  {this.state.price_Hoodies.map((item) => {
-                                    return (
-                                      <option key={item.key} value={item.id}>
-                                        {item.name}
-                                      </option>
-                                    );
-                                  })}
-                                </Input>
-                              </FormGroup>
-                            </Col>
-                            <Col md={6}>
-                              <FormGroup>
-                                <Label>Weight</Label>
-                                <Input
-                                  type='number'
-                                  name='hoodie_weight'
-                                  onBlur={this.handleBlur}
-                                  onChange={this.handleChange}
-                                  value={this.state.hoodie_weight}
-                                  invalid={'hoodie_weight' in errors}
-                                  className='form-control form-control'
-                                  placeholder=''
-                                  step='0.1'
-                                  required
-                                />
-                                <div className='invalid-feedback ml-2'>
-                                  {errors.hoodie_weight}
-                                </div>
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col md={6}>
-                          <h4>Kids</h4>
-                          <hr />
-                          <Row>
-                            <Col md={6}>
-                              <FormGroup>
-                                <Label>Price</Label>
-                                <Input
-                                  type='select'
-                                  name='price_kid'
-                                  value={this.state.p_kid}
-                                  onChange={this.handleSelect}
-                                  className='form-control form-control'
-                                  required
-                                >
-                                  {this.state.price_kid.map((item) => {
-                                    return (
-                                      <option key={item.key} value={item.id}>
-                                        {item.name}
-                                      </option>
-                                    );
-                                  })}
-                                </Input>
-                              </FormGroup>
-                            </Col>
-                            <Col md={6}>
-                              <FormGroup>
-                                <Label>Weight</Label>
-                                <Input
-                                  type='number'
-                                  name='kid_weight'
-                                  onBlur={this.handleBlur}
-                                  onChange={this.handleChange}
-                                  value={this.state.kid_weight}
-                                  invalid={'kid_weight' in errors}
-                                  className='form-control form-control'
-                                  placeholder=''
-                                  step='0.1'
-                                  required
-                                />
-                                <div className='invalid-feedback ml-2'>
-                                  {errors.kid_weight}
-                                </div>
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col md={12}>
-                          <Button
-                            type='submit'
-                            className='float-left btn btn-info'
-                            disabled={isButtonActive}
-                          >
-                            Create
-                          </Button>
-                        </Col>
-                      </Row>
-                    </Col>
-                    <Col md={2}>
-                      <h4>Category</h4>
-                      <hr />
-                      <FormGroup className='mb-3'>
-                        <InputGroup
-                          className='input-group-alternative input-group-merge'
-                          style={{ borderRadius: '0px', width: '100%' }}
-                        >
-                          <InputGroupAddon addonType='prepend'>
-                            <InputGroupText>
-                              <i className='fas fa-search' />
-                            </InputGroupText>
-                          </InputGroupAddon>
-                          <Input
-                            placeholder='Search'
-                            type='text'
-                            name='searchCategory'
-                            onChange={this.handleSearchCategory}
-                            style={{ width: '50%' }}
-                          />
-                        </InputGroup>
-                      </FormGroup>
-                      <ul className='list-group list-group-flush'>
-                        {this.state.searchCategories.map(function (item) {
-                          return (
-                            <li
-                              className={classnames(
-                                'list-group-item list-group-item-action',
-                                { active: item.id === self.state.category }
-                              )}
-                              onClick={() => self.handleCategorySelect(item.id)}
-                              action='true'
-                              key={item.id}
-                            >
-                              {item.name}
-                            </li>
-                          );
-                        })}
-                      </ul>
-                      {this.state.isShowError && this.state.category === 0 && (
-                        <div className='invalid-category'>
-                          <p>Please select category</p>
-                        </div>
-                      )}
-                    </Col>
-                    <Col md={3}>
-                      <div>
-                        <h4>Keyword</h4>
-                        <hr />
-                        <FormGroup className='mb-3' style={{ width: '100%' }}>
-                          <InputGroup
-                            className='input-group-alternative input-group-merge'
-                            style={{ borderRadius: '0px', width: '100%' }}
-                          >
-                            <InputGroupAddon addonType='prepend'>
-                              <InputGroupText>
-                                <i className='fas fa-search' />
-                              </InputGroupText>
-                            </InputGroupAddon>
-                            <Input
-                              placeholder='Search'
-                              type='text'
-                              name='searchKeyword'
-                              onChange={this.handleSearchKeyword}
-                              style={{ width: '80%' }}
-                            />
-                          </InputGroup>
-                        </FormGroup>
-                        <ul className='list-group list-group-flush'>
-                          {this.state.searchKeywords.map(function (item) {
-                            return (
-                              <li
-                                className={classnames(
-                                  'list-group-item list-group-item-action',
-                                  { active: item.id === self.state.keyword }
-                                )}
-                                onClick={() =>
-                                  self.handleKeywordSelect(item.id)
-                                }
-                                action='true'
-                                key={item.id}
+                              <Button type='submit' color='primary'>
+                                {"Check"}
+                              </Button>
+                              <Button
+                                type='button'
+                                color='warning'
+                                disabled={!isNext}
+                                onClick={() => {
+                                  this.setState({
+                                    isCheckWin: false,
+                                    isNext: false,
+                                    checkResult: {},
+                                  });
+                                }}
                               >
-                                {item.tshirts}
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </div>
-                      {this.state.isShowError && this.state.keyword === 0 && (
-                        <div className='invalid-keyword'>
-                          <p>Please select keyword</p>
-                        </div>
-                      )}
-                    </Col>
-                  </Row>
-                </form>
-              </CardBody>
-            </Card>
-          </LoadingOverlay>
-        </Container>
+                                Next
+                         </Button>
+                            </Col>
+                          </Row>
+                          {Object.keys(checkResult).length == 0 && isNext ? (
+                            <Row>
+                              <p className='mt-2 mb-1 ml-3 check-text'>
+                                {"No trademark issues found"}
+                              </p>
+                            </Row>
+                          ) : null}
+
+                          {Object.keys(checkResult).includes('error') ?
+                            Object.keys(this.state.checkResult['error']).map(item => (
+                              <Row key={`check-result-error-${item}`}>
+                                <small className='mt-3 mb-1 ml-3'>
+                                  {this.state.checkResult['error'][item]}
+                                </small>
+                              </Row>
+                            )) : null}
+
+                          {Object.keys(checkResult).includes('US') ? <>
+                            <Row className='mt-4 ml-1'>
+                              <img
+                                src={require(`assets/img/flag/us.png`)}
+                                style={{ width: '18px', height: '18px' }}
+                              />
+                              <h4 className='ml-2'>{"US"}</h4>
+                            </Row>
+                            <hr style={{ borderTop: '1px solid rgba(0, 0, 0, 0.3)' }} />
+                            <Row className='mt-2 mb-1'>
+                              {Object.keys(this.state.checkResult['US']).map(item => (
+                                <small className='mb-2 ml-3' key={`check-result-us-${item}`}>
+                                  {this.state.checkResult['US'][item]}
+                                </small>
+                              ))}
+                            </Row>
+                          </> : null}
+
+                          {Object.keys(checkResult).includes('UK') ? <>
+                            <Row className='mt-4 ml-1'>
+                              <img
+                                src={require(`assets/img/flag/uk.png`)}
+                                style={{ width: '18px', height: '18px' }}
+                              />
+                              <h4 className='ml-2'>{'UK'}</h4>
+                            </Row>
+                            <hr style={{ borderTop: '1px solid rgba(0, 0, 0, 0.3)' }} />
+                            <Row className='mt-2 mb-1'>
+                              {Object.keys(this.state.checkResult['UK']).map(item => {
+                                return (
+                                  <small className='mb-2 ml-3' key={`check-result-uk-${item}`}>
+                                    {`${item.toUpperCase()} -`}
+                                    {this.state.checkResult['UK'][item].map(el => (
+                                      <React.Fragment key={`check-result-uk-${el.id}`}>
+                                        <a href={el.link} target="blank">
+                                          {` ${el.number} | `}
+                                        </a>
+                                        {el.description.map(d => {
+                                          if (d) return d + " | "
+                                        })}
+                                        {"Registered"}<br />
+                                      </React.Fragment>
+                                    ))}
+                                  </small>
+                                );
+                              })}
+                            </Row>
+                          </> : null}
+                        </Col>
+                        <Col md={4}>
+                          <h4>{"Product Create Instructions"}</h4>
+                          <hr />
+                          <small className='text-uppercase text-muted font-weight-bold' style={{
+                            'whiteSpace': 'pre-wrap'
+                          }}>
+                            {this.state.setting.product_create_guide}
+                          </small>
+                        </Col>
+                      </Row>
+                    </Form>
+                    <form
+                      method='POST'
+                      onSubmit={this.handleSubmit}
+                      ref={(el) => (this.myFormRef = el)}
+                      hidden={isCheckWin}
+                    >
+                      <Row>
+                        <Col md={7}>
+                          <Row>
+                            <Col md={8}>
+                              <h4>Product Title</h4>
+                              <hr />
+                              <FormGroup>
+                                <Input
+                                  type='text'
+                                  name='product_title'
+                                  value={this.state.product_title}
+                                  readOnly={true}
+                                  maxLength={25}
+                                  invalid={'product_title' in errors}
+                                  placeholder='Enter Product Title'
+                                  className='form-control form-control'
+                                  required
+                                />
+                                <div className='invalid-feedback ml-2'>
+                                  {errors.product_title}
+                                </div>
+                              </FormGroup>
+                            </Col>
+                            <Col md={4}>
+                              <h4>Artist</h4>
+                              <hr></hr>
+                              <FormGroup>
+                                <Input
+                                  type='select'
+                                  name='artist'
+                                  value={this.state.artist}
+                                  onChange={this.handleSelect}
+                                  className='form-control form-control'
+                                >
+                                  {this.state.artist_list.map(function (item) {
+                                    return (
+                                      <option key={item.key} value={item.id}>
+                                        {item.name}
+                                      </option>
+                                    );
+                                  })}
+                                </Input>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col md={12}>
+                              <h4>Source</h4>
+                              <hr className='label-hr' />
+                              <FormGroup>
+                                <Input
+                                  type='textarea'
+                                  name='source'
+                                  onBlur={this.handleBlur}
+                                  onChange={this.handleChange}
+                                  invalid={'source' in errors}
+                                  value={this.state.source}
+                                  className='form-control form-control'
+                                  placeholder='Enter Source'
+                                  required
+                                ></Input>
+                                <div className='invalid-feedback ml-2'>
+                                  {errors.source}
+                                </div>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col md={4}>
+                              <h4>Adult Tshirts</h4>
+                              <hr className='label-hr' />
+                              <Row>
+                                <Col md={6}>
+                                  <FormGroup>
+                                    <Label>Price</Label>
+                                    <Input
+                                      type='select'
+                                      name='price_tshirt'
+                                      onChange={this.handleSelect}
+                                      value={this.state.p_tshirt}
+                                      className='form-control form-control'
+                                      placeholder='Enter Price'
+                                      required
+                                    >
+                                      {this.state.price_tshirt.map((item) => {
+                                        return (
+                                          <option key={item.key} value={item.id}>
+                                            {item.name}
+                                          </option>
+                                        );
+                                      })}
+                                    </Input>
+                                  </FormGroup>
+                                </Col>
+                                <Col md={6}>
+                                  <FormGroup>
+                                    <Label>Weight</Label>
+                                    <Input
+                                      type='number'
+                                      name='tshirt_weight'
+                                      onBlur={this.handleBlur}
+                                      onChange={this.handleChange}
+                                      invalid={'tshirt_weight' in errors}
+                                      className='form-control form-control'
+                                      value={this.state.tshirt_weight}
+                                      placeholder=''
+                                      step='0.1'
+                                      required
+                                    />
+                                    <div className='invalid-feedback ml-2'>
+                                      {errors.tshirt_weight}
+                                    </div>
+                                  </FormGroup>
+                                </Col>
+                              </Row>
+                            </Col>
+                            <Col md={4}>
+                              <h4>Print Mode</h4>
+                              <hr className='label-hr' />
+                              <Label>&nbsp;</Label>
+                              <FormGroup>
+                                <Input
+                                  type='select'
+                                  name='tshirt_print'
+                                  value={this.state.tshirt_print}
+                                  className='form-control form-control'
+                                  onChange={this.handleSelect}
+                                >
+                                  {this.state.printMode_list.map(function (item) {
+                                    return (
+                                      <option key={item.key} value={item.key}>
+                                        {item.name}
+                                      </option>
+                                    );
+                                  })}
+                                </Input>
+                              </FormGroup>
+                            </Col>
+                            <Col md={4}>
+                              <h4>Product Image</h4>
+                              <hr className='label-hr' />
+                              <Label>&nbsp;</Label>
+                              <FormGroup>
+                                <Input
+                                  type='select'
+                                  name='tshirt_image'
+                                  value={this.state.tshirt_image}
+                                  onChange={this.handleSelect}
+                                  className='form-control form-control'
+                                >
+                                  {this.state.product_image.map(function (item) {
+                                    return (
+                                      <option key={item.key} value={item.name}>
+                                        {item.name}
+                                      </option>
+                                    );
+                                  })}
+                                </Input>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <h4>Stickers</h4>
+                          <hr className='label-hr' />
+                          <Row>
+                            <Col md={3}>
+                              <FormGroup>
+                                <Label>Width</Label>
+                                <Input
+                                  type='number'
+                                  name='stickers_width'
+                                  onBlur={this.handleBlur}
+                                  onChange={this.handleChange}
+                                  invalid={'stickers_width' in errors}
+                                  className='form-control form-control'
+                                  placeholder='Enter Width'
+                                  required
+                                />
+                                <div className='invalid-feedback ml-2'>
+                                  {errors.stickers_width}
+                                </div>
+                              </FormGroup>
+                            </Col>
+                            <Col md={3}>
+                              <FormGroup>
+                                <Label>Height</Label>
+                                <Input
+                                  type='number'
+                                  name='stickers_height'
+                                  onBlur={this.handleBlur}
+                                  onChange={this.handleChange}
+                                  invalid={'stickers_height' in errors}
+                                  className='form-control form-control'
+                                  placeholder='Enter Height'
+                                  required
+                                  min='0'
+                                />
+                                <div className='invalid-feedback ml-2'>
+                                  {errors.stickers_height}
+                                </div>
+                              </FormGroup>
+                            </Col>
+                            <Col md={2}>
+                              <FormGroup>
+                                <Label>Type</Label>
+                                <Input
+                                  type='select'
+                                  name='stickers_type'
+                                  value={this.state.sticker_type}
+                                  onChange={this.handleSelect}
+                                  className='form-control form-control'
+                                >
+                                  {this.state.stickerType_list.map(function (item) {
+                                    return (
+                                      <option key={item.key} value={item.key}>
+                                        {item.key}
+                                      </option>
+                                    );
+                                  })}
+                                </Input>
+                              </FormGroup>
+                            </Col>
+                            <Col md={2}>
+                              <FormGroup>
+                                <Label>Price</Label>
+                                <Input
+                                  type='select'
+                                  name='price_sticker'
+                                  value={this.state.p_sticker}
+                                  onChange={this.handleSelect}
+                                  className='form-control form-control'
+                                >
+                                  {this.state.price_sticker.map((item) => {
+                                    return (
+                                      <option key={item.key} value={item.id}>
+                                        {item.name}
+                                      </option>
+                                    );
+                                  })}
+                                </Input>
+                              </FormGroup>
+                            </Col>
+                            <Col md={2}>
+                              <FormGroup>
+                                <Label>Weight</Label>
+                                <Input
+                                  type='number'
+                                  name='stickers_weight'
+                                  onBlur={this.handleBlur}
+                                  onChange={this.handleChange}
+                                  invalid={'stickers_weight' in errors}
+                                  value={this.state.stickers_weight}
+                                  className='form-control form-control'
+                                  placeholder=''
+                                  step='0.1'
+                                  required
+                                />
+                                <div className='invalid-feedback ml-2'>
+                                  {errors.stickers_weight}
+                                </div>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col md={6}>
+                              <h4>Mugs</h4>
+                              <hr />
+                              <Row>
+                                <Col md={4}>
+                                  <FormGroup>
+                                    <Label>11oz Price</Label>
+                                    <Input
+                                      type='select'
+                                      name='price_msg'
+                                      value={this.state.p_msg}
+                                      onChange={this.handleSelect}
+                                      className='form-control form-control'
+                                    >
+                                      {this.state.price_msg.map((item) => {
+                                        return (
+                                          <option key={item.key} value={item.id}>
+                                            {item.name}
+                                          </option>
+                                        );
+                                      })}
+                                    </Input>
+                                  </FormGroup>
+                                </Col>
+                                <Col md={4}>
+                                  <FormGroup>
+                                    <Label>15oz Price</Label>
+                                    <Input
+                                      type='select'
+                                      name='price_mxg'
+                                      value={this.state.p_mxg}
+                                      onChange={this.handleSelect}
+                                      className='form-control form-control'
+                                    >
+                                      {this.state.price_mxg.map((item) => {
+                                        return (
+                                          <option key={item.key} value={item.id}>
+                                            {item.name}
+                                          </option>
+                                        );
+                                      })}
+                                    </Input>
+                                  </FormGroup>
+                                </Col>
+                                <Col md={4}>
+                                  <FormGroup>
+                                    <Label>Weight</Label>
+                                    <Input
+                                      type='number'
+                                      name='mug_weight'
+                                      onBlur={this.handleBlur}
+                                      onChange={this.handleChange}
+                                      invalid={'mug_weight' in errors}
+                                      value={this.state.mug_weight}
+                                      className='form-control form-control'
+                                      placeholder=''
+                                      step='0.1'
+                                      required
+                                    />
+                                    <div className='invalid-feedback ml-2'>
+                                      {errors.mug_weight}
+                                    </div>
+                                  </FormGroup>
+                                </Col>
+                              </Row>
+                            </Col>
+                            <Col md={6}>
+                              <h4>Tote Bags</h4>
+                              <hr />
+                              <Row>
+                                <Col md={6}>
+                                  <FormGroup>
+                                    <Label>Price</Label>
+                                    <Input
+                                      type='select'
+                                      name='price_totebag'
+                                      onChange={this.handleSelect}
+                                      value={this.state.p_totebag}
+                                      className='form-control form-control'
+                                    >
+                                      {this.state.price_totebag.map((item) => {
+                                        return (
+                                          <option key={item.key} value={item.id}>
+                                            {item.name}
+                                          </option>
+                                        );
+                                      })}
+                                    </Input>
+                                  </FormGroup>
+                                </Col>
+                                <Col md={6}>
+                                  <FormGroup>
+                                    <Label>Weight</Label>
+                                    <Input
+                                      type='number'
+                                      name='totebag_weight'
+                                      onBlur={this.handleBlur}
+                                      onChange={this.handleChange}
+                                      invalid={'totebag_weight' in errors}
+                                      value={this.state.totebag_weight}
+                                      className='form-control form-control'
+                                      placeholder=''
+                                      step='0.1'
+                                      required
+                                    />
+                                    <div className='invalid-feedback ml-2'>
+                                      {errors.totebag_weight}
+                                    </div>
+                                  </FormGroup>
+                                </Col>
+                              </Row>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col md={6}>
+                              <h4>Cushion Covers</h4>
+                              <hr />
+                              <Row>
+                                <Col md={6}>
+                                  <Label>Price</Label>
+                                  <FormGroup>
+                                    <Input
+                                      type='select'
+                                      name='price_cushioncover'
+                                      value={this.state.p_cushioncover}
+                                      onChange={this.handleSelect}
+                                      className='form-control form-control'
+                                    >
+                                      {this.state.price_cushioncover.map((item) => {
+                                        return (
+                                          <option key={item.key} value={item.id}>
+                                            {item.name}
+                                          </option>
+                                        );
+                                      })}
+                                    </Input>
+                                  </FormGroup>
+                                </Col>
+                                <Col md={6}>
+                                  <FormGroup>
+                                    <Label>Weight</Label>
+                                    <Input
+                                      type='number'
+                                      name='cushioncover_weight'
+                                      onBlur={this.handleBlur}
+                                      onChange={this.handleChange}
+                                      value={this.state.cushioncover_weight}
+                                      invalid={'cushioncover_weight' in errors}
+                                      className='form-control form-control'
+                                      placeholder=''
+                                      step='0.1'
+                                      required
+                                    />
+                                    <div className='invalid-feedback ml-2'>
+                                      {errors.cushioncover_weight}
+                                    </div>
+                                  </FormGroup>
+                                </Col>
+                              </Row>
+                            </Col>
+                            <Col md={6}>
+                              <h4>Hoodies</h4>
+                              <hr />
+                              <Row>
+                                <Col md={6}>
+                                  <FormGroup>
+                                    <Label>Price</Label>
+                                    <Input
+                                      type='select'
+                                      name='price_Hoodies'
+                                      value={this.state.p_Hoodies}
+                                      onChange={this.handleSelect}
+                                      className='form-control form-control'
+                                      required
+                                    >
+                                      {this.state.price_Hoodies.map((item) => {
+                                        return (
+                                          <option key={item.key} value={item.id}>
+                                            {item.name}
+                                          </option>
+                                        );
+                                      })}
+                                    </Input>
+                                  </FormGroup>
+                                </Col>
+                                <Col md={6}>
+                                  <FormGroup>
+                                    <Label>Weight</Label>
+                                    <Input
+                                      type='number'
+                                      name='hoodie_weight'
+                                      onBlur={this.handleBlur}
+                                      onChange={this.handleChange}
+                                      value={this.state.hoodie_weight}
+                                      invalid={'hoodie_weight' in errors}
+                                      className='form-control form-control'
+                                      placeholder=''
+                                      step='0.1'
+                                      required
+                                    />
+                                    <div className='invalid-feedback ml-2'>
+                                      {errors.hoodie_weight}
+                                    </div>
+                                  </FormGroup>
+                                </Col>
+                              </Row>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col md={6}>
+                              <h4>Kids</h4>
+                              <hr />
+                              <Row>
+                                <Col md={6}>
+                                  <FormGroup>
+                                    <Label>Price</Label>
+                                    <Input
+                                      type='select'
+                                      name='price_kid'
+                                      value={this.state.p_kid}
+                                      onChange={this.handleSelect}
+                                      className='form-control form-control'
+                                      required
+                                    >
+                                      {this.state.price_kid.map((item) => {
+                                        return (
+                                          <option key={item.key} value={item.id}>
+                                            {item.name}
+                                          </option>
+                                        );
+                                      })}
+                                    </Input>
+                                  </FormGroup>
+                                </Col>
+                                <Col md={6}>
+                                  <FormGroup>
+                                    <Label>Weight</Label>
+                                    <Input
+                                      type='number'
+                                      name='kid_weight'
+                                      onBlur={this.handleBlur}
+                                      onChange={this.handleChange}
+                                      value={this.state.kid_weight}
+                                      invalid={'kid_weight' in errors}
+                                      className='form-control form-control'
+                                      placeholder=''
+                                      step='0.1'
+                                      required
+                                    />
+                                    <div className='invalid-feedback ml-2'>
+                                      {errors.kid_weight}
+                                    </div>
+                                  </FormGroup>
+                                </Col>
+                              </Row>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col md={12}>
+                              <Button
+                                type='submit'
+                                className='float-left btn btn-info'
+                                disabled={isButtonActive}
+                              >
+                                {"Create"}
+                              </Button>
+                            </Col>
+                          </Row>
+                        </Col>
+                        <Col md={2}>
+                          <h4>Category</h4>
+                          <hr />
+                          <FormGroup className='mb-3'>
+                            <InputGroup
+                              className='input-group-alternative input-group-merge'
+                              style={{ borderRadius: '0px', width: '100%' }}
+                            >
+                              <InputGroupAddon addonType='prepend'>
+                                <InputGroupText>
+                                  <i className='fas fa-search' />
+                                </InputGroupText>
+                              </InputGroupAddon>
+                              <Input
+                                placeholder='Search'
+                                type='text'
+                                name='searchCategory'
+                                onChange={this.handleSearchCategory}
+                                style={{ width: '50%' }}
+                              />
+                            </InputGroup>
+                          </FormGroup>
+                          <ul className='list-group list-group-flush'>
+                            {this.state.searchCategories.map(function (item) {
+                              return (
+                                <li
+                                  className={classnames(
+                                    'list-group-item list-group-item-action',
+                                    { active: item.id === self.state.category }
+                                  )}
+                                  onClick={() => self.handleCategorySelect(item.id)}
+                                  action='true'
+                                  key={item.id}
+                                >
+                                  {item.name}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                          {this.state.isShowError && this.state.category === 0 && (
+                            <div className='invalid-category'>
+                              <p>{"Please select category"}</p>
+                            </div>
+                          )}
+                        </Col>
+                        <Col md={3}>
+                          <div>
+                            <h4>Keyword</h4>
+                            <hr />
+                            <FormGroup className='mb-3' style={{ width: '100%' }}>
+                              <InputGroup
+                                className='input-group-alternative input-group-merge'
+                                style={{ borderRadius: '0px', width: '100%' }}
+                              >
+                                <InputGroupAddon addonType='prepend'>
+                                  <InputGroupText>
+                                    <i className='fas fa-search' />
+                                  </InputGroupText>
+                                </InputGroupAddon>
+                                <Input
+                                  placeholder='Search'
+                                  type='text'
+                                  name='searchKeyword'
+                                  onChange={this.handleSearchKeyword}
+                                  style={{ width: '80%' }}
+                                />
+                              </InputGroup>
+                            </FormGroup>
+                            <ul className='list-group list-group-flush'>
+                              {this.state.searchKeywords.map(function (item) {
+                                return (
+                                  <li
+                                    className={classnames(
+                                      'list-group-item list-group-item-action',
+                                      { active: item.id === self.state.keyword }
+                                    )}
+                                    onClick={() =>
+                                      self.handleKeywordSelect(item.id)
+                                    }
+                                    action='true'
+                                    key={item.id}
+                                  >
+                                    {item.tshirts}
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                          {this.state.isShowError && this.state.keyword === 0 && (
+                            <div className='invalid-keyword'>
+                              <p>{"Please select keyword"}</p>
+                            </div>
+                          )}
+                        </Col>
+                      </Row>
+                    </form>
+                  </CardBody>
+                </Card>
+              </LoadingOverlay>
+            </Container>
+          </>
+        }
+        {isProductImage &&
+          <>
+            <MainHeader name='Product Image' parentName='Product' />
+            <Container className='mt--6 product-image-container' fluid>
+              <LoadingOverlay
+                active={isActive}
+                spinner
+                text={'Creating your product. Just a wait. It takes several minutes ...'}
+              >
+                <ProductImage 
+                  key={product.product_title.split(' ').join('_')} 
+                  title={product.product_title} 
+                />
+              </LoadingOverlay>
+            </Container>
+          </>
+        }
       </>
     );
   }

@@ -11,8 +11,8 @@ import {
 import APP_CONST from '../../../../../helper/constant';
 
 const INIT_IMAGE_URL = {
+    light: null,
     dark: null,
-    light: null
 }
 
 function ImageDoubleItem(props) {
@@ -21,58 +21,75 @@ function ImageDoubleItem(props) {
 
     const handlePreview = (event, url) => {
         const name = event.target.getAttribute('name')
-
         if (url) {
-            let artworkFile = props.imageUrl && Object.keys(props.imageUrl).includes(name) ?
+            let artworkFile = props.imageUrl && Object.keys(props.imageUrl).includes(name) && props.imageUrl[name] ?
                 props.imageUrl[name].split('/')[props.imageUrl[name].split('/').length - 1].slice(0, -4) :
-                Object.keys(props.themeUrl).includes(name) ?
+                Object.keys(props.themeUrl).includes(name) && props.themeUrl[name] ?
                     props.themeUrl[name].split('/')[props.themeUrl[name].split('/').length - 1].slice(0, -4) : null;
 
-            url = url.replace("[$artwork]", artworkFile);
-            setPreview(prevState => ({ ...prevState, [name]: url }))
+            url = artworkFile ? url.replace("[$artwork]", artworkFile) : null;
+            setPreview(prevState => ({ ...prevState, [name]: url }));
         }
     }
 
     return (
         <Card>
-            <CardBody className="custom-procut-image-card image-process-panel pb-1">
+            <CardBody className="custom-product-image-card image-process-panel pb-1">
                 <Row>
-                    <Col md={2} className="p-0">
-                        <h4 className="mb-4">{props.source.title}</h4>
-                        <img
-                            className="image-prview mb-4"
-                            src={(props.imageUrl && Object.keys(props.imageUrl).includes('light')) ? props.imageUrl.light : null}
-                        />
-                        <Button
-                            id={`${preFile}-light`}
-                            name="light"
-                            type='button'
-                            color='primary'
-                            className="custom-upload-button"
-                            size="sm"
-                            onClick={(e) => props.onUploadFile(e, props.variant)}
-                        >
-                            {"Upload Light"}
-                        </Button>
-                    </Col>
-                    <Col md={2} className="p-0">
-                        <img
-                            className="image-prview mb-4"
-                            style={{ marginTop: '6.2vh' }}
-                            src={(props.imageUrl && Object.keys(props.imageUrl).includes('dark')) ? props.imageUrl.dark : null}
-                        />
-                        <Button
-                            id={`${preFile}-dark`}
-                            name="dark"
-                            type='button'
-                            color='primary'
-                            className="custom-upload-button"
-                            size="sm"
-                            onClick={(e) => props.onUploadFile(e, props.variant)}
-                        >
-                            {"Upload Dark"}
-                        </Button>
-                    </Col>
+                    {Object.keys(INIT_IMAGE_URL).map(item => (
+                        <Col md={2} className="p-0" key={item}>
+                            <Row style={{ height: '2.5rem' }}>
+                                {item === 'light' &&
+                                    <Col md={12}>
+                                        <h4 className="mb-4">{props.source.title}</h4>
+                                    </Col>
+                                }
+                            </Row>
+                            <Row>
+                                <Col md={12}>
+                                    <img
+                                        className="image-prview mb-2"
+                                        src={
+                                            (props.imageUrl && Object.keys(props.imageUrl).includes(item) && props.imageUrl[item]) ?
+                                                props.imageUrl[item] : null
+                                        }
+                                    />
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md={12}>
+                                    <Button
+                                        id={`${preFile}-${item}`}
+                                        name={item}
+                                        type='button'
+                                        color='primary'
+                                        className="custom-upload-button mb-1"
+                                        size="sm"
+                                        style={{ width: '97%' }}
+                                        onClick={(e) => props.onUploadFile(e, props.variant)}
+                                    >
+                                        {`Upload ${item.charAt(0).toUpperCase() + item.slice(1)}`}
+                                    </Button>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md={12}>
+                                    <Button
+                                        id={`${preFile}-${item}`}
+                                        name={item}
+                                        type='button'
+                                        color='primary'
+                                        className="custom-upload-button"
+                                        size="sm"
+                                        style={{ width: '97%' }}
+                                        onClick={(e) => props.onRemoveFile(e, props.variant)}
+                                    >
+                                        {`Remove ${item.charAt(0).toUpperCase() + item.slice(1)}`}
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </Col>
+                    ))}
                     {Array(props.source.type).fill(null).map((value, index) => (
                         <Col md={4} className="p-0" key={`${props.variant}-${index}`}>
                             <img
@@ -114,7 +131,6 @@ function ImageDoubleItem(props) {
                             ))}
                         </Col>
                     ))}
-                    {/* "https://res.cloudinary.com/umbrellaink/image/upload/o_0/w_370,h_421,x_1,y_280,c_fit,g_north,l_artwork:artwork-dark/e_displace,x_15,y_15,l_adult-tees:TMP-DIS1-GSet1/u_adult-tees:TMP-GSet1-BK,y_0/adult-tees/TMP-GSet1-BK" */}
                 </Row>
             </CardBody>
         </Card>

@@ -1,47 +1,52 @@
-.product-image-container .custom-procut-image-card {
+.product-image-container .custom-product-image-card {
   background-color: #e6e6e6;
   border-radius: 6px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 2px 10px 0 rgba(0, 0, 0, 0.19);
   text-align: center;
 }
-.product-image-container .custom-procut-image-card .image-prview {
+.product-image-container .custom-product-image-card .image-prview {
   margin: auto;
   width: 80%;
+  min-width: 80%;
   min-height: 12vh;
   border: 1px solid #595959;
   background-color: #f8f9fe;
 }
-.product-image-container .custom-procut-image-card .custom-upload-button {
+.product-image-container .custom-product-image-card .custom-upload-button {
   border-radius: 6px;
 }
-.product-image-container .custom-procut-image-card .image-process {
+.product-image-container .custom-product-image-card .image-process {
   margin: auto;
   width: 12vw;
-  min-height: 25vh;
+  min-width: 90%;
+  min-height: 28vh;
   border: 1px solid #595959;
   background-color: #f8f9fe;
 }
-.product-image-container .custom-procut-image-card .image-upload {
+.product-image-container .custom-product-image-card .image-upload {
   margin: auto;
   width: auto;
   height: 10vh;
   background-color: #f8f9fe;
 }
-.product-image-container .custom-procut-image-card .custom-color-picker {
+.product-image-container .custom-product-image-card .custom-color-picker {
   display: flex;
 }
-.product-image-container .custom-procut-image-card .custom-color-picker .custom-color-picker-item-one {
+.product-image-container .custom-product-image-card .custom-color-picker .custom-color-picker-item-one {
   width: 12px;
   height: 12px;
   border: 1px solid #595959;
   border-radius: 50%;
 }
-.product-image-container .custom-procut-image-card .custom-color-picker .custom-color-picker-item-two {
+.product-image-container .custom-product-image-card .custom-color-picker .custom-color-picker-item-two {
   width: 20px;
   height: 20px;
   border: 1px solid #595959;
   border-radius: 50%;
 }
-.product-image-container .custom-procut-image-card .custom-color-picker-title {
+.product-image-container .custom-product-image-card .custom-color-picker-title {
   display: inline-block;
+}
+.product-image-container .button-group-panel {
+  padding: 1rem;
 }

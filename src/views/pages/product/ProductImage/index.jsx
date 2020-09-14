@@ -16,7 +16,7 @@ import ImageSingleItem from './ImageSingleItem';
 import http from "../../../../helper/http";
 import APP_CONST from "../../../../helper/constant";
 
-function ProductImage() {
+function ProductImage(props) {
     const [source, setSource] = useState({});
     const [themeUrl, setThemeUrl] = useState({});
     const [imageUrl, setImageUrl] = useState({});
@@ -66,6 +66,21 @@ function ProductImage() {
         });
     }
 
+    const handleRemoveFile = (event, variant) => {
+        const { name } = event.target;
+
+        setImageUrl(prevState => ({
+            ...prevState, [variant]: {
+                ...prevState[variant],
+                [name]: null
+            }
+        }));
+    }
+
+    const handleSubmit = () => {
+
+    }
+
     return (
         <>
             <MainHeader name='Product Image' parentName='Product' />
@@ -80,9 +95,9 @@ function ProductImage() {
                             </Col>
                         </Row>
                         <Row>
-                            <Col md={5}>
+                            <Col md={6}>
                                 <Card>
-                                    <CardBody className="custom-procut-image-card">
+                                    <CardBody className="custom-product-image-card button-group-panel">
                                         <Button
                                             type='button'
                                             color='primary'
@@ -107,6 +122,13 @@ function ProductImage() {
                                         >
                                             {"For Dark"}
                                         </Button>
+                                        <Button
+                                            type='button'
+                                            color='warning'
+                                            onClick={handleSubmit}
+                                        >
+                                            {"Create"}
+                                        </Button>
                                     </CardBody>
                                 </Card>
                             </Col>
@@ -126,6 +148,7 @@ function ProductImage() {
                                                         imageUrl[item] : null
                                                 }
                                                 onUploadFile={handleUploadFile}
+                                                onRemoveFile={handleRemoveFile}
                                             />
                                         </Col>
                                     }
@@ -139,6 +162,8 @@ function ProductImage() {
                         </Row>
                     </CardBody>
                 </Card>
+
+
             </Container>
         </>
     );
