@@ -4,6 +4,7 @@ import {
   LIST_PRODUCT_IMAGESET,
   UPDATE_PRODUCT_IMAGESET,
   CREATE_PRODUCT,
+  CREATE_PRODUCT_IMAGES,
   DELETE_PRODUCT,
   CLEAN_PRODUCT,
 } from '../actions/types';
@@ -14,6 +15,7 @@ const initialState = {
   stickerType_list: [],
   artist_list: [],
   imageSets: [],
+  payload: {},
   message: '',
   errors: '',
 };
@@ -31,6 +33,8 @@ export default function (state = initialState, action) {
     case UPDATE_PRODUCT_IMAGESET:
       return { ...state, imageSets: action.imageSets, message: action.message };
     case CREATE_PRODUCT:
+      return { ...state, payload: action.payload, message: action.message, errors: action.errors };
+    case CREATE_PRODUCT_IMAGES:
       return { ...state, message: action.message, errors: action.errors };
     case DELETE_PRODUCT:
       return { ...state, message: action.message };

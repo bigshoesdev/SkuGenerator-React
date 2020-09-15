@@ -2,7 +2,6 @@ import React from 'react';
 import ReeValidate from 'ree-validate';
 import classnames from 'classnames';
 import { connect } from 'react-redux';
-import NotificationAlert from 'react-notification-alert';
 import LoadingOverlay from 'react-loading-overlay';
 import http from '../../../helper/http';
 import {
@@ -138,25 +137,6 @@ class ProductCreate extends React.Component {
     this.props.allCategories();
     this.props.allKeywords();
   }
-
-  showNotification = (message) => {
-    let options = {
-      place: 'tr',
-      message: (
-        <div className='alert-text'>
-          <span
-            className='alert-title'
-            data-notify='title'
-            dangerouslySetInnerHTML={{ __html: message }}
-          ></span>
-        </div>
-      ),
-      type: 'success',
-      icon: 'ni ni-bell-55',
-      autoDismiss: 7,
-    };
-    // this.refs.notificationAlert.notificationAlert(options);
-  };
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.categories) {
@@ -294,14 +274,11 @@ class ProductCreate extends React.Component {
     if (nextProps.setting) {
       this.setState({ setting: nextProps.setting });
     }
-
     if (nextProps.message) {
       this.setState({ isActive: false, isButtonActive: false });
-      this.showNotification(nextProps.message);
     }
     if (nextProps.responseErrors) {
       this.setState({ isActive: false, isButtonActive: false });
-      this.showNotification(nextProps.responseErrors);
     }
   }
 
@@ -640,7 +617,7 @@ class ProductCreate extends React.Component {
       isProductImage,
     } = this.state;
     const self = this;
-    console.log(isProductImage)
+
     return (
       <>
         {!isProductImage &&
@@ -658,9 +635,6 @@ class ProductCreate extends React.Component {
               >
                 <Card style={{ minHeight: '700px' }}>
                   <CardBody>
-                    {/* <div className='rna-wrapper'>
-                    <NotificationAlert ref='notificationAlert' />
-                  </div> */}
                     <Form
                       role='form'
                       method='POST'
@@ -1431,9 +1405,11 @@ class ProductCreate extends React.Component {
                 spinner
                 text={'Creating your product. Just a wait. It takes several minutes ...'}
               >
-                <ProductImage 
-                  key={product.product_title.split(' ').join('_')} 
-                  title={product.product_title} 
+                <ProductImage
+                  key={product.product_title.split(' ').join('_')}
+                  // title="BattleShipAAA"
+                  isActive={isActive}
+                  onSubmit={(value) => this.setState({ isActive: value })}
                 />
               </LoadingOverlay>
             </Container>

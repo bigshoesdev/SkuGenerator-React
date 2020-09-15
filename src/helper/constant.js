@@ -5,6 +5,7 @@ const APP_CONST = {
   BASE_URL: "http://127.0.0.1:5000",
 
   /** Cloudinary Constants */
+  CLOUD_NAME: 'umbrellaink',
   UPLOAD_PRESET: 'v2wd9hdn',
   COLOR_LIST: {
     BK: '#000', WH: '#fff', RD: '#FF0000',

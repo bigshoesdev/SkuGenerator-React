@@ -12,6 +12,7 @@ exports.stickertypeList = stickertypeList;
 exports.printmodeList = printmodeList;
 exports.productImageSetList = productImageSetList;
 exports.updateProductImageSets = updateProductImageSets;
+exports.createProductImages = createProductImages;
 
 var _types = require("./types");
 
@@ -33,7 +34,7 @@ function createProduct(obj) {
       _http["default"].post("".concat(_constant["default"].API_URL, "/product/create"), obj).then(function (res) {
         dispatch({
           type: _types.CREATE_PRODUCT,
-          payload: res.data.data,
+          payload: res.data.data.product,
           message: "The Product is created successfully!"
         });
         return resolve();
@@ -276,6 +277,37 @@ function updateProductImageSets(obj) {
           errors: "There is a server connection Error, Try Later."
         });
       }
+    });
+  };
+}
+
+function createProductImages(obj) {
+  return function (dispatch) {
+    return new Promise(function (resolve, reject) {
+      dispatch({
+        type: _types.CLEAN_PRODUCT
+      });
+
+      _http["default"].post("".concat(_constant["default"].API_URL, "/product/image/create"), obj).then(function (res) {
+        dispatch({
+          type: _types.CREATE_PRODUCT_IMAGES,
+          message: "The Product Images are created successfully!"
+        });
+        return resolve();
+      })["catch"](function (err) {
+        if (err.response) {
+          var errors = err.response.data.errors;
+          dispatch({
+            type: _types.CREATE_PRODUCT_IMAGES,
+            errors: (0, _util.errorHandler)(errors)
+          });
+        } else {
+          dispatch({
+            type: _types.CREATE_PRODUCT_IMAGES,
+            errors: "There is a server connection Error, Try Later."
+          });
+        }
+      });
     });
   };
 }

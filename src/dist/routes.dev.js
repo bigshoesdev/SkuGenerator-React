@@ -17,8 +17,6 @@ var _ProductDetail = _interopRequireDefault(require("views/pages/product/Product
 
 var _ProductImageSet = _interopRequireDefault(require("views/pages/product/ProductImageSet.jsx"));
 
-var _ProductImage = _interopRequireDefault(require("views/pages/product/ProductImage"));
-
 var _KeywordList = _interopRequireDefault(require("views/pages/keyword/KeywordList.jsx"));
 
 var _CategoryList = _interopRequireDefault(require("views/pages/category/CategoryList.jsx"));
@@ -83,11 +81,6 @@ var routes = [{
     path: "/product-create",
     name: "Product Create",
     component: _ProductCreate["default"],
-    layout: "/main"
-  }, {
-    path: "/product-image",
-    name: "Product Image",
-    component: _ProductImage["default"],
     layout: "/main"
   }, {
     path: "/product-imageset",

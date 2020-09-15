@@ -19,6 +19,7 @@ var initialState = {
   stickerType_list: [],
   artist_list: [],
   imageSets: [],
+  payload: {},
   message: '',
   errors: ''
 };
@@ -56,6 +57,13 @@ function _default() {
       });
 
     case _types.CREATE_PRODUCT:
+      return _objectSpread({}, state, {
+        payload: action.payload,
+        message: action.message,
+        errors: action.errors
+      });
+
+    case _types.CREATE_PRODUCT_IMAGES:
       return _objectSpread({}, state, {
         message: action.message,
         errors: action.errors

@@ -1,6 +1,7 @@
 
 import {
   CREATE_PRODUCT,
+  CREATE_PRODUCT_IMAGES,
   DELETE_PRODUCT,
   LIST_ALL_PRODUCT_INFO,
   PRODUCT_DETAIL,
@@ -24,7 +25,7 @@ export function createProduct(obj) {
         .then((res) => {
           dispatch({
             type: CREATE_PRODUCT,
-            payload: res.data.data,
+            payload: res.data.data.product,
             message: "The Product is created successfully!"
           });
           return resolve();
@@ -246,4 +247,34 @@ export function updateProductImageSets(obj) {
         }
       });
   };
+}
+
+export function createProductImages(obj) {
+  return dispatch => (
+    new Promise((resolve, reject) => {
+      dispatch({ type: CLEAN_PRODUCT });
+      http.post(`${APP_CONST.API_URL}/product/image/create`, obj)
+        .then((res) => {
+          dispatch({
+            type: CREATE_PRODUCT_IMAGES,
+            message: "The Product Images are created successfully!"
+          });
+          return resolve();
+        })
+        .catch(err => {
+          if (err.response) {
+            let { errors } = err.response.data;
+            dispatch({
+              type: CREATE_PRODUCT_IMAGES,
+              errors: errorHandler(errors)
+            });
+          } else {
+            dispatch({
+              type: CREATE_PRODUCT_IMAGES,
+              errors: "There is a server connection Error, Try Later."
+            });
+          }
+        });
+    })
+  );
 }
