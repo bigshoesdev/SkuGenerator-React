@@ -6,9 +6,10 @@
 }
 .product-image-container .custom-product-image-card .image-prview {
   margin: auto;
-  width: 80%;
-  min-width: 80%;
-  min-height: 12vh;
+  width: 5vw;
+  height: 5.2vw;
+  min-width: 5vw;
+  min-height: 5.2vw;
   border: 1px solid #595959;
   background-color: #f8f9fe;
 }
@@ -19,7 +20,7 @@
   margin: auto;
   width: 12vw;
   min-width: 90%;
-  min-height: 28vh;
+  min-height: 12vw;
   border: 1px solid #595959;
   background-color: #f8f9fe;
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
     Card,
@@ -19,8 +19,31 @@ function ImageDoubleItem(props) {
     const [preview, setPreview] = useState(INIT_IMAGE_URL);
     const preFile = `${props.skuNumber}-${props.variant}-artwork`;
 
+    useEffect(() => {
+        if (Object.keys(props.themeUrl).length > 0) {
+            props.source.colorList.map(el => {
+                if (props.source.type === 2 && el.gender === 'M') {
+                    let url = el.url
+                    if (el.key === 'WH') {
+                        if (Object.keys(props.themeUrl).includes('light') && props.themeUrl['light']) {
+                            let artwork = props.themeUrl['light'].split('/')[props.themeUrl['light'].split('/').length - 1].slice(0, -4);
+                            url = url.replace("[$artwork]", artwork);
+                            setPreview(prevState => ({ ...prevState, light: url }));
+                        }
+                    } else if (el.key === 'BK') {
+                        if (Object.keys(props.themeUrl).includes('dark') && props.themeUrl['dark']) {
+                            let artwork = props.themeUrl['dark'].split('/')[props.themeUrl['dark'].split('/').length - 1].slice(0, -4);
+                            url = url.replace("[$artwork]", artwork);
+                            setPreview(prevState => ({ ...prevState, dark: url }));
+                        }
+                    }
+                }
+            });
+        }
+    }, [props.themeUrl])
+
     const handlePreview = (event, url) => {
-        const name = event.target.getAttribute('name')
+        const name = event.target.getAttribute('name');
         if (url) {
             let artworkFile = props.imageUrl && Object.keys(props.imageUrl).includes(name) && props.imageUrl[name] ?
                 props.imageUrl[name].split('/')[props.imageUrl[name].split('/').length - 1].slice(0, -4) :
@@ -65,7 +88,7 @@ function ImageDoubleItem(props) {
                                         color='primary'
                                         className="custom-upload-button mb-1"
                                         size="sm"
-                                        style={{ width: '97%' }}
+                                        style={{ width: '97%', fontSize: '0.65rem' }}
                                         onClick={(e) => props.onUploadFile(e, props.variant)}
                                     >
                                         {`Upload ${item.charAt(0).toUpperCase() + item.slice(1)}`}
@@ -81,7 +104,7 @@ function ImageDoubleItem(props) {
                                         color='primary'
                                         className="custom-upload-button"
                                         size="sm"
-                                        style={{ width: '97%' }}
+                                        style={{ width: '97%', fontSize: '0.65rem' }}
                                         onClick={(e) => props.onRemoveFile(e, props.variant)}
                                     >
                                         {`Remove ${item.charAt(0).toUpperCase() + item.slice(1)}`}
