@@ -2,6 +2,7 @@ import Login from "views/pages/auth/Login.jsx";
 import Register from "views/pages/auth/Register.jsx";
 import ProductList from "views/pages/product/ProductList.jsx";
 import ProductCreate from "views/pages/product/ProductCreate.jsx";
+import ProductUpload from 'views/pages/product/ProductUpload.jsx'
 import ProductDetail from "views/pages/product/ProductDetail.jsx";
 import ProductImageSet from "views/pages/product/ProductImageSet.jsx";
 import KeywordList from "views/pages/keyword/KeywordList.jsx";
@@ -68,6 +69,14 @@ export const routes = [
         path: "/product-detail/:id",
         name: "Product Detail",
         component: ProductDetail,
+        layout: "/main",
+      },
+
+      // TODO: Merge with Product Create Process
+      {
+        path: "/product-upload",
+        name: "Product Upload",
+        component: ProductUpload,
         layout: "/main",
       },
     ],

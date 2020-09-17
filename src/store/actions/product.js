@@ -10,6 +10,7 @@ import {
   LIST_PRINT_MODE,
   LIST_PRODUCT_IMAGESET,
   UPDATE_PRODUCT_IMAGESET,
+  UPLOAD_PRODUCT,
   CLEAN_PRODUCT
 } from './types';
 
@@ -266,6 +267,36 @@ export function createProductImages(obj) {
             let { errors } = err.response.data;
             dispatch({
               type: CREATE_PRODUCT_IMAGES,
+              errors: errorHandler(errors)
+            });
+          } else {
+            dispatch({
+              type: CREATE_PRODUCT_IMAGES,
+              errors: "There is a server connection Error, Try Later."
+            });
+          }
+        });
+    })
+  );
+}
+
+export function uploadProduct(obj) {
+  return dispatch => (
+    new Promise((resolve, reject) => {
+      dispatch({ type: CLEAN_PRODUCT });
+      http.post(`${APP_CONST.API_URL}/product/upload`, obj)
+        .then((res) => {
+          dispatch({
+            type: UPLOAD_PRODUCT,
+            message: `The Product is uploaded successfully! to ${obj.list.join(', ')}`
+          });
+          return resolve();
+        })
+        .catch(err => {
+          if (err.response) {
+            let { errors } = err.response.data;
+            dispatch({
+              type: UPLOAD_PRODUCT,
               errors: errorHandler(errors)
             });
           } else {

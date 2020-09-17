@@ -13,6 +13,8 @@ var _ProductList = _interopRequireDefault(require("views/pages/product/ProductLi
 
 var _ProductCreate = _interopRequireDefault(require("views/pages/product/ProductCreate.jsx"));
 
+var _ProductUpload = _interopRequireDefault(require("views/pages/product/ProductUpload.jsx"));
+
 var _ProductDetail = _interopRequireDefault(require("views/pages/product/ProductDetail.jsx"));
 
 var _ProductImageSet = _interopRequireDefault(require("views/pages/product/ProductImageSet.jsx"));
@@ -91,6 +93,12 @@ var routes = [{
     path: "/product-detail/:id",
     name: "Product Detail",
     component: _ProductDetail["default"],
+    layout: "/main"
+  }, // TODO: Merge with Product Create Process
+  {
+    path: "/product-upload",
+    name: "Product Upload",
+    component: _ProductUpload["default"],
     layout: "/main"
   }]
 }, {

@@ -24,7 +24,6 @@ function ProductImage(props) {
     const [imageUrl, setImageUrl] = useState({});
     const [skuNumber, setSkuNumber] = useState();
     const [isDisabled, setIsDisabled] = useState(true);
-    const [isSubmit, setIsSubmit] = useState(false);
     const alertEl = useRef(null);
     const dispatch = useDispatch();
 
@@ -63,7 +62,7 @@ function ProductImage(props) {
     }, [themeUrl]);
 
     useEffect(() => {
-        if (isSubmit) {
+        if (props.isSubmit) {
             let data = {};
             Object.keys(source).map(item => {
                 source[item].colorList.map(el => {
@@ -78,7 +77,7 @@ function ProductImage(props) {
             });
             dispatch(createProductImages({ id: product.id, data }));
         }
-    }, [isSubmit]);
+    }, [props.isSubmit]);
 
     useEffect(() => {
         if (message !== '') {
@@ -169,7 +168,7 @@ function ProductImage(props) {
             }
         });
         props.onSubmit(true);
-        setIsSubmit(true);
+        props.onCheckIsSubmit();
     }
 
     return (
@@ -181,7 +180,7 @@ function ProductImage(props) {
                 <Row>
                     <Col md={8}>
                         <h4 className='display-4 ml-3 mb-3'>
-                            {"Product Title"}
+                            {"Product Image"}
                         </h4>
                     </Col>
                 </Row>

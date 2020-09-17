@@ -13,6 +13,7 @@ exports.printmodeList = printmodeList;
 exports.productImageSetList = productImageSetList;
 exports.updateProductImageSets = updateProductImageSets;
 exports.createProductImages = createProductImages;
+exports.uploadProduct = uploadProduct;
 
 var _types = require("./types");
 
@@ -299,6 +300,37 @@ function createProductImages(obj) {
           var errors = err.response.data.errors;
           dispatch({
             type: _types.CREATE_PRODUCT_IMAGES,
+            errors: (0, _util.errorHandler)(errors)
+          });
+        } else {
+          dispatch({
+            type: _types.CREATE_PRODUCT_IMAGES,
+            errors: "There is a server connection Error, Try Later."
+          });
+        }
+      });
+    });
+  };
+}
+
+function uploadProduct(obj) {
+  return function (dispatch) {
+    return new Promise(function (resolve, reject) {
+      dispatch({
+        type: _types.CLEAN_PRODUCT
+      });
+
+      _http["default"].post("".concat(_constant["default"].API_URL, "/product/upload"), obj).then(function (res) {
+        dispatch({
+          type: _types.UPLOAD_PRODUCT,
+          message: "The Product is uploaded successfully! to ".concat(obj.list.join(', '))
+        });
+        return resolve();
+      })["catch"](function (err) {
+        if (err.response) {
+          var errors = err.response.data.errors;
+          dispatch({
+            type: _types.UPLOAD_PRODUCT,
             errors: (0, _util.errorHandler)(errors)
           });
         } else {

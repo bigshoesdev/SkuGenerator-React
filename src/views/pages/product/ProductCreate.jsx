@@ -22,6 +22,7 @@ import {
 
 import MainHeader from '../../components/headers/MainHeader';
 import ProductImage from '../product/ProductImage';
+import ProductUpload from '../product/ProductUpload';
 import { allCategories } from '../../../store/actions/category';
 import { allKeywords } from '../../../store/actions/keyword';
 import { createProduct, allProductInfo } from '../../../store/actions/product';
@@ -111,6 +112,7 @@ class ProductCreate extends React.Component {
     responseErrors: '',
 
     isCheckWin: true,
+    isSubmit: false,
     checkResult: {},
     isNext: false,
     isProductImage: false,
@@ -615,6 +617,7 @@ class ProductCreate extends React.Component {
       checkResult,
       product,
       isProductImage,
+      isSubmit,
     } = this.state;
     const self = this;
 
@@ -1396,7 +1399,7 @@ class ProductCreate extends React.Component {
             </Container>
           </>
         }
-        {isProductImage &&
+        {(isProductImage && !isSubmit) &&
           <>
             <MainHeader name='Product Image' parentName='Product' />
             <Container className='mt--6 product-image-container' fluid>
@@ -1406,10 +1409,28 @@ class ProductCreate extends React.Component {
                 text={'Creating your product. Just a wait. It takes several minutes ...'}
               >
                 <ProductImage
-                  key={product.product_title.split(' ').join('_')}
-                  // title="BattleShipAAA"
+                  isSubmit={isSubmit}
                   isActive={isActive}
                   onSubmit={(value) => this.setState({ isActive: value })}
+                  onCheckIsSubmit={() => this.setState({ isSubmit: true })}
+                />
+              </LoadingOverlay>
+            </Container>
+          </>
+        }
+        { isSubmit &&
+          <>
+            <MainHeader name='Product Upload' parentName='Product' />
+            <Container className='mt--6 product-upload-container' fluid>
+              <LoadingOverlay
+                active={isActive}
+                spinner
+                text={'Creating your product. Just a wait. It takes several minutes ...'}
+              >
+                <ProductUpload
+                  isActive={isActive}
+                  onSubmit={(value) => this.setState({ isActive: value })}
+                // onSubmit={(value) => this.setState({ isActive: value, isSubmit: true })}
                 />
               </LoadingOverlay>
             </Container>
