@@ -258,7 +258,7 @@ export function createProductImages(obj) {
         .then((res) => {
           dispatch({
             type: CREATE_PRODUCT_IMAGES,
-            message: "The Product Images are created successfully!"
+            message: "The Product Images are uploaded successfully!"
           });
           return resolve();
         })

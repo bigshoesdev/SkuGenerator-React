@@ -36,15 +36,15 @@ function ProductUpload(props) {
         state => { return state['product']['payload'] },
         shallowEqual
     );
-
+    
     useEffect(() => {
         if (isSubmit) {
             // TODO: Open in completed stage with Amazon, eBay ...
             //
             // let checkedList = Object.keys(checkedItems).filter(item => checkedItems[item]);
-
+            console.log("data:", props.source);
             let checkedList = ['shopify'];
-            dispatch(uploadProduct({ id: product.id, list: checkedList }));
+            dispatch(uploadProduct({ id: product.id, list: checkedList, data: props.source }));
         }
     }, [isSubmit]);
 
@@ -54,11 +54,11 @@ function ProductUpload(props) {
     //     if (message !== '') {
     //         props.onSubmit(false);
     //         showNotification(message);
-    //         history.push('/product-upload');
+    //         history.push('/product-list');
     //     } else if (responseErrors !== '') {
     //         props.onSubmit(false);
     //         showNotification(responseErrors);
-    //         history.push('/product-upload');
+    //         history.push('/product-list');
     //     }
     // }, [message, responseErrors]);
 
@@ -153,7 +153,7 @@ function ProductUpload(props) {
                         <Button
                             color='info'
                             style={{ width: '100%' }}
-                            onClick={() => history.push('/product-upload')}
+                            onClick={() => history.push('/product-list')}
                         >
                             {"Skip"}
                         </Button>

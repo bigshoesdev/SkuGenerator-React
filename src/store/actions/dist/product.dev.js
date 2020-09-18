@@ -292,7 +292,7 @@ function createProductImages(obj) {
       _http["default"].post("".concat(_constant["default"].API_URL, "/product/image/create"), obj).then(function (res) {
         dispatch({
           type: _types.CREATE_PRODUCT_IMAGES,
-          message: "The Product Images are created successfully!"
+          message: "The Product Images are uploaded successfully!"
         });
         return resolve();
       })["catch"](function (err) {

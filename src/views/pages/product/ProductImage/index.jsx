@@ -75,6 +75,8 @@ function ProductImage(props) {
                 })
                 data[item] = source[item].colorList;
             });
+
+            props.onUpload(data);
             dispatch(createProductImages({ id: product.id, data }));
         }
     }, [props.isSubmit]);
@@ -83,6 +85,10 @@ function ProductImage(props) {
         if (message !== '') {
             props.onSubmit(false);
             showNotification(message);
+
+            if (message.includes('Images')) {
+                props.onIsUploadPanel();
+            }
         } else if (responseErrors !== '') {
             props.onSubmit(false);
             showNotification(responseErrors);

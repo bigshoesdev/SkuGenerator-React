@@ -105,11 +105,13 @@ class ProductCreate extends React.Component {
     searchKeywords: [],
     searchCategories: [],
     tempKeywords: [],
+    uploadData: {},
     keyword_value: '',
     category_value: '',
     isActive: false,
     isButtonActive: false,
     responseErrors: '',
+    isUploadpanel: false,
 
     isCheckWin: true,
     isSubmit: false,
@@ -618,6 +620,8 @@ class ProductCreate extends React.Component {
       product,
       isProductImage,
       isSubmit,
+      uploadData,
+      isUploadpanel,
     } = this.state;
     const self = this;
 
@@ -1399,38 +1403,40 @@ class ProductCreate extends React.Component {
             </Container>
           </>
         }
-        {(isProductImage && !isSubmit) &&
+        {(isProductImage && !isUploadpanel) &&
           <>
             <MainHeader name='Product Image' parentName='Product' />
             <Container className='mt--6 product-image-container' fluid>
               <LoadingOverlay
                 active={isActive}
-                spinner
                 text={'Creating your product. Just a wait. It takes several minutes ...'}
+                spinner
               >
                 <ProductImage
                   isSubmit={isSubmit}
                   isActive={isActive}
                   onSubmit={(value) => this.setState({ isActive: value })}
                   onCheckIsSubmit={() => this.setState({ isSubmit: true })}
+                  onIsUploadPanel={() => this.setState({ isUploadpanel: true })}
+                  onUpload={(data) => this.setState({ uploadData: data })}
                 />
               </LoadingOverlay>
             </Container>
           </>
         }
-        { isSubmit &&
+        { isUploadpanel &&
           <>
             <MainHeader name='Product Upload' parentName='Product' />
             <Container className='mt--6 product-upload-container' fluid>
               <LoadingOverlay
                 active={isActive}
-                spinner
                 text={'Creating your product. Just a wait. It takes several minutes ...'}
+                spinner
               >
                 <ProductUpload
                   isActive={isActive}
+                  source={uploadData}
                   onSubmit={(value) => this.setState({ isActive: value })}
-                // onSubmit={(value) => this.setState({ isActive: value, isSubmit: true })}
                 />
               </LoadingOverlay>
             </Container>
