@@ -69,6 +69,12 @@ function _default() {
         errors: action.errors
       });
 
+    case _types.UPLOAD_PRODUCT:
+      return _objectSpread({}, state, {
+        message: action.message,
+        errors: action.errors
+      });
+
     case _types.DELETE_PRODUCT:
       return _objectSpread({}, state, {
         message: action.message

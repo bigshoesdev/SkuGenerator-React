@@ -288,7 +288,7 @@ export function uploadProduct(obj) {
         .then((res) => {
           dispatch({
             type: UPLOAD_PRODUCT,
-            message: `The Product is uploaded successfully! to ${obj.list.join(', ')}`
+            message: `The Product is uploaded to marketplaces successfully!`
           });
           return resolve();
         })

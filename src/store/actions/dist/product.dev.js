@@ -323,7 +323,7 @@ function uploadProduct(obj) {
       _http["default"].post("".concat(_constant["default"].API_URL, "/product/upload"), obj).then(function (res) {
         dispatch({
           type: _types.UPLOAD_PRODUCT,
-          message: "The Product is uploaded successfully! to ".concat(obj.list.join(', '))
+          message: "The Product is uploaded to marketplaces successfully!"
         });
         return resolve();
       })["catch"](function (err) {

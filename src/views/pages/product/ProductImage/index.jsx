@@ -31,7 +31,7 @@ function ProductImage(props) {
         state => { return state['product']['message'] },
         shallowEqual
     );
-
+        
     const responseErrors = useSelector(
         state => { return state['product']['errors'] },
         shallowEqual
@@ -41,7 +41,7 @@ function ProductImage(props) {
         state => { return state['product']['payload'] },
         shallowEqual
     );
-
+    
     useEffect(() => {
         let fetchUrl = `${APP_CONST.API_URL}/product/image/list`;
         http

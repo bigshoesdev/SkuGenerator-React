@@ -36,31 +36,28 @@ function ProductUpload(props) {
         state => { return state['product']['payload'] },
         shallowEqual
     );
-    
+
     useEffect(() => {
         if (isSubmit) {
             // TODO: Open in completed stage with Amazon, eBay ...
             //
             // let checkedList = Object.keys(checkedItems).filter(item => checkedItems[item]);
-            console.log("data:", props.source);
             let checkedList = ['shopify'];
             dispatch(uploadProduct({ id: product.id, list: checkedList, data: props.source }));
         }
     }, [isSubmit]);
 
-    // TODO: Merge with product create process
-    //
-    // useEffect(() => {
-    //     if (message !== '') {
-    //         props.onSubmit(false);
-    //         showNotification(message);
-    //         history.push('/product-list');
-    //     } else if (responseErrors !== '') {
-    //         props.onSubmit(false);
-    //         showNotification(responseErrors);
-    //         history.push('/product-list');
-    //     }
-    // }, [message, responseErrors]);
+    useEffect(() => {
+        if (message !== '') {
+            if (message && message.includes('marketplaces')) {
+                props.onSubmit(false);
+            }
+            showNotification(message);
+        } else if (responseErrors !== '') {
+            props.onSubmit(false);
+            showNotification(responseErrors);
+        }
+    }, [message, responseErrors]);
 
     const showNotification = (message) => {
         let options = {
@@ -89,9 +86,7 @@ function ProductUpload(props) {
 
     const handleSubmit = () => {
         setIsSubmit(true);
-
-        // TODO: Merge with product create process
-        // props.onSubmit(true);
+        props.onSubmit(true);
     }
 
     return (
