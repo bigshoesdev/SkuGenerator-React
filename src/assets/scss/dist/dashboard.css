@@ -23494,7 +23494,6 @@ button:focus, :focus {
   font-size: 0.8rem !important;
 }
 .description-variant-container .div-tbl-description-variant tbody {
-  display: block;
   min-height: 40px;
 }
 .description-variant-container .div-tbl-description-variant tbody td {

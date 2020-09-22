@@ -48,12 +48,13 @@
             font-size: 0.8rem !important;
         }
         tbody {
-            display: block;
             min-height: 40px;
         }
         tbody td {
             height: 40px;
-            width: 100%;
+            width: 20% !important;
+            max-width: 14vw;
+            min-width: 14vw;
         }
 
         tbody tr:nth-of-type(even) {
