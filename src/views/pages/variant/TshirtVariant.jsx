@@ -81,6 +81,7 @@ class TshirtVariant extends React.Component {
         size: "",
         type: "",
         url: "",
+        print_url: "",
       },
       responseErrors: "",
       errors: {},
@@ -162,7 +163,7 @@ class TshirtVariant extends React.Component {
     const tshirt = data.find((obj) => {
       return obj.id === id;
     });
-    
+
     this.setState({
       modalTshirt: { ...tshirt },
       isModal: true,
@@ -445,7 +446,7 @@ class TshirtVariant extends React.Component {
       responseErrors: "",
     });
     const { modalTshirt } = this.state;
-    
+
     this.genderstring = this.state.gender[0]["name"];
     this.colorstring = this.state.colors[0]["name"];
     this.sizestring = this.state.sizes[0]["name"];
@@ -548,6 +549,7 @@ class TshirtVariant extends React.Component {
             size,
             type = "",
             url,
+            print_url,
             master_type = "tshirts",
           } = modalTshirt;
           this.props.createVariant({
@@ -557,6 +559,7 @@ class TshirtVariant extends React.Component {
             type,
             size,
             url,
+            print_url,
             master_type,
           });
         } else {
@@ -567,6 +570,7 @@ class TshirtVariant extends React.Component {
             color,
             size,
             url,
+            print_url,
             type = "",
             master_type = "tshirts",
           } = modalTshirt;
@@ -578,6 +582,7 @@ class TshirtVariant extends React.Component {
             type,
             size,
             url,
+            print_url,
             master_type,
           });
         }
@@ -780,6 +785,17 @@ class TshirtVariant extends React.Component {
                             required
                             type="text"
                             value={modalTshirt.url}
+                            onChange={this.handleChangeSelect}
+                          />
+                        </FormGroup>
+                        <FormGroup>
+                          <label htmlFor="genderFormControlInput">Print URL</label>
+                          <Input
+                            name="print_url"
+                            ref="print_url"
+                            required
+                            type="text"
+                            value={modalTshirt.print_url}
                             onChange={this.handleChangeSelect}
                           />
                         </FormGroup>
