@@ -782,8 +782,7 @@ class TshirtVariant extends React.Component {
                           <Input
                             name="url"
                             ref="url"
-                            required
-                            type="text"
+                              type="text"
                             value={modalTshirt.url}
                             onChange={this.handleChangeSelect}
                           />
@@ -793,7 +792,6 @@ class TshirtVariant extends React.Component {
                           <Input
                             name="print_url"
                             ref="print_url"
-                            required
                             type="text"
                             value={modalTshirt.print_url}
                             onChange={this.handleChangeSelect}

@@ -31,7 +31,7 @@ function ProductImage(props) {
         state => { return state['product']['message'] },
         shallowEqual
     );
-        
+
     const responseErrors = useSelector(
         state => { return state['product']['errors'] },
         shallowEqual
@@ -41,7 +41,7 @@ function ProductImage(props) {
         state => { return state['product']['payload'] },
         shallowEqual
     );
-    
+
     useEffect(() => {
         let fetchUrl = `${APP_CONST.API_URL}/product/image/list`;
         http
@@ -64,20 +64,33 @@ function ProductImage(props) {
     useEffect(() => {
         if (props.isSubmit) {
             let data = {};
+            let printUrls = {};
+
             Object.keys(source).map(item => {
                 source[item].colorList.map(el => {
                     themes.map(theme => {
                         if (theme.charAt(0) === el.theme.toLowerCase()) {
                             let artwork = imageUrl[item][theme].split('/')[imageUrl[item][theme].split('/').length - 1].slice(0, -4);
-                            el.url = (el.url.replace("[$artwork]", artwork));
+                            el.url = el.url.replace("[$artwork]", artwork);
                         }
-                    })
-                })
-                data[item] = source[item].colorList;
-            });
+                    });
+                });
 
+                source[item].printUrls.map(el => {
+                    themes.map(theme => {
+                        if (theme.charAt(0) === el.theme.toLowerCase()) {
+                            let artwork = imageUrl[item][theme].split('/')[imageUrl[item][theme].split('/').length - 1].slice(0, -4);
+                            el.printUrl = el.printUrl.replace("[$artwork]", artwork);
+                        }
+                    });
+                });
+
+                data[item] = source[item].colorList;
+                printUrls[item] = source[item].printUrls;
+            });
+            console.log(printUrls);
             props.onUpload(data);
-            dispatch(createProductImages({ id: product.id, data }));
+            dispatch(createProductImages({ id: product.id, data, printUrls }));
         }
     }, [props.isSubmit]);
 
