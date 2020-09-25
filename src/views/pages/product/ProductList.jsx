@@ -34,7 +34,10 @@ import {
 import MainHeader from '../../components/headers/MainHeader';
 import APP_CONST from '../../../helper/constant';
 import http from '../../../helper/http';
-import { productDelete } from '../../../store/actions/product';
+import { 
+  productDelete,
+  productGenerate
+} from '../../../store/actions/product';
 
 class ProductList extends React.Component {
   constructor(props) {
@@ -89,6 +92,7 @@ class ProductList extends React.Component {
       isDownloadData: [],
       columnsAllCheck: [],
       productListId: '',
+      checkedItems: {},
     };
     this.onSubmitExport = this.onSubmitExport.bind(this);
     this.fetchEntities = this.fetchEntities.bind(this);
@@ -203,14 +207,14 @@ class ProductList extends React.Component {
     if (column === this.state.sorted_column) {
       this.state.order === 'asc'
         ? this.setState(
-            { order: 'desc', current_page: this.state.first_page },
-            () => {
-              this.fetchEntities();
-            }
-          )
-        : this.setState({ order: 'asc' }, () => {
+          { order: 'desc', current_page: this.state.first_page },
+          () => {
             this.fetchEntities();
-          });
+          }
+        )
+        : this.setState({ order: 'asc' }, () => {
+          this.fetchEntities();
+        });
     } else {
       this.setState(
         {
@@ -380,6 +384,27 @@ class ProductList extends React.Component {
     this.props.history.push('/main/product-detail/' + id);
   }
 
+  handleChecked = (event) => {
+    const { id, name } = event.target;
+    var checked = document.getElementById(id).checked;
+    this.setState((prevState) => {
+      return { checkedItems: { ...prevState.checkedItems, [name]: checked } }
+    });
+  }
+  onSubmitGenerator = (event) => {
+    event.preventDefault();
+    let products = [];
+
+    Object.keys(this.state.checkedItems).map(item => {
+      if (this.state.checkedItems[item]) {
+        products.push(item);
+      }
+    });
+    console.log(products);
+    this.props.productGenerate({ products });
+    this.setState({checkedItems: {}});
+  }
+
   dataList() {
     var self = this;
     if (this.state.entities.data.length) {
@@ -388,9 +413,27 @@ class ProductList extends React.Component {
           <tr key={product.id}>
             {Object.keys(product).map((key, i) => {
               if (key === 'id') {
+                let current_number = (self.state.current_page - 1) * 20 + index + 1;
                 return (
-                  <td key={key} className='text-center'>
-                    {index + 1}
+                  <td className="text-center" key={key} style={{ minWidth: '5vw' }}>
+                    <div className="custom-control custom-checkbox">
+                      <Input
+                        id={`class-number-${product.id}`}
+                        name={product.id}
+                        className="custom-control-input"
+                        type="checkbox"
+                        checked={Object.keys(self.state.checkedItems).includes(product.id.toString()) ?
+                          self.state.checkedItems[product.id.toString()] : false
+                        }
+                        onChange={this.handleChecked}
+                      />
+                      <label
+                        className={`custom-control-label ${current_number < 10 ? 'pl-2' : ''}`}
+                        htmlFor={`class-number-${product.id}`}
+                      >
+                        {index + 1}
+                      </label>
+                    </div>
                   </td>
                 );
               } else if (key.includes('name')) {
@@ -405,12 +448,12 @@ class ProductList extends React.Component {
                       __html:
                         product['isdownload_' + key.substring(5)] === 1
                           ? '<a target="__blank" href="' +
-                            APP_CONST.BASE_URL +
-                            '/export-file?data=%5B%22' +
-                            downloadLink +
-                            '%22%5D' +
-                            '"><img src="https://img.icons8.com/ultraviolet/40/000000/export-csv.png" style="width: 22px;height: 22px;"></a>   ' +
-                            product[key]
+                          APP_CONST.BASE_URL +
+                          '/export-file?data=%5B%22' +
+                          downloadLink +
+                          '%22%5D' +
+                          '"><img src="https://img.icons8.com/ultraviolet/40/000000/export-csv.png" style="width: 22px;height: 22px;"></a>   ' +
+                          product[key]
                           : product[key],
                     }}
                   ></td>
@@ -463,7 +506,7 @@ class ProductList extends React.Component {
                 );
               } else if (
                 key.includes('updated_at') ||
-                key.includes('isupload') 
+                key.includes('isupload')
               ) {
                 return null;
               } else {
@@ -673,6 +716,13 @@ class ProductList extends React.Component {
                     <Button className='btn-productList' color='primary'>
                       Export CSV
                     </Button>
+                    <Button 
+                      className='btn-productList' 
+                      color='primary'
+                      onClick={this.onSubmitGenerator}
+                    >
+                      {`Generator`}
+                    </Button>
                   </form>
                 </Col>
                 <Col>
@@ -768,4 +818,5 @@ const mapStateToProps = ({ product }) => ({
 });
 export default connect(mapStateToProps, {
   productDelete,
+  productGenerate
 })(withRouter(ProductList));

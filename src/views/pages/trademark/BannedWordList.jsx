@@ -68,7 +68,7 @@ class BannedWordList extends React.Component {
       isDeleteModal: false,
     };
     this.validator = new ReeValidate({
-      name: "required|min:2",
+      name: "required|min:1",
     });
   }
   componentDidMount() {

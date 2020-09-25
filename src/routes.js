@@ -71,14 +71,6 @@ export const routes = [
         component: ProductDetail,
         layout: "/main",
       },
-
-      // TODO: Merge with Product Create Process
-      {
-        path: "/product-upload",
-        name: "Product Upload",
-        component: ProductUpload,
-        layout: "/main",
-      },
     ],
   },
   {

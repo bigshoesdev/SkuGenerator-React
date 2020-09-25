@@ -7,6 +7,7 @@ exports.createProduct = createProduct;
 exports.productDetail = productDetail;
 exports.allProductInfo = allProductInfo;
 exports.productDelete = productDelete;
+exports.productGenerate = productGenerate;
 exports.artistList = artistList;
 exports.stickertypeList = stickertypeList;
 exports.printmodeList = printmodeList;
@@ -134,6 +135,34 @@ function productDelete(obj) {
       } else {
         dispatch({
           type: _types.DELETE_PRODUCT,
+          errors: "There is a server connection Error, Try Later."
+        });
+      }
+    });
+  };
+}
+
+function productGenerate(obj) {
+  return function (dispatch) {
+    dispatch({
+      type: _types.CLEAN_PRODUCT
+    });
+
+    _http["default"].post("".concat(_constant["default"].API_URL, "/product/generate"), obj).then(function (response) {
+      dispatch({
+        type: _types.GENERATE_PRODUCT,
+        message: "The Images and Print Files of the product are generated successfully!"
+      });
+    })["catch"](function (err) {
+      if (err.response) {
+        var errors = err.response.data.errors;
+        dispatch({
+          type: _types.GENERATE_PRODUCT,
+          errors: (0, _util.errorHandler)(errors)
+        });
+      } else {
+        dispatch({
+          type: _types.GENERATE_PRODUCT,
           errors: "There is a server connection Error, Try Later."
         });
       }

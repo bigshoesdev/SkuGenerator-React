@@ -88,9 +88,8 @@ function ProductImage(props) {
                 data[item] = source[item].colorList;
                 printUrls[item] = source[item].printUrls;
             });
-            console.log(printUrls);
             props.onUpload(data);
-            dispatch(createProductImages({ id: product.id, data, printUrls }));
+            dispatch(createProductImages({ id: product.id, data, printUrls, themeUrl }));
         }
     }, [props.isSubmit]);
 

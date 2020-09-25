@@ -94,12 +94,6 @@ var routes = [{
     name: "Product Detail",
     component: _ProductDetail["default"],
     layout: "/main"
-  }, // TODO: Merge with Product Create Process
-  {
-    path: "/product-upload",
-    name: "Product Upload",
-    component: _ProductUpload["default"],
-    layout: "/main"
   }]
 }, {
   collapse: true,
