@@ -132,6 +132,21 @@ function ProductUpload(props) {
                             />
                         </Card>
                     </Col>
+                    <Col md={3}>
+                        <Card
+                            id="etsy"
+                            className={
+                                `upload-platform-card p-3 
+                                        ${Object.keys(checkedItems).includes('etsy') && checkedItems['etsy'] ? 'checked' : ''}`
+                            }
+                            onClick={handleChecked}
+                        >
+                            <CardImg
+                                src={require(`assets/img/brand/etsy.png`)}
+                                className="upload-card-image"
+                            />
+                        </Card>
+                    </Col>
                 </Row>
                 <Row>
                     <Col md={2}>
