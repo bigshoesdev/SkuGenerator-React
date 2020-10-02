@@ -23,11 +23,11 @@ import {
 const columns = [
     { id: 'description', name: 'Description' },
     { id: 'shopify_description', name: 'Shopify' },
-    { id: 'etsy_description', name: 'eBay' },
+    { id: 'etsy_description', name: 'Etsy' },
     { id: 'ebay_description', name: 'eBay' },
     { id: 'amazon_description', name: 'Amazon' },
     { id: 'shopify_seo', name: 'Shopify SEO' },
-    { id: 'etsy_seo', name: 'eBay SEO' },
+    { id: 'etsy_seo', name: 'Etsy SEO' },
     { id: 'ebay_seo', name: 'eBay SEO' },
     { id: 'amazon_seo', name: 'Amazon SEO' },
 ];

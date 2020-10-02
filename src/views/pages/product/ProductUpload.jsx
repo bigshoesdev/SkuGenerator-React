@@ -39,9 +39,7 @@ function ProductUpload(props) {
 
     useEffect(() => {
         if (isSubmit) {
-            // TODO: Open in completed stage with Amazon, eBay ...
-            // let checkedList = Object.keys(checkedItems).filter(item => checkedItems[item]);
-            let checkedList = ['shopify'];
+            let checkedList = Object.keys(checkedItems).filter(item => checkedItems[item]);
             dispatch(uploadProduct({ id: product.id, list: checkedList, data: props.source }));
         }
     }, [isSubmit]);
