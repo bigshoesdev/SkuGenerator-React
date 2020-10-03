@@ -2,6 +2,7 @@ import {
   CLEAN_SETTING,
   UPDATE_SETTING,
   GET_SETTING,
+  UPDATE_ETSY_SETTING,
   SETTING_ERROR
 } from "./types";
   
@@ -58,4 +59,29 @@ export function getSetting(){
         }
       });
   }
+}
+
+export function updateEtsySetting(obj) {
+  return function (dispatch) {
+    dispatch({ type: CLEAN_SETTING });
+    http
+      .post(`${APP_CONST.API_URL}/setting/etsy/update`, obj)
+      .then(() => {
+        dispatch({
+          type: UPDATE_ETSY_SETTING,
+          message: "The Etsy Setting is updated successfully!",
+        });
+      })
+      .catch(err => {
+        if (err.response) {
+          let { errors } = err.response.data;
+          dispatch({ type: SETTING_ERROR, errors: errorHandler(errors) });
+        } else {
+          dispatch({
+            type: SETTING_ERROR,
+            errors: "There is a server connection Error, Try Later."
+          });
+        }
+      });
+  };
 }

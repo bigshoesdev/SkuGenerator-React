@@ -25,7 +25,9 @@ var _CategoryList = _interopRequireDefault(require("views/pages/category/Categor
 
 var _ArtistList = _interopRequireDefault(require("views/pages/artist/ArtistList.jsx"));
 
-var _Setting = _interopRequireDefault(require("views/pages/setting/Setting.jsx"));
+var _setting = _interopRequireDefault(require("views/pages/setting/setting"));
+
+var _etsy = _interopRequireDefault(require("views/pages/setting/etsy"));
 
 var _TshirtVariant = _interopRequireDefault(require("views/pages/variant/TshirtVariant.jsx"));
 
@@ -197,10 +199,20 @@ var routes = [{
   component: _Performance["default"],
   layout: "/main"
 }, {
-  path: "/setting",
+  collapse: true,
   name: "Setting",
   icon: "ni ni-settings text-green",
-  component: _Setting["default"],
-  layout: "/main"
+  state: "settingCollapse",
+  views: [{
+    path: "/setting",
+    name: "General Setting",
+    component: _setting["default"],
+    layout: "/main"
+  }, {
+    path: "/etsy-setting",
+    name: "Etsy Setting",
+    component: _etsy["default"],
+    layout: "/main"
+  }]
 }];
 exports.routes = routes;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import NotificationAlert from 'react-notification-alert';
-import { updateSetting, getSetting } from '../../../store/actions/setting';
+import { updateSetting, getSetting } from '../../../../store/actions/setting';
 
 import {
   Card,
@@ -16,9 +16,9 @@ import {
   Form,
 } from 'reactstrap';
 
-import MainHeader from '../../components/headers/MainHeader';
-import http from '../../../helper/http';
-import APP_CONST from '../../../helper/constant';
+import MainHeader from '../../../components/headers/MainHeader';
+import http from '../../../../helper/http';
+import APP_CONST from '../../../../helper/constant';
 
 class Setting extends React.Component {
   state = {

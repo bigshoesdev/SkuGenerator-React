@@ -1,8 +1,8 @@
 const APP_CONST = {
-  API_URL: "http://127.0.0.1:5000/api",
-  // API_URL: 'http://zed.umbrellaink.com.au/api',
-  // BASE_URL: 'http://zed.umbrellaink.com.au',
-  BASE_URL: "http://127.0.0.1:5000",
+  // API_URL: "http://127.0.0.1:5000/api",
+  API_URL: 'http://zed.umbrellaink.com.au/api',
+  BASE_URL: 'http://zed.umbrellaink.com.au',
+  // BASE_URL: "http://127.0.0.1:5000",
 
   /** Cloudinary Constants */
   CLOUD_NAME: 'umbrellaink',
@@ -18,7 +18,7 @@ const APP_CONST = {
     { key: 'M', name: 'Mens' },
     { key: 'F', name: 'Womens' }
   ],
-  THEME: ['L', 'D']
+  THEME: ['L', 'D'],
 };
 
 export default APP_CONST;

@@ -8,7 +8,8 @@ import ProductImageSet from "views/pages/product/ProductImageSet.jsx";
 import KeywordList from "views/pages/keyword/KeywordList.jsx";
 import CategoryList from "views/pages/category/CategoryList.jsx";
 import ArtistList from "views/pages/artist/ArtistList.jsx";
-import Setting from "views/pages/setting/Setting.jsx";
+import Setting from "views/pages/setting/setting";
+import EtsySetting from "views/pages/setting/etsy";
 import TshirtVariant from "views/pages/variant/TshirtVariant.jsx";
 import MugsVariant from "views/pages/variant/MugsVariant.jsx";
 import ToteBagsVariant from "views/pages/variant/ToteBagsVariant.jsx";
@@ -195,11 +196,25 @@ export const routes = [
     component: Performance,
     layout: "/main",
   },
+
   {
-    path: "/setting",
+    collapse: true,
     name: "Setting",
     icon: "ni ni-settings text-green",
-    component: Setting,
-    layout: "/main",
+    state: "settingCollapse",
+    views: [
+      {
+        path: "/setting",
+        name: "General Setting",
+        component: Setting,
+        layout: "/main",
+      },
+      {
+        path: "/etsy-setting",
+        name: "Etsy Setting",
+        component: EtsySetting,
+        layout: "/main",
+      },
+    ],
   },
 ];

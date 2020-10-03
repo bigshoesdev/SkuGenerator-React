@@ -89,7 +89,7 @@ function ProductImage(props) {
                 printUrls[item] = source[item].printUrls;
             });
             props.onUpload(data);
-            dispatch(createProductImages({ id: product.id, data, printUrls, themeUrl }));
+            dispatch(createProductImages({ id: product.id, data, printUrls, imageUrl }));
         }
     }, [props.isSubmit]);
 
