@@ -106,6 +106,7 @@ class ProductCreate extends React.Component {
     searchCategories: [],
     tempKeywords: [],
     uploadData: {},
+    artworks: {},
     keyword_value: '',
     category_value: '',
     isActive: false,
@@ -621,6 +622,7 @@ class ProductCreate extends React.Component {
       isProductImage,
       isSubmit,
       uploadData,
+      artworks,
       isUploadpanel,
     } = this.state;
     const self = this;
@@ -1418,7 +1420,7 @@ class ProductCreate extends React.Component {
                   onSubmit={(value) => this.setState({ isActive: value })}
                   onCheckIsSubmit={() => this.setState({ isSubmit: true })}
                   onIsUploadPanel={() => this.setState({ isUploadpanel: true })}
-                  onUpload={(data) => this.setState({ uploadData: data })}
+                  onUpload={(data, imageUrl) => this.setState({ uploadData: data, artworks: imageUrl })}
                 />
               </LoadingOverlay>
             </Container>
@@ -1436,6 +1438,7 @@ class ProductCreate extends React.Component {
                 <ProductUpload
                   isActive={isActive}
                   source={uploadData}
+                  artworks={artworks}
                   onSubmit={(value) => this.setState({ isActive: value })}
                 />
               </LoadingOverlay>
