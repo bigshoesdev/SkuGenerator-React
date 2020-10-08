@@ -419,7 +419,6 @@ class BannedWordList extends React.Component {
           });
         } else {
           const { id, name, type } = modalWord;
-          console.log(type);
           this.props.updateWord({
             id,
             name,
