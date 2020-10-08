@@ -400,7 +400,6 @@ class ProductList extends React.Component {
         products.push(item);
       }
     });
-    console.log(products);
     this.props.productGenerate({ products });
     this.setState({checkedItems: {}});
   }

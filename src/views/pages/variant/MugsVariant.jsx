@@ -326,9 +326,7 @@ class MugVariant extends React.Component {
                     );
                 });
               } else if (key === "type") {
-                // console.log(this.state.types);
                 return this.state.types.map((item) => {
-                  // console.log(item.key);
                   if (data[key] === item.key) {
                     return (
                       <td className="text-center" key={key}>
