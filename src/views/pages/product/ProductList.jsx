@@ -121,9 +121,6 @@ class ProductList extends React.Component {
         }
       );
     }
-    if (nextProps.responseErrors) {
-      console.log('Error');
-    }
   }
 
   changePage(pageNumber) {
