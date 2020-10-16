@@ -13,15 +13,13 @@ var _ProductList = _interopRequireDefault(require("views/pages/product/ProductLi
 
 var _ProductCreate = _interopRequireDefault(require("views/pages/product/ProductCreate.jsx"));
 
-var _ProductUpload = _interopRequireDefault(require("views/pages/product/ProductUpload.jsx"));
-
 var _ProductDetail = _interopRequireDefault(require("views/pages/product/ProductDetail.jsx"));
 
 var _ProductImageSet = _interopRequireDefault(require("views/pages/product/ProductImageSet.jsx"));
 
 var _KeywordList = _interopRequireDefault(require("views/pages/keyword/KeywordList.jsx"));
 
-var _CategoryList = _interopRequireDefault(require("views/pages/category/CategoryList.jsx"));
+var _category = _interopRequireDefault(require("views/pages/category"));
 
 var _ArtistList = _interopRequireDefault(require("views/pages/artist/ArtistList.jsx"));
 
@@ -59,6 +57,7 @@ var _Performance = _interopRequireDefault(require("./views/pages/performance/Per
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
+// import CategoryList from "views/pages/category/CategoryList.jsx";
 var authRoutes = [{
   path: "/login",
   name: "Login",
@@ -190,7 +189,7 @@ var routes = [{
   path: "/category",
   name: "Category",
   icon: "ni ni-map-big text-green",
-  component: _CategoryList["default"],
+  component: _category["default"],
   layout: "/main"
 }, {
   path: "/performance",

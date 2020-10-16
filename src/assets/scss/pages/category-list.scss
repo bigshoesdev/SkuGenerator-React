@@ -4,7 +4,10 @@
     .card .table th {
         overflow: hidden;
         text-overflow: ellipsis;
-        white-space: nowrap;
+    }
+
+    .table {
+        width: 300%;
     }
 
     .btn-createcategory {
@@ -38,11 +41,6 @@
         border-color: #f7eded;
     }
 
-    .td-action {
-        text-align: center !important;
-        margin-right: 0em;
-    }
-
     .btn:not(:last-child) {
         margin-right: 0em;
     }
@@ -52,6 +50,7 @@
         padding: 0.5rem;
         padding-left: 1rem;
         padding-right: 1rem;
+        white-space: normal;
     }
 
     .card .table th {
@@ -60,13 +59,14 @@
     }
 
     .card .table td {
-        padding-top: 0.2rem;
-        padding-bottom: 0.2rem;
+        padding-top: 0.6rem;
+        padding-bottom: 0.6rem;
     }
 
     .div-tbl-categorylist {
         margin-left: 20px;
         margin-right: 20px;
+        position: relative;
 
         th {
             background-color: $table-active-bg;
@@ -75,6 +75,12 @@
 
         tbody tr:nth-of-type(even) {
             background-color: $table-accent-bg;
+        }
+
+        .frozen {
+            width: 7%;
+            position: absolute;
+            background-color: #fff;
         }
     }
 
@@ -86,7 +92,12 @@
         padding-top: 0.7rem;
         padding-bottom: 0.7rem;
     }
-    .btn-tbl-categorylist-delete {
-        margin-left: 30px;
+
+    .td-action {
+        text-align: center !important;
+        margin-right: 0em;
+        position: absolute;
+        right: 0;
+        background-color: #fff;
     }
 }

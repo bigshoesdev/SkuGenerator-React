@@ -2,11 +2,11 @@ import Login from "views/pages/auth/Login.jsx";
 import Register from "views/pages/auth/Register.jsx";
 import ProductList from "views/pages/product/ProductList.jsx";
 import ProductCreate from "views/pages/product/ProductCreate.jsx";
-import ProductUpload from 'views/pages/product/ProductUpload.jsx'
 import ProductDetail from "views/pages/product/ProductDetail.jsx";
 import ProductImageSet from "views/pages/product/ProductImageSet.jsx";
 import KeywordList from "views/pages/keyword/KeywordList.jsx";
-import CategoryList from "views/pages/category/CategoryList.jsx";
+import CategoryList from "views/pages/category";
+// import CategoryList from "views/pages/category/CategoryList.jsx";
 import ArtistList from "views/pages/artist/ArtistList.jsx";
 import Setting from "views/pages/setting/setting";
 import EtsySetting from "views/pages/setting/etsy";
