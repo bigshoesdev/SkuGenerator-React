@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import NotificationAlert from 'react-notification-alert';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
     Card,
@@ -8,15 +9,21 @@ import {
     Row,
     Col,
     Button,
+    Container
 } from 'reactstrap';
 
-import ImageDoubleItem from './ImageDoubleItem';
-import ImageSingleItem from './ImageSingleItem';
+import ImageThemeDoubleItem from './ImageThemeDoubleItem';
+import ImageThemeSingleItem from './ImageThemeSingleItem';
+import ImageSideDoubleItem from './ImageSideDoubleItem';
 import http from "../../../../helper/http";
 import APP_CONST from "../../../../helper/constant";
+import { baseName } from '../../../../helper/util';
 import { createProductImages } from '../../../../store/actions/product';
 
+import MainHeader from '../../../components/headers/MainHeader';
+
 const themes = ['light', 'dark'];
+const sides = ['front', 'dark'];
 
 function ProductImage(props) {
     const [source, setSource] = useState({});
@@ -67,27 +74,43 @@ function ProductImage(props) {
             let printUrls = {};
 
             Object.keys(source).map(item => {
+                let master = source[item]['type'];
+
                 source[item].colorList.map(el => {
-                    themes.map(theme => {
-                        if (theme.charAt(0) === el.theme.toLowerCase()) {
-                            let artwork = imageUrl[item][theme].split('/')[imageUrl[item][theme].split('/').length - 1].slice(0, -4);
-                            el.url = el.url.replace("[$artwork]", artwork);
-                        }
-                    });
+                    if (master === 2) {
+                        themes.map(theme => {
+                            if (theme.charAt(0) === el.theme.toLowerCase()) {
+                                let artwork = baseName(imageUrl[item][theme]);
+                                el.url = el.url.replace("[$artwork]", artwork);
+                            }
+                        });
+                    } else if (master === 3) {
+                        el.front_url = el.front_url.replace("[$artwork]", baseName(imageUrl[item]['front']));
+                        el.back_url = el.back_url.replace("[$artwork]", baseName(imageUrl[item]['back']));
+                    }
+
                 });
 
                 source[item].printUrls.map(el => {
-                    themes.map(theme => {
-                        if (theme.charAt(0) === el.theme.toLowerCase()) {
-                            let artwork = imageUrl[item][theme].split('/')[imageUrl[item][theme].split('/').length - 1].slice(0, -4);
-                            el.printUrl = el.printUrl.replace("[$artwork]", artwork);
-                        }
-                    });
+                    if (master === 2) {
+                        themes.map(theme => {
+                            if (theme.charAt(0) === el.theme.toLowerCase()) {
+                                let artwork = baseName(imageUrl[item][theme]);
+                                el.printUrl = el.printUrl.replace("[$artwork]", artwork);
+                            }
+                        });
+                    } else if (master === 3) {
+                        el.printUrl = el.printUrl.replace("[$artwork-front]", baseName(imageUrl[item]['front']));
+                        el.printUrl = el.printUrl.replace("[$artwork-back]", baseName(imageUrl[item]['back']));
+                    }
                 });
 
                 data[item] = source[item].colorList;
                 printUrls[item] = source[item].printUrls;
             });
+            console.log(imageUrl)
+            console.log(data)
+            console.log(printUrls)
             props.onUpload(data, imageUrl);
             dispatch(createProductImages({ id: product.id, data, printUrls }));
         }
@@ -129,13 +152,12 @@ function ProductImage(props) {
     const handleUploadFile = (event, variant) => {
         event.preventDefault();
         const { id, name } = event.currentTarget;
-        const number = Math.floor(100000 + Math.random() * 900000);
 
         window.cloudinary.openUploadWidget({
             cloud_name: APP_CONST.CLOUD_NAME,
             upload_preset: APP_CONST.UPLOAD_PRESET,
             tags: ['artwork'],
-            public_id: `${id}_${number}`
+            public_id: `${id}_${uuidv4()}`
         }, (err, res) => {
             if (!err && res && res.event === "success" && Object.keys(res.info).includes('secure_url')) {
                 if (variant === 'master') {
@@ -164,113 +186,121 @@ function ProductImage(props) {
     }
 
     const handleSubmit = () => {
-        Object.keys(source).map(item => {
-            if (Object.keys(imageUrl).includes(item)) {
-                themes.map(el => {
-                    if (!Object.keys(imageUrl[item]).includes(el)) {
-                        setImageUrl(prevState => ({
-                            ...prevState, [item]: {
-                                ...prevState[item], [el]: themeUrl[el]
-                            }
-                        }));
-                    }
-                });
-            } else {
-                themes.map(el => {
-                    setImageUrl(prevState => ({
-                        ...prevState, [item]: {
-                            ...prevState[item], [el]: themeUrl[el]
-                        }
-                    }));
-                });
-            }
-        });
         props.onSubmit(true);
         props.onCheckIsSubmit();
     }
 
+    console.log(imageUrl)
     return (
-        <Card style={{ minHeight: '700px' }}>
-            <div className='rna-wrapper'>
-                <NotificationAlert ref={alertEl} />
-            </div>
-            <CardBody className="pl-6 pr-6">
-                <Row>
-                    <Col md={8}>
-                        <h4 className='display-4 ml-3 mb-3'>
-                            {"Product Image"}
-                        </h4>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={6}>
-                        <Card>
-                            <CardBody className="custom-product-image-card button-group-panel">
-                                <Button
-                                    type='button'
-                                    color='primary'
-                                >
-                                    {"Original PDF"}
-                                </Button>
-                                <Button
-                                    id={`${skuNumber}-artwork-light`}
-                                    name="light"
-                                    type='button'
-                                    color='primary'
-                                    onClick={(e) => handleUploadFile(e, 'master')}
-                                >
-                                    {"For Light"}
-                                </Button>
-                                <Button
-                                    id={`${skuNumber}-artwork-dark`}
-                                    name="dark"
-                                    type='button'
-                                    color='primary'
-                                    onClick={(e) => handleUploadFile(e, 'master')}
-                                >
-                                    {"For Dark"}
-                                </Button>
-                                <Button
-                                    type='button'
-                                    color='warning'
-                                    disabled={isDisabled}
-                                    onClick={handleSubmit}
-                                >
-                                    {"Create"}
-                                </Button>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-                <Row>
-                    {Object.keys(source).map(item => (
-                        <React.Fragment key={item}>
-                            {source[item].type === 2 &&
-                                <Col md={7}>
-                                    <ImageDoubleItem
-                                        source={source[item]}
-                                        skuNumber={skuNumber}
-                                        themeUrl={themeUrl}
-                                        variant={item}
-                                        imageUrl={
-                                            Object.keys(imageUrl).includes(item) ?
-                                                imageUrl[item] : null
-                                        }
-                                        onUploadFile={handleUploadFile}
-                                        onRemoveFile={handleRemoveFile}
-                                    />
-                                </Col>
-                            }
-                            {source[item].type === 1 &&
-                                <Col md={5}>
-                                    <ImageSingleItem source={source[item]} />
-                                </Col>
-                            }
-                        </React.Fragment>
-                    ))}
-                </Row>
-            </CardBody>
-        </Card>
+        <>
+            <MainHeader name='Product Image' parentName='Product' />
+            <Container className='mt--6 product-image-container' fluid>
+
+
+                <Card style={{ minHeight: '700px' }}>
+                    <div className='rna-wrapper'>
+                        <NotificationAlert ref={alertEl} />
+                    </div>
+                    <CardBody className="pl-6 pr-6">
+                        <Row>
+                            <Col md={8}>
+                                <h4 className='display-4 ml-3 mb-3'>
+                                    {"Product Image"}
+                                </h4>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col md={6}>
+                                <Card>
+                                    <CardBody className="custom-product-image-card button-group-panel">
+                                        <Button
+                                            type='button'
+                                            color='primary'
+                                        >
+                                            {"Original PDF"}
+                                        </Button>
+                                        <Button
+                                            id={`${skuNumber}-artwork-light`}
+                                            name="light"
+                                            type='button'
+                                            color='primary'
+                                            onClick={(e) => handleUploadFile(e, 'master')}
+                                        >
+                                            {"For Light"}
+                                        </Button>
+                                        <Button
+                                            id={`${skuNumber}-artwork-dark`}
+                                            name="dark"
+                                            type='button'
+                                            color='primary'
+                                            onClick={(e) => handleUploadFile(e, 'master')}
+                                        >
+                                            {"For Dark"}
+                                        </Button>
+                                        <Button
+                                            type='button'
+                                            color='warning'
+                                            disabled={isDisabled}
+                                            onClick={handleSubmit}
+                                        >
+                                            {"Create"}
+                                        </Button>
+                                    </CardBody>
+                                </Card>
+                            </Col>
+                        </Row>
+                        <Row>
+                            {Object.keys(source).map(item => (
+                                <React.Fragment key={item}>
+                                    {source[item].type === 2 &&
+                                        <Col md={7}>
+                                            <ImageThemeDoubleItem
+                                                source={source[item]}
+                                                skuNumber={skuNumber}
+                                                themeUrl={themeUrl}
+                                                variant={item}
+                                                imageUrl={
+                                                    Object.keys(imageUrl).includes(item) ?
+                                                        imageUrl[item] : null
+                                                }
+                                                isSubmit={props.isSubmit}
+                                                onUploadFile={handleUploadFile}
+                                                onRemoveFile={handleRemoveFile}
+                                                onImageUrl={(master, preview) => setImageUrl(prevState => ({ ...prevState, [master]: preview }))}
+                                            />
+                                        </Col>
+                                    }
+                                    {source[item].type === 1 &&
+                                        <Col md={5}>
+                                            <ImageThemeSingleItem source={source[item]} />
+                                        </Col>
+                                    }
+                                    {source[item].type === 3 &&
+                                        <Col md={7}>
+                                            <ImageSideDoubleItem
+                                                source={source[item]}
+                                                skuNumber={skuNumber}
+                                                themeUrl={themeUrl}
+                                                variant={item}
+                                                imageUrl={
+                                                    Object.keys(imageUrl).includes(item) ?
+                                                        imageUrl[item] : null
+                                                }
+                                                isSubmit={props.isSubmit}
+                                                onUploadFile={handleUploadFile}
+                                                onRemoveFile={handleRemoveFile}
+                                                onImageUrl={(master, preview) => setImageUrl(prevState => ({ ...prevState, [master]: preview }))}
+                                            />
+                                        </Col>
+                                    }
+                                </React.Fragment>
+                            ))}
+                        </Row>
+                    </CardBody>
+                </Card>
+
+            </Container>
+        </>
     );
 }
 

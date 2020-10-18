@@ -6,7 +6,6 @@ import ProductDetail from "views/pages/product/ProductDetail.jsx";
 import ProductImageSet from "views/pages/product/ProductImageSet.jsx";
 import KeywordList from "views/pages/keyword/KeywordList.jsx";
 import CategoryList from "views/pages/category";
-// import CategoryList from "views/pages/category/CategoryList.jsx";
 import ArtistList from "views/pages/artist/ArtistList.jsx";
 import Setting from "views/pages/setting/setting";
 import EtsySetting from "views/pages/setting/etsy";
@@ -25,6 +24,7 @@ import BannedWordList from "./views/pages/trademark/BannedWordList";
 import TradeMarkClassWordList from "./views/pages/trademark/TradeMarkClassWordList";
 import Performance from "./views/pages/performance/Performance";
 
+import ProductImage from "views/pages/product/ProductImage";
 
 export const authRoutes = [
   {
@@ -70,6 +70,12 @@ export const routes = [
         path: "/product-detail/:id",
         name: "Product Detail",
         component: ProductDetail,
+        layout: "/main",
+      },
+      {
+        path: "/product-image",
+        name: "Product Image",
+        component: ProductImage,
         layout: "/main",
       },
     ],

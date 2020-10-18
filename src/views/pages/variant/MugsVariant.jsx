@@ -72,6 +72,9 @@ class MugVariant extends React.Component {
         color: "",
         size: "",
         type: "",
+        url: "",
+        url2: "",
+        print_url: "",
       },
       responseErrors: "",
       errors: {},
@@ -399,14 +402,14 @@ class MugVariant extends React.Component {
     if (column === this.state.sorted_column) {
       this.state.order === "asc"
         ? this.setState(
-            { order: "desc", current_page: this.state.first_page },
-            () => {
-              this.fetchEntities();
-            }
-          )
-        : this.setState({ order: "asc" }, () => {
+          { order: "desc", current_page: this.state.first_page },
+          () => {
             this.fetchEntities();
-          });
+          }
+        )
+        : this.setState({ order: "asc" }, () => {
+          this.fetchEntities();
+        });
     } else {
       this.setState(
         {
@@ -540,6 +543,9 @@ class MugVariant extends React.Component {
             color,
             size,
             type,
+            url,
+            url2,
+            print_url,
             master_type = "mugs",
           } = modalMug;
           this.props.createVariant({
@@ -548,6 +554,9 @@ class MugVariant extends React.Component {
             color,
             size,
             type,
+            url,
+            url2,
+            print_url,
             master_type,
           });
         } else {
@@ -558,6 +567,9 @@ class MugVariant extends React.Component {
             color,
             size,
             type,
+            url,
+            url2,
+            print_url,
             master_type = "mugs",
           } = modalMug;
           this.props.updateVariant({
@@ -567,6 +579,9 @@ class MugVariant extends React.Component {
             color,
             type,
             size,
+            url,
+            url2,
+            print_url,
             master_type,
           });
         }
@@ -761,6 +776,36 @@ class MugVariant extends React.Component {
                               );
                             })}
                           </Input>
+                        </FormGroup>
+                        <FormGroup>
+                          <label htmlFor="genderFormControlInput">Front URL</label>
+                          <Input
+                            name="url"
+                            ref="url"
+                            type="text"
+                            value={modalMug.url}
+                            onChange={this.handleChangeSelect}
+                          />
+                        </FormGroup>
+                        <FormGroup>
+                          <label htmlFor="genderFormControlInput">Back URL</label>
+                          <Input
+                            name="url2"
+                            ref="url2"
+                            type="text"
+                            value={modalMug.url2}
+                            onChange={this.handleChangeSelect}
+                          />
+                        </FormGroup>
+                        <FormGroup>
+                          <label htmlFor="genderFormControlInput">Print URL</label>
+                          <Input
+                            name="print_url"
+                            ref="print_url"
+                            type="text"
+                            value={modalMug.print_url}
+                            onChange={this.handleChangeSelect}
+                          />
                         </FormGroup>
                       </ModalBody>
                       <ModalFooter>

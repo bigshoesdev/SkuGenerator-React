@@ -9,6 +9,7 @@ import {
 } from 'reactstrap';
 
 import APP_CONST from '../../../../../helper/constant';
+import { baseName } from '../../../../../helper/util';
 
 const INIT_IMAGE_URL = {
     light: null,
@@ -26,13 +27,13 @@ function ImageDoubleItem(props) {
                     let url = el.url
                     if (el.key === 'WH') {
                         if (Object.keys(props.themeUrl).includes('light') && props.themeUrl['light']) {
-                            let artwork = props.themeUrl['light'].split('/')[props.themeUrl['light'].split('/').length - 1].slice(0, -4);
+                            let artwork = baseName(props.themeUrl['light']);
                             url = url.replace("[$artwork]", artwork);
                             setPreview(prevState => ({ ...prevState, light: url }));
                         }
                     } else if (el.key === 'BK') {
                         if (Object.keys(props.themeUrl).includes('dark') && props.themeUrl['dark']) {
-                            let artwork = props.themeUrl['dark'].split('/')[props.themeUrl['dark'].split('/').length - 1].slice(0, -4);
+                            let artwork = baseName(props.themeUrl['dark'])
                             url = url.replace("[$artwork]", artwork);
                             setPreview(prevState => ({ ...prevState, dark: url }));
                         }
@@ -46,10 +47,8 @@ function ImageDoubleItem(props) {
         const name = event.target.getAttribute('name');
         if (url) {
             let artworkFile = props.imageUrl && Object.keys(props.imageUrl).includes(name) && props.imageUrl[name] ?
-                props.imageUrl[name].split('/')[props.imageUrl[name].split('/').length - 1].slice(0, -4) :
-                Object.keys(props.themeUrl).includes(name) && props.themeUrl[name] ?
-                    props.themeUrl[name].split('/')[props.themeUrl[name].split('/').length - 1].slice(0, -4) : null;
-
+                baseName(props.imageUrl[name]) : Object.keys(props.themeUrl).includes(name) && props.themeUrl[name] ?
+                    baseName(props.themeUrl[name]) : null;
             url = artworkFile ? url.replace("[$artwork]", artworkFile) : null;
             setPreview(prevState => ({ ...prevState, [name]: url }));
         }

@@ -5,10 +5,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 var APP_CONST = {
-  // API_URL: "http://127.0.0.1:5000/api",
-  API_URL: 'http://zed.umbrellaink.com.au/api',
-  BASE_URL: 'http://zed.umbrellaink.com.au',
-  // BASE_URL: "http://127.0.0.1:5000",
+  API_URL: "http://127.0.0.1:5000/api",
+  // API_URL: 'http://zed.umbrellaink.com.au/api',
+  // BASE_URL: 'http://zed.umbrellaink.com.au',
+  BASE_URL: "http://127.0.0.1:5000",
 
   /** Cloudinary Constants */
   CLOUD_NAME: 'umbrellaink',
@@ -27,7 +27,8 @@ var APP_CONST = {
     NV: '#000080',
     CH: '#36454f',
     OR: '#FFA500',
-    SA: '#c2b280'
+    SA: '#c2b280',
+    BL: '#0000ff'
   },
   GENDER_LIST: [{
     key: 'M',

@@ -55,9 +55,10 @@ var _TradeMarkClassWordList = _interopRequireDefault(require("./views/pages/trad
 
 var _Performance = _interopRequireDefault(require("./views/pages/performance/Performance"));
 
+var _ProductImage = _interopRequireDefault(require("views/pages/product/ProductImage"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-// import CategoryList from "views/pages/category/CategoryList.jsx";
 var authRoutes = [{
   path: "/login",
   name: "Login",
@@ -94,6 +95,11 @@ var routes = [{
     path: "/product-detail/:id",
     name: "Product Detail",
     component: _ProductDetail["default"],
+    layout: "/main"
+  }, {
+    path: "/product-image",
+    name: "Product Image",
+    component: _ProductImage["default"],
     layout: "/main"
   }]
 }, {
