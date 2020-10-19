@@ -9,7 +9,6 @@ import {
     Row,
     Col,
     Button,
-    Container
 } from 'reactstrap';
 
 import ImageThemeDoubleItem from './ImageThemeDoubleItem';
@@ -20,16 +19,16 @@ import APP_CONST from "../../../../helper/constant";
 import { baseName } from '../../../../helper/util';
 import { createProductImages } from '../../../../store/actions/product';
 
-import MainHeader from '../../../components/headers/MainHeader';
 
 const themes = ['light', 'dark'];
-const sides = ['front', 'dark'];
+const sides = ['front', 'back'];
 
 function ProductImage(props) {
     const [source, setSource] = useState({});
     const [themeUrl, setThemeUrl] = useState({});
     const [imageUrl, setImageUrl] = useState({});
     const [skuNumber, setSkuNumber] = useState();
+    const [checkedList, setCheckedList] = useState({});
     const [isDisabled, setIsDisabled] = useState(true);
     const alertEl = useRef(null);
     const dispatch = useDispatch();
@@ -88,7 +87,6 @@ function ProductImage(props) {
                         el.front_url = el.front_url.replace("[$artwork]", baseName(imageUrl[item]['front']));
                         el.back_url = el.back_url.replace("[$artwork]", baseName(imageUrl[item]['back']));
                     }
-
                 });
 
                 source[item].printUrls.map(el => {
@@ -108,9 +106,6 @@ function ProductImage(props) {
                 data[item] = source[item].colorList;
                 printUrls[item] = source[item].printUrls;
             });
-            console.log(imageUrl)
-            console.log(data)
-            console.log(printUrls)
             props.onUpload(data, imageUrl);
             dispatch(createProductImages({ id: product.id, data, printUrls }));
         }
@@ -186,121 +181,156 @@ function ProductImage(props) {
     }
 
     const handleSubmit = () => {
+        Object.keys(source).map(item => {
+            let master = source[item]['type'];
+
+            if (Object.keys(imageUrl).includes(item)) {
+                if (master === 2) {
+                    themes.map(el => {
+                        if (!Object.keys(imageUrl[item]).includes(el)) {
+                            setImageUrl(prevState => ({
+                                ...prevState, [item]: {
+                                    ...prevState[item], [el]: themeUrl[el]
+                                }
+                            }));
+                        }
+                    });
+                } else if (master === 3) {
+                    let theme = checkedList[item] ? 'light' : 'dark';
+                    sides.map(el => {
+                        if (!Object.keys(imageUrl[item]).includes(el)) {
+                            setImageUrl(prevState => ({
+                                ...prevState, [item]: {
+                                    ...prevState[item], [el]: themeUrl[theme]
+                                }
+                            }));
+                        }
+                    });
+                }
+            } else {
+                if (master === 2) {
+                    themes.map(el => {
+                        setImageUrl(prevState => ({
+                            ...prevState, [item]: {
+                                ...prevState[item], [el]: themeUrl[el]
+                            }
+                        }));
+                    });
+                } else if (master === 3) {
+                    let theme = checkedList[item] ? 'light' : 'dark';
+                    sides.map(el => {
+                        setImageUrl(prevState => ({
+                            ...prevState, [item]: {
+                                ...prevState[item], [el]: themeUrl[theme]
+                            }
+                        }));
+                    });
+                }
+            }
+        });
         props.onSubmit(true);
         props.onCheckIsSubmit();
     }
 
-    console.log(imageUrl)
     return (
-        <>
-            <MainHeader name='Product Image' parentName='Product' />
-            <Container className='mt--6 product-image-container' fluid>
-
-
-                <Card style={{ minHeight: '700px' }}>
-                    <div className='rna-wrapper'>
-                        <NotificationAlert ref={alertEl} />
-                    </div>
-                    <CardBody className="pl-6 pr-6">
-                        <Row>
-                            <Col md={8}>
-                                <h4 className='display-4 ml-3 mb-3'>
-                                    {"Product Image"}
-                                </h4>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col md={6}>
-                                <Card>
-                                    <CardBody className="custom-product-image-card button-group-panel">
-                                        <Button
-                                            type='button'
-                                            color='primary'
-                                        >
-                                            {"Original PDF"}
-                                        </Button>
-                                        <Button
-                                            id={`${skuNumber}-artwork-light`}
-                                            name="light"
-                                            type='button'
-                                            color='primary'
-                                            onClick={(e) => handleUploadFile(e, 'master')}
-                                        >
-                                            {"For Light"}
-                                        </Button>
-                                        <Button
-                                            id={`${skuNumber}-artwork-dark`}
-                                            name="dark"
-                                            type='button'
-                                            color='primary'
-                                            onClick={(e) => handleUploadFile(e, 'master')}
-                                        >
-                                            {"For Dark"}
-                                        </Button>
-                                        <Button
-                                            type='button'
-                                            color='warning'
-                                            disabled={isDisabled}
-                                            onClick={handleSubmit}
-                                        >
-                                            {"Create"}
-                                        </Button>
-                                    </CardBody>
-                                </Card>
-                            </Col>
-                        </Row>
-                        <Row>
-                            {Object.keys(source).map(item => (
-                                <React.Fragment key={item}>
-                                    {source[item].type === 2 &&
-                                        <Col md={7}>
-                                            <ImageThemeDoubleItem
-                                                source={source[item]}
-                                                skuNumber={skuNumber}
-                                                themeUrl={themeUrl}
-                                                variant={item}
-                                                imageUrl={
-                                                    Object.keys(imageUrl).includes(item) ?
-                                                        imageUrl[item] : null
-                                                }
-                                                isSubmit={props.isSubmit}
-                                                onUploadFile={handleUploadFile}
-                                                onRemoveFile={handleRemoveFile}
-                                                onImageUrl={(master, preview) => setImageUrl(prevState => ({ ...prevState, [master]: preview }))}
-                                            />
-                                        </Col>
-                                    }
-                                    {source[item].type === 1 &&
-                                        <Col md={5}>
-                                            <ImageThemeSingleItem source={source[item]} />
-                                        </Col>
-                                    }
-                                    {source[item].type === 3 &&
-                                        <Col md={7}>
-                                            <ImageSideDoubleItem
-                                                source={source[item]}
-                                                skuNumber={skuNumber}
-                                                themeUrl={themeUrl}
-                                                variant={item}
-                                                imageUrl={
-                                                    Object.keys(imageUrl).includes(item) ?
-                                                        imageUrl[item] : null
-                                                }
-                                                isSubmit={props.isSubmit}
-                                                onUploadFile={handleUploadFile}
-                                                onRemoveFile={handleRemoveFile}
-                                                onImageUrl={(master, preview) => setImageUrl(prevState => ({ ...prevState, [master]: preview }))}
-                                            />
-                                        </Col>
-                                    }
-                                </React.Fragment>
-                            ))}
-                        </Row>
-                    </CardBody>
-                </Card>
-
-            </Container>
-        </>
+        <Card style={{ minHeight: '700px' }}>
+            <div className='rna-wrapper'>
+                <NotificationAlert ref={alertEl} />
+            </div>
+            <CardBody className="pl-6 pr-6">
+                <Row>
+                    <Col md={8}>
+                        <h4 className='display-4 ml-3 mb-3'>
+                            {"Product Image"}
+                        </h4>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={6}>
+                        <Card>
+                            <CardBody className="custom-product-image-card button-group-panel">
+                                <Button
+                                    type='button'
+                                    color='primary'
+                                >
+                                    {"Original PDF"}
+                                </Button>
+                                <Button
+                                    id={`${skuNumber}-artwork-light`}
+                                    name="light"
+                                    type='button'
+                                    color='primary'
+                                    onClick={(e) => handleUploadFile(e, 'master')}
+                                >
+                                    {"For Light"}
+                                </Button>
+                                <Button
+                                    id={`${skuNumber}-artwork-dark`}
+                                    name="dark"
+                                    type='button'
+                                    color='primary'
+                                    onClick={(e) => handleUploadFile(e, 'master')}
+                                >
+                                    {"For Dark"}
+                                </Button>
+                                <Button
+                                    type='button'
+                                    color='warning'
+                                    disabled={isDisabled}
+                                    onClick={handleSubmit}
+                                >
+                                    {"Create"}
+                                </Button>
+                            </CardBody>
+                        </Card>
+                    </Col>
+                </Row>
+                <Row>
+                    {Object.keys(source).map(item => (
+                        <React.Fragment key={item}>
+                            {source[item].type === 2 &&
+                                <Col md={7}>
+                                    <ImageThemeDoubleItem
+                                        source={source[item]}
+                                        skuNumber={skuNumber}
+                                        themeUrl={themeUrl}
+                                        variant={item}
+                                        imageUrl={
+                                            Object.keys(imageUrl).includes(item) ?
+                                                imageUrl[item] : null
+                                        }
+                                        onUploadFile={handleUploadFile}
+                                        onRemoveFile={handleRemoveFile}
+                                    />
+                                </Col>
+                            }
+                            {source[item].type === 1 &&
+                                <Col md={5}>
+                                    <ImageThemeSingleItem source={source[item]} />
+                                </Col>
+                            }
+                            {source[item].type === 3 &&
+                                <Col md={7}>
+                                    <ImageSideDoubleItem
+                                        source={source[item]}
+                                        skuNumber={skuNumber}
+                                        themeUrl={themeUrl}
+                                        variant={item}
+                                        imageUrl={
+                                            Object.keys(imageUrl).includes(item) ?
+                                                imageUrl[item] : null
+                                        }
+                                        onUploadFile={handleUploadFile}
+                                        onRemoveFile={handleRemoveFile}
+                                        onChecked={(value) => setCheckedList(prevState => ({ ...prevState, [item]: value }))}
+                                    />
+                                </Col>
+                            }
+                        </React.Fragment>
+                    ))}
+                </Row>
+            </CardBody>
+        </Card>
     );
 }
 

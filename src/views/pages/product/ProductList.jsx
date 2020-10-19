@@ -388,6 +388,7 @@ class ProductList extends React.Component {
       return { checkedItems: { ...prevState.checkedItems, [name]: checked } }
     });
   }
+  
   onSubmitGenerator = (event) => {
     event.preventDefault();
     let products = [];

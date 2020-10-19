@@ -13,6 +13,7 @@ import {
 import APP_CONST from '../../../../../helper/constant';
 import { baseName } from '../../../../../helper/util';
 
+
 const INIT_IMAGE_URL = {
     front: null,
     back: null,
@@ -31,6 +32,7 @@ function ImageSideDoubleItem(props) {
 
                 if (el.key === 'WH') {
                     let artwork;
+
                     Object.keys(INIT_IMAGE_URL).map(item => {
                         if (Object.keys(props.themeUrl).includes('light') && props.themeUrl['light'] && isLight) {
                             artwork = baseName(props.themeUrl['light'])
@@ -54,10 +56,8 @@ function ImageSideDoubleItem(props) {
     }, [props.themeUrl, isLight])
 
     useEffect(() => {
-        if (Object.values(preview).every(item => Boolean(item))) {
-            props.onImageUrl(props.variant, preview);
-        }
-    }, [preview])
+        props.onChecked(isLight)
+    }, [isLight])
 
     const handlePreview = (frontUrl, backUrl) => {
         if (frontUrl && backUrl) {
