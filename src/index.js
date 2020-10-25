@@ -13,7 +13,7 @@ import "assets/vendor/quill/dist/quill.core.css";
 import "assets/vendor/nucleo/css/nucleo.css";
 import "assets/vendor/@fortawesome/fontawesome-free/css/all.min.css";
 // core styles
-import "assets/scss/dashboard.scss?v1.0.0";
+import "assets/scss/dashboard.scss?v1.0.0"; 
 
 import { Provider } from "react-redux";
 import AdminLayout from "views/layouts/Admin.jsx";
