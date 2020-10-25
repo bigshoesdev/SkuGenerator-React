@@ -24,6 +24,7 @@ import BannedWordList from "./views/pages/trademark/BannedWordList";
 import TradeMarkClassWordList from "./views/pages/trademark/TradeMarkClassWordList";
 import Performance from "./views/pages/performance/Performance";
 
+
 export const authRoutes = [
   {
     path: "/login",

@@ -9,6 +9,7 @@ import {
     Row,
     Col,
     Button,
+    Container
 } from 'reactstrap';
 
 import ImageThemeDoubleItem from './ImageThemeDoubleItem';
@@ -98,8 +99,8 @@ function ProductImage(props) {
                             }
                         });
                     } else if (master === 3) {
-                        el.printUrl = el.printUrl.replace("[$artwork-front]", baseName(imageUrl[item]['front']));
-                        el.printUrl = el.printUrl.replace("[$artwork-back]", baseName(imageUrl[item]['back']));
+                        el.printUrl = el.printUrl.replace("[$artwork_front]", baseName(imageUrl[item]['front']));
+                        el.printUrl = el.printUrl.replace("[$artwork_back]", baseName(imageUrl[item]['back']));
                     }
                 });
 

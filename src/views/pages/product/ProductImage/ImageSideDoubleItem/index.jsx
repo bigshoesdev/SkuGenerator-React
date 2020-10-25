@@ -53,7 +53,7 @@ function ImageSideDoubleItem(props) {
                 }
             });
         }
-    }, [props.themeUrl, isLight])
+    }, [props.themeUrl, isLight, props.imageUrl])
 
     useEffect(() => {
         props.onChecked(isLight)

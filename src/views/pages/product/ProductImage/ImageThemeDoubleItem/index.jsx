@@ -26,13 +26,21 @@ function ImageDoubleItem(props) {
                 if (props.source.type === 2 && el.gender === 'M') {
                     let url = el.url
                     if (el.key === 'WH') {
-                        if (Object.keys(props.themeUrl).includes('light') && props.themeUrl['light']) {
+                        if (props.imageUrl &&Object.keys(props.imageUrl).includes('light') && props.imageUrl['light']) {
+                            let artwork = baseName(props.imageUrl['light']);
+                            url = url.replace("[$artwork]", artwork);
+                            setPreview(prevState => ({ ...prevState, light: url }));
+                        } else if (Object.keys(props.themeUrl).includes('light') && props.themeUrl['light']) {
                             let artwork = baseName(props.themeUrl['light']);
                             url = url.replace("[$artwork]", artwork);
                             setPreview(prevState => ({ ...prevState, light: url }));
                         }
                     } else if (el.key === 'BK') {
-                        if (Object.keys(props.themeUrl).includes('dark') && props.themeUrl['dark']) {
+                        if (props.imageUrl && Object.keys(props.imageUrl).includes('dark') && props.imageUrl['dark']) {
+                            let artwork = baseName(props.imageUrl['dark'])
+                            url = url.replace("[$artwork]", artwork);
+                            setPreview(prevState => ({ ...prevState, dark: url }));
+                        } else if (Object.keys(props.themeUrl).includes('dark') && props.themeUrl['dark']) {
                             let artwork = baseName(props.themeUrl['dark'])
                             url = url.replace("[$artwork]", artwork);
                             setPreview(prevState => ({ ...prevState, dark: url }));
@@ -41,7 +49,7 @@ function ImageDoubleItem(props) {
                 }
             });
         }
-    }, [props.themeUrl])
+    }, [props.themeUrl, props.imageUrl])
 
     const handlePreview = (event, url) => {
         const name = event.target.getAttribute('name');
