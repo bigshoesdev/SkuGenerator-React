@@ -7,6 +7,7 @@ import {
   CREATE_PRODUCT_IMAGES,
   UPLOAD_PRODUCT,
   GENERATE_PRODUCT,
+  UPLOAD_STICKERS_PDF,
   DELETE_PRODUCT,
   CLEAN_PRODUCT,
 } from '../actions/types';
@@ -41,6 +42,8 @@ export default function (state = initialState, action) {
     case UPLOAD_PRODUCT:
       return { ...state, message: action.message, errors: action.errors };
     case GENERATE_PRODUCT:
+      return { ...state, message: action.message, errors: action.errors };
+    case UPLOAD_STICKERS_PDF:
       return { ...state, message: action.message, errors: action.errors };
     case DELETE_PRODUCT:
       return { ...state, message: action.message };

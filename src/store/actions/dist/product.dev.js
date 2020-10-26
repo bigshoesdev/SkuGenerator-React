@@ -15,6 +15,7 @@ exports.productImageSetList = productImageSetList;
 exports.updateProductImageSets = updateProductImageSets;
 exports.createProductImages = createProductImages;
 exports.uploadProduct = uploadProduct;
+exports.uploadStickersPDF = uploadStickersPDF;
 
 var _types = require("./types");
 
@@ -365,6 +366,37 @@ function uploadProduct(obj) {
         } else {
           dispatch({
             type: _types.CREATE_PRODUCT_IMAGES,
+            errors: "There is a server connection Error, Try Later."
+          });
+        }
+      });
+    });
+  };
+}
+
+function uploadStickersPDF(obj) {
+  return function (dispatch) {
+    return new Promise(function (resolve, reject) {
+      dispatch({
+        type: _types.CLEAN_PRODUCT
+      });
+
+      _http["default"].post("".concat(_constant["default"].API_URL, "/product/upload-sticker-pdf"), obj).then(function (res) {
+        dispatch({
+          type: _types.UPLOAD_STICKERS_PDF,
+          message: "The Stickers PDF is uploaded successfully!"
+        });
+        return resolve();
+      })["catch"](function (err) {
+        if (err.response) {
+          var errors = err.response.data.errors;
+          dispatch({
+            type: _types.UPLOAD_STICKERS_PDF,
+            errors: (0, _util.errorHandler)(errors)
+          });
+        } else {
+          dispatch({
+            type: _types.UPLOAD_STICKERS_PDF,
             errors: "There is a server connection Error, Try Later."
           });
         }

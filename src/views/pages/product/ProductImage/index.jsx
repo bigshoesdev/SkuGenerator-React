@@ -9,16 +9,24 @@ import {
     Row,
     Col,
     Button,
-    Container
+    Container,
+    Input
 } from 'reactstrap';
 
 import ImageThemeDoubleItem from './ImageThemeDoubleItem';
 import ImageThemeSingleItem from './ImageThemeSingleItem';
 import ImageSideDoubleItem from './ImageSideDoubleItem';
+import ImageStickersItem from './ImageStickersItem';
 import http from "../../../../helper/http";
 import APP_CONST from "../../../../helper/constant";
 import { baseName } from '../../../../helper/util';
-import { createProductImages } from '../../../../store/actions/product';
+import {
+    createProductImages,
+    uploadStickersPDF,
+} from '../../../../store/actions/product';
+
+// TODO: Remove in case of production.
+import MainHeader from '../../../components/headers/MainHeader';
 
 
 const themes = ['light', 'dark'];
@@ -29,6 +37,7 @@ function ProductImage(props) {
     const [themeUrl, setThemeUrl] = useState({});
     const [imageUrl, setImageUrl] = useState({});
     const [skuNumber, setSkuNumber] = useState();
+    const [stickersPdf, setStickersPdf] = useState(null);
     const [checkedList, setCheckedList] = useState({});
     const [isDisabled, setIsDisabled] = useState(true);
     const alertEl = useRef(null);
@@ -114,14 +123,14 @@ function ProductImage(props) {
 
     useEffect(() => {
         if (message !== '') {
-            props.onSubmit(false);
+            // props.onSubmit(false);
             showNotification(message);
 
             if (message.includes('Images')) {
                 props.onIsUploadPanel();
             }
         } else if (responseErrors !== '') {
-            props.onSubmit(false);
+            // props.onSubmit(false);
             showNotification(responseErrors);
         }
     }, [message, responseErrors])
@@ -148,26 +157,30 @@ function ProductImage(props) {
     const handleUploadFile = (event, variant) => {
         event.preventDefault();
         const { id, name } = event.currentTarget;
-
-        window.cloudinary.openUploadWidget({
-            cloud_name: APP_CONST.CLOUD_NAME,
-            upload_preset: APP_CONST.UPLOAD_PRESET,
-            tags: ['artwork'],
-            public_id: `${id}_${uuidv4()}`
-        }, (err, res) => {
-            if (!err && res && res.event === "success" && Object.keys(res.info).includes('secure_url')) {
-                if (variant === 'master') {
-                    setThemeUrl(prevState => ({ ...prevState, [name]: res.info.secure_url }))
-                } else {
-                    setImageUrl(prevState => ({
-                        ...prevState, [variant]: {
-                            ...prevState[variant],
-                            [name]: res.info.secure_url
-                        }
-                    }));
+        if (name === 'stickers-pdf') {
+            let element = document.getElementById('stickers-pdf-file');
+            element.click();
+        } else {
+            window.cloudinary.openUploadWidget({
+                cloud_name: APP_CONST.CLOUD_NAME,
+                upload_preset: APP_CONST.UPLOAD_PRESET,
+                tags: ['artwork'],
+                public_id: `${id}_${uuidv4()}`
+            }, (err, res) => {
+                if (!err && res && res.event === "success" && Object.keys(res.info).includes('secure_url')) {
+                    if (variant === 'master') {
+                        setThemeUrl(prevState => ({ ...prevState, [name]: res.info.secure_url }))
+                    } else {
+                        setImageUrl(prevState => ({
+                            ...prevState, [variant]: {
+                                ...prevState[variant],
+                                [name]: res.info.secure_url
+                            }
+                        }));
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     const handleRemoveFile = (event, variant) => {
@@ -182,156 +195,212 @@ function ProductImage(props) {
     }
 
     const handleSubmit = () => {
-        Object.keys(source).map(item => {
-            let master = source[item]['type'];
+        Object.keys(source).filter(item => item !== 'stickers')
+            .map(item => {
+                let master = source[item]['type'];
 
-            if (Object.keys(imageUrl).includes(item)) {
-                if (master === 2) {
-                    themes.map(el => {
-                        if (!Object.keys(imageUrl[item]).includes(el)) {
+                if (Object.keys(imageUrl).includes(item)) {
+                    if (master === 2) {
+                        themes.map(el => {
+                            if (!Object.keys(imageUrl[item]).includes(el)) {
+                                setImageUrl(prevState => ({
+                                    ...prevState, [item]: {
+                                        ...prevState[item], [el]: themeUrl[el]
+                                    }
+                                }));
+                            }
+                        });
+                    } else if (master === 3) {
+                        let theme = checkedList[item] ? 'light' : 'dark';
+                        sides.map(el => {
+                            if (!Object.keys(imageUrl[item]).includes(el)) {
+                                setImageUrl(prevState => ({
+                                    ...prevState, [item]: {
+                                        ...prevState[item], [el]: themeUrl[theme]
+                                    }
+                                }));
+                            }
+                        });
+                    }
+                } else {
+                    if (master === 2) {
+                        themes.map(el => {
                             setImageUrl(prevState => ({
                                 ...prevState, [item]: {
                                     ...prevState[item], [el]: themeUrl[el]
                                 }
                             }));
-                        }
-                    });
-                } else if (master === 3) {
-                    let theme = checkedList[item] ? 'light' : 'dark';
-                    sides.map(el => {
-                        if (!Object.keys(imageUrl[item]).includes(el)) {
+                        });
+                    } else if (master === 3) {
+                        let theme = checkedList[item] ? 'light' : 'dark';
+                        sides.map(el => {
                             setImageUrl(prevState => ({
                                 ...prevState, [item]: {
                                     ...prevState[item], [el]: themeUrl[theme]
                                 }
                             }));
-                        }
-                    });
+                        });
+                    }
                 }
-            } else {
-                if (master === 2) {
-                    themes.map(el => {
-                        setImageUrl(prevState => ({
-                            ...prevState, [item]: {
-                                ...prevState[item], [el]: themeUrl[el]
-                            }
-                        }));
-                    });
-                } else if (master === 3) {
-                    let theme = checkedList[item] ? 'light' : 'dark';
-                    sides.map(el => {
-                        setImageUrl(prevState => ({
-                            ...prevState, [item]: {
-                                ...prevState[item], [el]: themeUrl[theme]
-                            }
-                        }));
-                    });
-                }
-            }
-        });
+            });
+        dispatch(uploadStickersPDF(stickersPdf));
         props.onSubmit(true);
         props.onCheckIsSubmit();
     }
 
+    useEffect(() => {
+        if (stickersPdf)
+            dispatch(uploadStickersPDF(stickersPdf));
+    }, [stickersPdf]);
+
     return (
-        <Card style={{ minHeight: '700px' }}>
-            <div className='rna-wrapper'>
-                <NotificationAlert ref={alertEl} />
-            </div>
-            <CardBody className="pl-6 pr-6">
-                <Row>
-                    <Col md={8}>
-                        <h4 className='display-4 ml-3 mb-3'>
-                            {"Product Image"}
-                        </h4>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={6}>
-                        <Card>
-                            <CardBody className="custom-product-image-card button-group-panel">
-                                <Button
-                                    type='button'
-                                    color='primary'
-                                >
-                                    {"Original PDF"}
-                                </Button>
-                                <Button
-                                    id={`${skuNumber}-artwork-light`}
-                                    name="light"
-                                    type='button'
-                                    color='primary'
-                                    onClick={(e) => handleUploadFile(e, 'master')}
-                                >
-                                    {"For Light"}
-                                </Button>
-                                <Button
-                                    id={`${skuNumber}-artwork-dark`}
-                                    name="dark"
-                                    type='button'
-                                    color='primary'
-                                    onClick={(e) => handleUploadFile(e, 'master')}
-                                >
-                                    {"For Dark"}
-                                </Button>
-                                <Button
-                                    type='button'
-                                    color='warning'
-                                    disabled={isDisabled}
-                                    onClick={handleSubmit}
-                                >
-                                    {"Create"}
-                                </Button>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-                <Row>
-                    {Object.keys(source).map(item => (
-                        <React.Fragment key={item}>
-                            {source[item].type === 2 &&
-                                <Col md={7}>
-                                    <ImageThemeDoubleItem
-                                        source={source[item]}
-                                        skuNumber={skuNumber}
-                                        themeUrl={themeUrl}
-                                        variant={item}
-                                        imageUrl={
-                                            Object.keys(imageUrl).includes(item) ?
-                                                imageUrl[item] : null
-                                        }
-                                        onUploadFile={handleUploadFile}
-                                        onRemoveFile={handleRemoveFile}
-                                    />
-                                </Col>
-                            }
-                            {source[item].type === 1 &&
-                                <Col md={5}>
-                                    <ImageThemeSingleItem source={source[item]} />
-                                </Col>
-                            }
-                            {source[item].type === 3 &&
-                                <Col md={7}>
-                                    <ImageSideDoubleItem
-                                        source={source[item]}
-                                        skuNumber={skuNumber}
-                                        themeUrl={themeUrl}
-                                        variant={item}
-                                        imageUrl={
-                                            Object.keys(imageUrl).includes(item) ?
-                                                imageUrl[item] : null
-                                        }
-                                        onUploadFile={handleUploadFile}
-                                        onRemoveFile={handleRemoveFile}
-                                        onChecked={(value) => setCheckedList(prevState => ({ ...prevState, [item]: value }))}
-                                    />
-                                </Col>
-                            }
-                        </React.Fragment>
-                    ))}
-                </Row>
-            </CardBody>
-        </Card>
+        // TODO: Remove in case of production.
+        <>
+            <MainHeader name='Product Image' parentName='Product' />
+            <Container className='mt--6 product-image-container' fluid>
+
+                <Card style={{ minHeight: '700px' }}>
+                    <div className='rna-wrapper'>
+                        <NotificationAlert ref={alertEl} />
+                    </div>
+                    <CardBody className="pl-6 pr-6">
+                        <Row>
+                            <Col md={8}>
+                                <h4 className='display-4 ml-3 mb-3'>
+                                    {"Product Image"}
+                                </h4>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col md={9}>
+                                <Card>
+                                    <CardBody className="custom-product-image-card button-group-panel">
+                                        <Button
+                                            type='button'
+                                            color='primary'
+                                        >
+                                            {"Original PDF"}
+                                        </Button>
+                                        <Button
+                                            id={`${skuNumber}-artwork-light`}
+                                            name="light"
+                                            type='button'
+                                            color='primary'
+                                            onClick={(e) => handleUploadFile(e, 'master')}
+                                        >
+                                            {"For Light"}
+                                        </Button>
+                                        <Button
+                                            id={`${skuNumber}-artwork-dark`}
+                                            name="dark"
+                                            type='button'
+                                            color='primary'
+                                            onClick={(e) => handleUploadFile(e, 'master')}
+                                        >
+                                            {"For Dark"}
+                                        </Button>
+                                        <Button
+                                            id={`${skuNumber}-stickers-pdf`}
+                                            name="stickers-pdf"
+                                            type='button'
+                                            color='info'
+                                            onClick={(e) => handleUploadFile(e, 'master')}
+                                        >
+                                            {"Stickers PDF"}
+                                        </Button>
+                                        <Button
+                                            id={`${skuNumber}-stickers-artwork`}
+                                            name="stickers"
+                                            type='button'
+                                            color='info'
+                                            onClick={(e) => handleUploadFile(e, 'master')}
+                                        >
+                                            {"Stickers PNG"}
+                                        </Button>
+                                        <Button
+                                            type='button'
+                                            color='warning'
+                                            disabled={isDisabled}
+                                            onClick={handleSubmit}
+                                        >
+                                            {"Create"}
+                                        </Button>
+                                        <Input
+                                            id="stickers-pdf-file"
+                                            type="file"
+                                            onChange={(e) => setStickersPdf(e.target.files[0])}
+                                            hidden
+                                        />
+                                    </CardBody>
+                                </Card>
+                            </Col>
+                        </Row>
+                        <Row>
+                            {Object.keys(source).map(item => (
+                                <React.Fragment key={item}>
+                                    {source[item].type === 2 &&
+                                        <Col md={7}>
+                                            <ImageThemeDoubleItem
+                                                source={source[item]}
+                                                skuNumber={skuNumber}
+                                                themeUrl={themeUrl}
+                                                variant={item}
+                                                imageUrl={
+                                                    Object.keys(imageUrl).includes(item) ?
+                                                        imageUrl[item] : null
+                                                }
+                                                onUploadFile={handleUploadFile}
+                                                onRemoveFile={handleRemoveFile}
+                                            />
+                                        </Col>
+                                    }
+                                    {source[item].type === 1 &&
+                                        <Col md={5}>
+                                            <ImageThemeSingleItem source={source[item]} />
+                                        </Col>
+                                    }
+                                    {source[item].type === 3 &&
+                                        <Col md={7}>
+                                            <ImageSideDoubleItem
+                                                source={source[item]}
+                                                skuNumber={skuNumber}
+                                                themeUrl={themeUrl}
+                                                variant={item}
+                                                imageUrl={
+                                                    Object.keys(imageUrl).includes(item) ?
+                                                        imageUrl[item] : null
+                                                }
+                                                onUploadFile={handleUploadFile}
+                                                onRemoveFile={handleRemoveFile}
+                                                onChecked={(value) => setCheckedList(prevState => ({ ...prevState, [item]: value }))}
+                                            />
+                                        </Col>
+                                    }
+                                    {source[item].type === 4 &&
+                                        <Col md={5}>
+                                            <ImageStickersItem
+                                                source={source[item]}
+                                                skuNumber={skuNumber}
+                                                themeUrl={themeUrl}
+                                                variant={item}
+                                                imageUrl={
+                                                    Object.keys(imageUrl).includes(item) ?
+                                                        imageUrl[item] : null
+                                                }
+                                                onUploadFile={handleUploadFile}
+                                                onRemoveFile={handleRemoveFile}
+                                                onChecked={(value) => setCheckedList(prevState => ({ ...prevState, [item]: value }))}
+                                            />
+                                        </Col>
+                                    }
+                                </React.Fragment>
+                            ))}
+                        </Row>
+                    </CardBody>
+                </Card>
+
+            </Container>
+        </>
     );
 }
 

@@ -11,6 +11,7 @@ import {
   LIST_PRODUCT_IMAGESET,
   UPDATE_PRODUCT_IMAGESET,
   UPLOAD_PRODUCT,
+  UPLOAD_STICKERS_PDF,
   GENERATE_PRODUCT,
   CLEAN_PRODUCT
 } from './types';
@@ -328,6 +329,36 @@ export function uploadProduct(obj) {
           } else {
             dispatch({
               type: CREATE_PRODUCT_IMAGES,
+              errors: "There is a server connection Error, Try Later."
+            });
+          }
+        });
+    })
+  );
+}
+
+export function uploadStickersPDF(obj) {
+  return dispatch => (
+    new Promise((resolve, reject) => {
+      dispatch({ type: CLEAN_PRODUCT });
+      http.post(`${APP_CONST.API_URL}/product/upload-sticker-pdf`, obj)
+        .then((res) => {
+          dispatch({
+            type: UPLOAD_STICKERS_PDF,
+            message: `The Stickers PDF is uploaded successfully!`
+          });
+          return resolve();
+        })
+        .catch(err => {
+          if (err.response) {
+            let { errors } = err.response.data;
+            dispatch({
+              type: UPLOAD_STICKERS_PDF,
+              errors: errorHandler(errors)
+            });
+          } else {
+            dispatch({
+              type: UPLOAD_STICKERS_PDF,
               errors: "There is a server connection Error, Try Later."
             });
           }

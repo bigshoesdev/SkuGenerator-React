@@ -55,8 +55,11 @@ var _TradeMarkClassWordList = _interopRequireDefault(require("./views/pages/trad
 
 var _Performance = _interopRequireDefault(require("./views/pages/performance/Performance"));
 
+var _ProductImage = _interopRequireDefault(require("views/pages/product/ProductImage"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
+// TODO: Remove in case of production.
 var authRoutes = [{
   path: "/login",
   name: "Login",
@@ -93,6 +96,12 @@ var routes = [{
     path: "/product-detail/:id",
     name: "Product Detail",
     component: _ProductDetail["default"],
+    layout: "/main"
+  }, // TODO: Remove in case of production
+  {
+    path: "/product-image",
+    name: "Product Image",
+    component: _ProductImage["default"],
     layout: "/main"
   }]
 }, {
