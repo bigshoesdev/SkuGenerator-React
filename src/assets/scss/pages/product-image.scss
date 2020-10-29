@@ -24,6 +24,7 @@
             width: 12vw;
             min-width: 90%;
             min-height: 12vw;
+            max-height: 12vw;
             border: 1px solid #595959;
             background-color: #f8f9fe;
         }
@@ -60,5 +61,9 @@
 
     .button-group-panel {
         padding: 1rem;
+    }
+
+    .image-process-panel {
+        min-height: 16.77rem;
     }
 }

@@ -24,9 +24,6 @@ import BannedWordList from "./views/pages/trademark/BannedWordList";
 import TradeMarkClassWordList from "./views/pages/trademark/TradeMarkClassWordList";
 import Performance from "./views/pages/performance/Performance";
 
-// TODO: Remove in case of production.
-import ProductImage from "views/pages/product/ProductImage";
-
 export const authRoutes = [
   {
     path: "/login",
@@ -71,14 +68,6 @@ export const routes = [
         path: "/product-detail/:id",
         name: "Product Detail",
         component: ProductDetail,
-        layout: "/main",
-      },
-
-      // TODO: Remove in case of production
-      {
-        path: "/product-image",
-        name: "Product Image",
-        component: ProductImage,
         layout: "/main",
       },
     ],
