@@ -40,7 +40,14 @@ function ProductUpload(props) {
     useEffect(() => {
         if (isSubmit) {
             let checkedList = Object.keys(checkedItems).filter(item => checkedItems[item]);
-            dispatch(uploadProduct({ id: product.id, list: checkedList, data: props.source, artworks: props.artworks }));
+            
+            dispatch(uploadProduct({
+                id: product.id,
+                list: checkedList,
+                data: props.source,
+                artworks: props.artworks,
+                masterUrl: props.masterUrl
+            }));
         }
     }, [isSubmit]);
 

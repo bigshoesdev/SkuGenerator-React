@@ -59,7 +59,10 @@ function ImageSideDoubleItem(props) {
         props.onChecked(isLight)
     }, [isLight])
 
-    const handlePreview = (frontUrl, backUrl) => {
+    const handlePreview = (event, frontUrl, backUrl) => {
+        const key = event.target.getAttribute('data-name');
+        let masterUrls = {};
+
         if (frontUrl && backUrl) {
             Object.keys(preview).map(item => {
                 let url = item.includes('front') ? frontUrl : backUrl;
@@ -70,7 +73,9 @@ function ImageSideDoubleItem(props) {
 
                 url = artworkFile ? url.replace('[$artwork]', artworkFile) : null;
                 setPreview(prevState => ({ ...prevState, [item]: url }));
+                masterUrls[item] = url;
             });
+            props.onSetMasters({ key, url: masterUrls });
         }
     }
 
@@ -163,9 +168,10 @@ function ImageSideDoubleItem(props) {
                             {props.source.colorList.map(color => (
                                 <div
                                     key={color.key}
+                                    data-name={color.key}
                                     className="custom-color-picker-item-two mr-1"
                                     style={{ backgroundColor: APP_CONST.COLOR_LIST[color.key] }}
-                                    onClick={(e) => handlePreview(color.front_url, color.back_url)}
+                                    onClick={(e) => handlePreview(e, color.front_url, color.back_url)}
                                 />
                             ))}
                         </div>

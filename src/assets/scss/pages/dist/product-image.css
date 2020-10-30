@@ -13,6 +13,13 @@
   border: 1px solid #595959;
   background-color: #f8f9fe;
 }
+.product-image-container .custom-product-image-card .image-prview-stickers {
+  margin: auto;
+  width: 5vw;
+  min-width: 5vw;
+  border: 1px solid #595959;
+  background-color: #f8f9fe;
+}
 .product-image-container .custom-product-image-card .custom-upload-button {
   border-radius: 6px;
 }

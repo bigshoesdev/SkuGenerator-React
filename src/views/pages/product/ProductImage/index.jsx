@@ -39,8 +39,11 @@ function ProductImage(props) {
     const [themeUrl, setThemeUrl] = useState({});
     const [imageUrl, setImageUrl] = useState({});
     const [skuNumber, setSkuNumber] = useState();
+    const [masterUrl, setMasterUrl] = useState({});
     const [stickersPdf, setStickersPdf] = useState(null);
     const [alert, setAlert] = useState(false);
+    const [isSubmitAlert, setIsSubmitAlert] = useState(null);
+    const [submitAlert, setSubmitAlert] = useState([]);
     const [checkedList, setCheckedList] = useState({});
     const [isDisabled, setIsDisabled] = useState(true);
     const alertEl = useRef(null);
@@ -121,8 +124,8 @@ function ProductImage(props) {
                 data[item] = source[item].colorList;
                 printUrls[item] = source[item].printUrls;
             });
-            props.onUpload(data, imageUrl);
-            dispatch(createProductImages({ id: product.id, data, printUrls, themeUrl, imageUrl }));
+            props.onUpload(data, imageUrl, masterUrl);
+            dispatch(createProductImages({ id: product.id, data, printUrls, themeUrl, imageUrl, masterUrl }));
         }
     }, [props.isSubmit]);
 
@@ -200,60 +203,79 @@ function ProductImage(props) {
     }
 
     const handleSubmit = () => {
-        Object.keys(source).filter(item => item !== 'stickers')
-            .map(item => {
-                let master = source[item]['type'];
+        if (Object.keys(masterUrl).filter(el => el !== 'stickers').sort().toString() ===
+            Object.keys(source).filter(el => el === 'tshirts' || el === 'mugs').sort().toString() &&
+            Object.keys(masterUrl['tshirts']).includes('F') && Object.keys(masterUrl['tshirts']).includes('M')
+        ) {
+            Object.keys(source).filter(item => item !== 'stickers')
+                .map(item => {
+                    let master = source[item]['type'];
 
-                if (Object.keys(imageUrl).includes(item)) {
-                    if (master === 2) {
-                        themes.map(el => {
-                            if (!Object.keys(imageUrl[item]).includes(el)) {
+                    if (Object.keys(imageUrl).includes(item)) {
+                        if (master === 2) {
+                            themes.map(el => {
+                                if (!Object.keys(imageUrl[item]).includes(el)) {
+                                    setImageUrl(prevState => ({
+                                        ...prevState, [item]: {
+                                            ...prevState[item], [el]: themeUrl[el]
+                                        }
+                                    }));
+                                }
+                            });
+                        } else if (master === 3) {
+                            let theme = checkedList[item] ? 'light' : 'dark';
+                            sides.map(el => {
+                                if (!Object.keys(imageUrl[item]).includes(el)) {
+                                    setImageUrl(prevState => ({
+                                        ...prevState, [item]: {
+                                            ...prevState[item], [el]: themeUrl[theme]
+                                        }
+                                    }));
+                                }
+                            });
+                        }
+                    } else {
+                        if (master === 2) {
+                            themes.map(el => {
                                 setImageUrl(prevState => ({
                                     ...prevState, [item]: {
                                         ...prevState[item], [el]: themeUrl[el]
                                     }
                                 }));
-                            }
-                        });
-                    } else if (master === 3) {
-                        let theme = checkedList[item] ? 'light' : 'dark';
-                        sides.map(el => {
-                            if (!Object.keys(imageUrl[item]).includes(el)) {
+                            });
+                        } else if (master === 3) {
+                            let theme = checkedList[item] ? 'light' : 'dark';
+                            sides.map(el => {
                                 setImageUrl(prevState => ({
                                     ...prevState, [item]: {
                                         ...prevState[item], [el]: themeUrl[theme]
                                     }
                                 }));
-                            }
-                        });
+                            });
+                        }
                     }
-                } else {
-                    if (master === 2) {
-                        themes.map(el => {
-                            setImageUrl(prevState => ({
-                                ...prevState, [item]: {
-                                    ...prevState[item], [el]: themeUrl[el]
-                                }
-                            }));
-                        });
-                    } else if (master === 3) {
-                        let theme = checkedList[item] ? 'light' : 'dark';
-                        sides.map(el => {
-                            setImageUrl(prevState => ({
-                                ...prevState, [item]: {
-                                    ...prevState[item], [el]: themeUrl[theme]
-                                }
-                            }));
-                        });
-                    }
-                }
-            });
+                });
 
-        if (stickersPdf) {
-            dispatch(uploadStickersPDF({ file: stickersPdf, sku: skuNumber }));
+            if (stickersPdf) {
+                dispatch(uploadStickersPDF({ file: stickersPdf, sku: skuNumber }));
+            }
+            props.onCheckIsSubmit();
+            props.onCheckIsSubmit(true);
+        } else {
+            let elements = Object.keys(source).filter(el => el === 'tshirts' || el === 'mugs').filter(e =>
+                Object.keys(masterUrl).indexOf(e) === -1
+            );
+
+            if (!elements.includes('tshirts')) {
+                if (!Object.keys(masterUrl['tshirts']).includes('F') ||
+                    !Object.keys(masterUrl['tshirts']).includes('M')
+                ) {
+                    elements.push('tshirts');
+                }
+            }
+            setSubmitAlert(elements);
+            setIsSubmitAlert(true);
         }
-        props.onSubmit(true);
-        props.onCheckIsSubmit();
     }
 
     const handleFileUpload = (event) => {
@@ -294,6 +316,30 @@ function ProductImage(props) {
                         type='button'
                         color='danger'
                         onClick={() => setAlert(false)}
+                    >
+                        {"Confirm"}
+                    </Button>
+                </ModalFooter>
+            </Modal>
+            <Modal
+                isOpen={isSubmitAlert}
+                toggle={() => setIsSubmitAlert(false)}
+            >
+                <ModalHeader>{"Warning"}</ModalHeader>
+                <ModalBody>
+                    {`Please select exact colour for each product master type.
+                    Following are ones that don't have exact colour.`}<br />
+                    <ul>
+                        {submitAlert.map(item =>
+                            <li key={item}>{item.charAt(0).toUpperCase() + item.slice(1)}</li>
+                        )}
+                    </ul>
+                </ModalBody>
+                <ModalFooter>
+                    <Button
+                        type='button'
+                        color='danger'
+                        onClick={() => setIsSubmitAlert(false)}
                     >
                         {"Confirm"}
                     </Button>
@@ -388,6 +434,17 @@ function ProductImage(props) {
                                         }
                                         onUploadFile={handleUploadFile}
                                         onRemoveFile={handleRemoveFile}
+                                        onSetMasters={(data) => {
+                                            if (item === 'tshirts') {
+                                                setMasterUrl(prevState => ({
+                                                    ...prevState, [item]: {
+                                                        ...prevState[item], [data.gender]: data
+                                                    }
+                                                }));
+                                            } else {
+                                                setMasterUrl(prevState => ({ ...prevState, [item]: data }));
+                                            }
+                                        }}
                                     />
                                 </Col>
                             }
@@ -410,6 +467,7 @@ function ProductImage(props) {
                                         onUploadFile={handleUploadFile}
                                         onRemoveFile={handleRemoveFile}
                                         onChecked={(value) => setCheckedList(prevState => ({ ...prevState, [item]: value }))}
+                                        onSetMasters={(data) => setMasterUrl(prevState => ({ ...prevState, [item]: data }))}
                                     />
                                 </Col>
                             }

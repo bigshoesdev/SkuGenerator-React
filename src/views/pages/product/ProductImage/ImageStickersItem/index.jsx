@@ -34,7 +34,7 @@ function ImageStickersItem(props) {
                         <Row>
                             <Col md={12}>
                                 <img
-                                    className="image-prview mb-2"
+                                    className={preview ? "image-prview-stickers mb-2" : "image-prview mb-2"}
                                     src={props.imageUrl && Object.keys(props.imageUrl).includes('artwork') && props.imageUrl.artwork ?
                                         props.imageUrl.artwork : null}
                                 />

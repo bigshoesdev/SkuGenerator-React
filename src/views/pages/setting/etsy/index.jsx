@@ -32,8 +32,9 @@ import { updateEtsySetting } from '../../../../store/actions/setting';
 
 const columns = [
     { id: 'id', label: 'No', width: '5%' },
-    { id: 'url', label: 'URL', width: '75%' },
+    { id: 'url', label: 'URL', width: '70%' },
     { id: 'type', label: 'Type', width: '10%' },
+    { id: 'color', label: 'Colour', width: '5%' },
     { id: 'action', label: 'Action', width: '10%' },
 ];
 
@@ -246,6 +247,9 @@ function EtsySetting() {
                                                                 case 'url':
                                                                     value = <span>{item[el.id]}</span>;
                                                                     style = { width: el.width, whiteSpace: 'normal', maxWidth: '30rem' }
+                                                                    break;
+                                                                case 'color':
+                                                                    value = <span>{item[el.id]}</span>;
                                                                     break;
                                                                 default:
                                                                     break;

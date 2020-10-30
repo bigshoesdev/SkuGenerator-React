@@ -57,12 +57,16 @@ function ImageDoubleItem(props) {
 
     const handlePreview = (event, url) => {
         const name = event.target.getAttribute('name');
+        const key = event.target.getAttribute('data-name');
+        const gender = event.target.getAttribute('data-gender');
+
         if (url) {
             let artworkFile = props.imageUrl && Object.keys(props.imageUrl).includes(name) && props.imageUrl[name] ?
                 baseName(props.imageUrl[name]) : Object.keys(props.themeUrl).includes(name) && props.themeUrl[name] ?
                     baseName(props.themeUrl[name]) : null;
             url = artworkFile ? url.replace("[$artwork]", artworkFile) : null;
             setPreview(prevState => ({ ...prevState, [name]: url }));
+            props.onSetMasters({ key, gender, url });
         }
     }
 
@@ -152,7 +156,9 @@ function ImageDoubleItem(props) {
                                                         <div
                                                             key={`${color.key}-${idx}`}
                                                             name={color.theme === 'D' ? 'dark' : 'light'}
-                                                            className="custom-color-picker-item-one mr-1"
+                                                            className={`custom-color-picker-item-one mr-1`}
+                                                            data-name={color.key}
+                                                            data-gender={color.gender}
                                                             style={{ backgroundColor: APP_CONST.COLOR_LIST[color.key] }}
                                                             onClick={(e) => handlePreview(e, color.url)}
                                                         />
