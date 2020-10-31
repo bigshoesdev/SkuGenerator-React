@@ -60,6 +60,11 @@
                 border: 1px solid #595959;
                 border-radius: 50%;
             }
+
+            .color-picker-clicked {
+                box-shadow: 1.5px 1.5px 1px 1px #999;
+                border: 1.5px solid #000;
+            }
         }
 
         .custom-color-picker-title {

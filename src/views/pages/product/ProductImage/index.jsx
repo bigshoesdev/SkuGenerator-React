@@ -432,6 +432,10 @@ function ProductImage(props) {
                                             Object.keys(imageUrl).includes(item) ?
                                                 imageUrl[item] : null
                                         }
+                                        masterUrl={
+                                            Object.keys(masterUrl).includes(item) ?
+                                                masterUrl[item] : null
+                                        }
                                         onUploadFile={handleUploadFile}
                                         onRemoveFile={handleRemoveFile}
                                         onSetMasters={(data) => {
@@ -463,6 +467,10 @@ function ProductImage(props) {
                                         imageUrl={
                                             Object.keys(imageUrl).includes(item) ?
                                                 imageUrl[item] : null
+                                        }
+                                        masterUrl={
+                                            Object.keys(masterUrl).includes(item) ?
+                                                masterUrl[item] : null
                                         }
                                         onUploadFile={handleUploadFile}
                                         onRemoveFile={handleRemoveFile}

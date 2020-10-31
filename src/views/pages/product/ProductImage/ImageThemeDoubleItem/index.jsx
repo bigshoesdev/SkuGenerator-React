@@ -152,11 +152,16 @@ function ImageDoubleItem(props) {
                                             {props.source.colorList.map(color => {
                                                 if (color.theme === APP_CONST.THEME[index]
                                                     && (color.gender === '' || color.gender === APP_CONST.GENDER_LIST[idx].key)) {
+                                                    let customStyle = props.masterUrl &&
+                                                        Object.keys(props.masterUrl).includes(APP_CONST.GENDER_LIST[idx].key) &&
+                                                        props.masterUrl[APP_CONST.GENDER_LIST[idx].key].key === color.key ?
+                                                        "color-picker-clicked" : "";
+
                                                     return (
                                                         <div
                                                             key={`${color.key}-${idx}`}
                                                             name={color.theme === 'D' ? 'dark' : 'light'}
-                                                            className={`custom-color-picker-item-one mr-1`}
+                                                            className={`custom-color-picker-item-one ${customStyle} mr-1`}
                                                             data-name={color.key}
                                                             data-gender={color.gender}
                                                             style={{ backgroundColor: APP_CONST.COLOR_LIST[color.key] }}

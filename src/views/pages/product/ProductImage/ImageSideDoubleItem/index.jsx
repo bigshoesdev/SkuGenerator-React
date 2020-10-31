@@ -165,15 +165,18 @@ function ImageSideDoubleItem(props) {
                         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
                         <div className="custom-color-picker">
-                            {props.source.colorList.map(color => (
-                                <div
-                                    key={color.key}
-                                    data-name={color.key}
-                                    className="custom-color-picker-item-two mr-1"
-                                    style={{ backgroundColor: APP_CONST.COLOR_LIST[color.key] }}
-                                    onClick={(e) => handlePreview(e, color.front_url, color.back_url)}
-                                />
-                            ))}
+                            {props.source.colorList.map(color => {
+                                let customStyle = props.masterUrl && props.masterUrl.key === color.key ? "color-picker-clicked" : "";
+                                return (
+                                    <div
+                                        key={color.key}
+                                        data-name={color.key}
+                                        className={`custom-color-picker-item-two ${customStyle} mr-1`}
+                                        style={{ backgroundColor: APP_CONST.COLOR_LIST[color.key] }}
+                                        onClick={(e) => handlePreview(e, color.front_url, color.back_url)}
+                                    />
+                                );
+                            })}
                         </div>
                     </Col>
                 </Row>
