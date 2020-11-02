@@ -462,7 +462,7 @@ class ApprovedWordList extends React.Component {
           <NotificationAlert ref='notificationAlert' />
         </div>
         <MainHeader name='Approved Keywords' parentName='Trademark' />
-        <Container className='mt--6 category-list-container' fluid>
+        <Container className='mt--6 trademark-container' fluid>
           <Card style={{ minHeight: '700px' }}>
             <CardBody>
               <Row>

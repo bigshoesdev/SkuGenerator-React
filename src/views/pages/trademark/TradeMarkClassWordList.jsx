@@ -120,7 +120,7 @@ function TrademarkClassWordList() {
   return (
     <>
       <MainHeader name="Trademark Class Word List" parentName="Trademark" />
-      <Container className="mt--6 category-list-container" fluid>
+      <Container className="mt--6 trademark-container" fluid>
         <Card style={{ minHeight: "700px" }}>
           <CardBody>
             <Row>

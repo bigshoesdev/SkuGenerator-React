@@ -103,7 +103,8 @@ function ProductImage(props) {
                         el.front_url = el.front_url.replace("[$artwork]", baseName(imageUrl[item]['front']));
                         el.back_url = el.back_url.replace("[$artwork]", baseName(imageUrl[item]['back']));
                     } else if (master === 4) {
-                        el.url = el.url.replace("[$artwork]", baseName(imageUrl[item]['artwork']));
+                        if (Object.keys(imageUrl).includes(item))
+                            el.url = el.url.replace("[$artwork]", baseName(imageUrl[item]['artwork']));
                     }
                 });
 
