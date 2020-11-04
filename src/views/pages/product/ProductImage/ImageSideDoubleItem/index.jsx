@@ -147,21 +147,30 @@ function ImageSideDoubleItem(props) {
                     ))}
                 </Row>
                 <Row className="mb-2 mt-2">
-                    <Col md={4}>
+                    <Col md={3}>
                         <div style={{ justifyContent: 'center', alignItems: 'center', display: 'flex' }}>
                             <Label className="custom-toggle">
                                 <Input type="checkbox" checked={isLight} onChange={() => setIsLight(!isLight)} />
                                 <span className="custom-toggle-slider rounded-circle" />
                             </Label>
                             <small className="ml-2">{"For Light"}</small>
-                            <img
-                                src={require(`assets/img/theme/color-wheel.png`)}
-                                style={{ width: '12%', height: '12%' }} className="ml-2"
-                            />
+                        </div>
+                    </Col>
+                    <Col md={3}>
+                        <div style={{ justifyContent: 'center', alignItems: 'center', display: 'flex' }}>
+                            <Label className="custom-toggle">
+                                <Input
+                                    type="checkbox"
+                                    checked={!props.skipItems.includes(props.variant)}
+                                    onChange={(e) => props.onSkipItems(props.variant, !e.target.checked)}
+                                />
+                                <span className="custom-toggle-slider rounded-circle" />
+                            </Label>
+                            <small className="ml-2">{"Upload"}</small>
                         </div>
                     </Col>
                     <Col
-                        md={8}
+                        md={6}
                         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
                         <div className="custom-color-picker">

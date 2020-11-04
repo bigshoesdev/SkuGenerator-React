@@ -14,8 +14,6 @@ import {
     ModalHeader,
     ModalBody,
     ModalFooter,
-
-    Container
 } from 'reactstrap';
 
 import ImageThemeDoubleItem from './ImageThemeDoubleItem';
@@ -40,6 +38,7 @@ function ProductImage(props) {
     const [imageUrl, setImageUrl] = useState({});
     const [skuNumber, setSkuNumber] = useState();
     const [masterUrl, setMasterUrl] = useState({});
+    const [skipItems, setSkipItems] = useState(['stickers']);
     const [stickersPdf, setStickersPdf] = useState(null);
     const [alert, setAlert] = useState(false);
     const [isSubmitAlert, setIsSubmitAlert] = useState(null);
@@ -125,7 +124,7 @@ function ProductImage(props) {
                 data[item] = source[item].colorList;
                 printUrls[item] = source[item].printUrls;
             });
-            props.onUpload(data, imageUrl, masterUrl);
+            props.onUpload(data, imageUrl, masterUrl, skipItems);
             dispatch(createProductImages({ id: product.id, data, printUrls, themeUrl, imageUrl, masterUrl }));
         }
     }, [props.isSubmit]);
@@ -143,6 +142,15 @@ function ProductImage(props) {
             showNotification(responseErrors);
         }
     }, [message, responseErrors])
+
+    useEffect(() => {
+        if (Object.keys(imageUrl).includes('stickers') &&
+            Object.keys(imageUrl.stickers).includes('artwork') &&
+            imageUrl.stickers.artwork
+        ) {
+            setSkipItems(skipItems.filter(d => d !== "stickers"))
+        }
+    }, [imageUrl])
 
     const showNotification = (message) => {
         let options = {
@@ -437,6 +445,12 @@ function ProductImage(props) {
                                             Object.keys(masterUrl).includes(item) ?
                                                 masterUrl[item] : null
                                         }
+                                        skipItems={skipItems}
+                                        onSkipItems={(data, checked) => {
+                                            checked ?
+                                                setSkipItems(prevState => ([...prevState, data])) :
+                                                setSkipItems(skipItems.filter(d => d !== data))
+                                        }}
                                         onUploadFile={handleUploadFile}
                                         onRemoveFile={handleRemoveFile}
                                         onSetMasters={(data) => {
@@ -473,6 +487,12 @@ function ProductImage(props) {
                                             Object.keys(masterUrl).includes(item) ?
                                                 masterUrl[item] : null
                                         }
+                                        skipItems={skipItems}
+                                        onSkipItems={(data, checked) => {
+                                            checked ?
+                                                setSkipItems(prevState => ([...prevState, data])) :
+                                                setSkipItems(skipItems.filter(d => d !== data))
+                                        }}
                                         onUploadFile={handleUploadFile}
                                         onRemoveFile={handleRemoveFile}
                                         onChecked={(value) => setCheckedList(prevState => ({ ...prevState, [item]: value }))}
@@ -485,10 +505,17 @@ function ProductImage(props) {
                                     <ImageStickersItem
                                         source={source[item]}
                                         skuNumber={skuNumber}
+                                        variant={item}
                                         imageUrl={
                                             Object.keys(imageUrl).includes(item) ?
                                                 imageUrl[item] : null
                                         }
+                                        skipItems={skipItems}
+                                        onSkipItems={(data, checked) => {
+                                            checked ?
+                                                setSkipItems(prevState => ([...prevState, data])) :
+                                                setSkipItems(skipItems.filter(d => d !== data))
+                                        }}
                                     />
                                 </Col>
                             }

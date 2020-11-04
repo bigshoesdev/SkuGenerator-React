@@ -6,6 +6,8 @@ import {
     Row,
     Col,
     Button,
+    Input,
+    Label
 } from 'reactstrap';
 
 import APP_CONST from '../../../../../helper/constant';
@@ -74,60 +76,80 @@ function ImageDoubleItem(props) {
         <Card>
             <CardBody className="custom-product-image-card image-process-panel pb-1">
                 <Row>
-                    {Object.keys(INIT_IMAGE_URL).map(item => (
-                        <Col md={2} className="p-0" key={item}>
-                            <Row style={{ height: '2.5rem' }}>
-                                {item === 'light' &&
-                                    <Col md={12}>
-                                        <h4 className="mb-4">{props.source.title}</h4>
-                                    </Col>
-                                }
-                            </Row>
-                            <Row>
-                                <Col md={12}>
-                                    <img
-                                        className="image-prview mb-2"
-                                        src={
-                                            (props.imageUrl && Object.keys(props.imageUrl).includes(item) && props.imageUrl[item]) ?
-                                                props.imageUrl[item] : null
+                    <Col md={4}>
+                        <Row>
+                            {Object.keys(INIT_IMAGE_URL).map(item => (
+                                <Col md={6} className="p-0" key={item}>
+                                    <Row style={{ height: '2.5rem' }}>
+                                        {item === 'light' &&
+                                            <Col md={12}>
+                                                <h4 className="mb-4">{props.source.title}</h4>
+                                            </Col>
                                         }
-                                    />
+                                    </Row>
+                                    <Row>
+                                        <Col md={12}>
+                                            <img
+                                                className="image-prview mb-2"
+                                                src={
+                                                    (props.imageUrl && Object.keys(props.imageUrl).includes(item) && props.imageUrl[item]) ?
+                                                        props.imageUrl[item] : null
+                                                }
+                                            />
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md={12}>
+                                            <Button
+                                                id={`${preFile}-${item}`}
+                                                name={item}
+                                                type='button'
+                                                color='primary'
+                                                className="custom-upload-button mb-1"
+                                                size="sm"
+                                                style={{ width: '97%', fontSize: '0.65rem' }}
+                                                onClick={(e) => props.onUploadFile(e, props.variant)}
+                                            >
+                                                {`Upload ${item.charAt(0).toUpperCase() + item.slice(1)}`}
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md={12}>
+                                            <Button
+                                                id={`${preFile}-${item}`}
+                                                name={item}
+                                                type='button'
+                                                color='primary'
+                                                className="custom-upload-button"
+                                                size="sm"
+                                                style={{ width: '97%', fontSize: '0.65rem' }}
+                                                onClick={(e) => props.onRemoveFile(e, props.variant)}
+                                            >
+                                                {`Remove ${item.charAt(0).toUpperCase() + item.slice(1)}`}
+                                            </Button>
+                                        </Col>
+                                    </Row>
+
                                 </Col>
-                            </Row>
-                            <Row>
-                                <Col md={12}>
-                                    <Button
-                                        id={`${preFile}-${item}`}
-                                        name={item}
-                                        type='button'
-                                        color='primary'
-                                        className="custom-upload-button mb-1"
-                                        size="sm"
-                                        style={{ width: '97%', fontSize: '0.65rem' }}
-                                        onClick={(e) => props.onUploadFile(e, props.variant)}
-                                    >
-                                        {`Upload ${item.charAt(0).toUpperCase() + item.slice(1)}`}
-                                    </Button>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md={12}>
-                                    <Button
-                                        id={`${preFile}-${item}`}
-                                        name={item}
-                                        type='button'
-                                        color='primary'
-                                        className="custom-upload-button"
-                                        size="sm"
-                                        style={{ width: '97%', fontSize: '0.65rem' }}
-                                        onClick={(e) => props.onRemoveFile(e, props.variant)}
-                                    >
-                                        {`Remove ${item.charAt(0).toUpperCase() + item.slice(1)}`}
-                                    </Button>
-                                </Col>
-                            </Row>
-                        </Col>
-                    ))}
+                            ))}
+                        </Row>
+                        <Row>
+                            <Col md={12} className="mt-3">
+                                <div style={{ justifyContent: 'left', alignItems: 'center', display: 'flex' }}>
+                                    <Label className="custom-toggle">
+                                        <Input
+                                            type="checkbox"
+                                            checked={!props.skipItems.includes(props.variant)}
+                                            onChange={(e) => props.onSkipItems(props.variant, !e.target.checked)}
+                                        />
+                                        <span className="custom-toggle-slider rounded-circle" />
+                                    </Label>
+                                    <small className="ml-2">{"Upload"}</small>
+                                </div>
+                            </Col>
+                        </Row>
+                    </Col>
                     {Array(props.source.type).fill(null).map((value, index) => (
                         <Col md={4} className="p-0" key={`${props.variant}-${index}`}>
                             <img

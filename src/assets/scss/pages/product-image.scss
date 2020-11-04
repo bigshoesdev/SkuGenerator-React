@@ -48,8 +48,8 @@
             display: flex;
 
             .custom-color-picker-item-one {
-                width: 12px;
-                height: 12px;
+                width: 15px;
+                height: 15px;
                 border: 1px solid #595959;
                 border-radius: 50%;
             }
@@ -62,8 +62,8 @@
             }
 
             .color-picker-clicked {
-                box-shadow: 1.5px 1.5px 1px 1px #999;
-                border: 1.5px solid #000;
+                border: 1px solid #FFF;
+                box-shadow: 0 0 0 2pt #00859B;
             }
         }
 

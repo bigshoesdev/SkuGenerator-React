@@ -46,7 +46,8 @@ function ProductUpload(props) {
                 list: checkedList,
                 data: props.source,
                 artworks: props.artworks,
-                masterUrl: props.masterUrl
+                masterUrl: props.masterUrl,
+                skipItems: props.skipItems
             }));
         }
     }, [isSubmit]);
@@ -92,7 +93,7 @@ function ProductUpload(props) {
         setIsSubmit(true);
         props.onSubmit(true);
     }
-
+    
     return (
         <Card style={{ minHeight: '500px' }}>
             <div className='rna-wrapper'>
