@@ -2,7 +2,7 @@ import React from 'react';
 import classnames from 'classnames';
 import moment from 'moment';
 import { connect } from 'react-redux';
-import { allArtists } from '../../../store/actions/artist';
+import { allArtists } from '../../../../store/actions/artist';
 import NotificationAlert from 'react-notification-alert';
 import {
   Card,
@@ -20,9 +20,9 @@ import {
   ButtonGroup,
 } from 'reactstrap';
 
-import MainHeader from '../../components/headers/MainHeader';
-import APP_CONST from '../../../helper/constant';
-import http from '../../../helper/http';
+import MainHeader from '../../../components/headers/MainHeader';
+import APP_CONST from '../../../../helper/constant';
+import http from '../../../../helper/http';
 
 class Performance extends React.Component {
   constructor(props) {

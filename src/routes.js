@@ -22,7 +22,8 @@ import DescriptionVariant from "./views/pages/variant/DescriptionVariant";
 import ApprovedWordList from "./views/pages/trademark/ApprovedWordList";
 import BannedWordList from "./views/pages/trademark/BannedWordList";
 import TradeMarkClassWordList from "./views/pages/trademark/TradeMarkClassWordList";
-import Performance from "./views/pages/performance/Performance";
+import Performance from "./views/pages/performance/performance";
+import Marketplaces from "./views/pages/performance/marketplaces";
 
 
 export const authRoutes = [
@@ -189,13 +190,25 @@ export const routes = [
     layout: "/main",
   },
   {
-    path: "/performance",
+    collapse: true,
     name: "Performance",
     icon: "ni ni-atom text-green",
-    component: Performance,
-    layout: "/main",
+    state: "performanceCollapse",
+    views: [
+      {
+        path: "/performance",
+        name: "Performance",
+        component: Performance,
+        layout: "/main",
+      },
+      {
+        path: "/marketplaces",
+        name: "Marketplaces",
+        component: Marketplaces,
+        layout: "/main",
+      },
+    ],
   },
-
   {
     collapse: true,
     name: "Setting",

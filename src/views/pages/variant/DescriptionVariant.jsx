@@ -170,15 +170,15 @@ function DescriptionVariant() {
                                                     <tr>
                                                         {Object.keys(item).filter(el => el !== 'id' && el !== 'master').map(el => (
                                                             <td
-                                                                className="text-center"
+                                                                key={el}
                                                                 contentEditable={isEdit[item.master] && isEdit[item.master][el] ? true : false}
                                                                 onInput={e => emitChange(e, item.master, el)}
                                                                 onBlur={e => emitChange(e, item.master, el)}
                                                                 suppressContentEditableWarning={true}
                                                                 style={isEdit[item.master] && isEdit[item.master][el] ?
-                                                                    { border: '2px solid', whiteSpace: 'normal' } : { border: '1px' }
+                                                                    { border: '2px solid', whiteSpace: 'pre-line', verticalAlign: 'top', textAlign: 'left' } :
+                                                                    { border: '1px', textAlign: 'center' }
                                                                 }
-                                                                key={el}
                                                             >
                                                                 {item[el]}
                                                             </td>
