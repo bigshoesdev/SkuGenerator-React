@@ -4,6 +4,7 @@ import ProductList from "views/pages/product/ProductList.jsx";
 import ProductCreate from "views/pages/product/ProductCreate.jsx";
 import ProductDetail from "views/pages/product/ProductDetail.jsx";
 import ProductImageSet from "views/pages/product/ProductImageSet.jsx";
+import ProductStatus from "views/pages/product/ProductStatus.jsx";
 import KeywordList from "views/pages/keyword/KeywordList.jsx";
 import CategoryList from "views/pages/category";
 import ArtistList from "views/pages/artist/ArtistList.jsx";
@@ -22,8 +23,7 @@ import DescriptionVariant from "./views/pages/variant/DescriptionVariant";
 import ApprovedWordList from "./views/pages/trademark/ApprovedWordList";
 import BannedWordList from "./views/pages/trademark/BannedWordList";
 import TradeMarkClassWordList from "./views/pages/trademark/TradeMarkClassWordList";
-import Performance from "./views/pages/performance/performance";
-import Marketplaces from "./views/pages/performance/marketplaces";
+import Performance from "./views/pages/performance/Performance.jsx";
 
 
 export const authRoutes = [
@@ -64,6 +64,12 @@ export const routes = [
         path: "/product-imageset",
         name: "Product Image Set",
         component: ProductImageSet,
+        layout: "/main",
+      },
+      {
+        path: "/product-status",
+        name: "Product Status",
+        component: ProductStatus,
         layout: "/main",
       },
       {
@@ -190,24 +196,12 @@ export const routes = [
     layout: "/main",
   },
   {
-    collapse: true,
+    path: "/performance",
     name: "Performance",
     icon: "ni ni-atom text-green",
+    component: Performance,
     state: "performanceCollapse",
-    views: [
-      {
-        path: "/performance",
-        name: "Performance",
-        component: Performance,
-        layout: "/main",
-      },
-      {
-        path: "/marketplaces",
-        name: "Marketplaces",
-        component: Marketplaces,
-        layout: "/main",
-      },
-    ],
+    layout: "/main",
   },
   {
     collapse: true,

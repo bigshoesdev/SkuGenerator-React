@@ -1,0 +1,14 @@
+.product-status-container {
+
+    .card .table td:not(.td-action),
+    .card .table th {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .card .table td,
+    .card .table th {
+        font-size: 0.75rem;
+    }
+}

@@ -720,9 +720,16 @@ class ProductCreate extends React.Component {
                             <hr style={{ borderTop: '1px solid rgba(0, 0, 0, 0.3)' }} />
                             <Row className='mt-2 mb-1'>
                               {Object.keys(this.state.checkResult['US']).map(item => (
-                                <small className='mb-2 ml-3' key={`check-result-us-${item}`}>
-                                  {this.state.checkResult['US'][item]}
-                                </small>
+                                <React.Fragment key={`check-result-us-${item}`}>
+                                  <small className='mb-2 ml-3'>
+                                    {this.state.checkResult['US'][item].map(el => (
+                                      <React.Fragment key={`check-result-us-${el.id}`}>
+                                        {el}<br />
+                                      </React.Fragment>
+                                    ))}
+                                  </small>
+                                  <br />
+                                </React.Fragment>
                               ))}
                             </Row>
                           </> : null}
