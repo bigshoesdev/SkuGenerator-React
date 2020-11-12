@@ -124,11 +124,9 @@ function EtsySetting() {
                             <FormGroup>
                                 <Input
                                     name="name"
-                                    required
                                     value={urlValue}
                                     placeholder="e.g. Tshirt Name"
                                     type="text"
-                                    minLength={5}
                                     onChange={(e) => setUrlValue(e.target.value)}
                                 />
                             </FormGroup>

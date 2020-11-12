@@ -41,10 +41,10 @@ const INIT_ENTITIES = {
 };
 
 const COLUMNS = [
-    { name: 'no', width: '5%' },
-    { name: 'title', width: '20%' },
-    { name: 'sku', width: '10%' },
-    { name: 'status', width: '10%' },
+    { id: 'id', name: 'no', width: '5%' },
+    { id: 'product_title', name: 'title', width: '20%' },
+    { id: 'product_no', name: 'sku', width: '10%' },
+    { id: 'product_status', name: 'status', width: '10%' },
 ];
 
 function ProductStatus() {
@@ -54,8 +54,7 @@ function ProductStatus() {
     const [isOpen, setIsOpen] = useState({});
     const [isOpenError, setIsOpenError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [sortedColumn, setSortedColumn] = useState('updated_at');
-    const [order, setOrder] = useState('desc');
+    const [pagination, setPagination] = useState({ sortedColumn: 'updated_at', order: 'desc' })
     const alertEl = useRef(null);
     const offset = 5;
 
@@ -73,7 +72,7 @@ function ProductStatus() {
         if (entities.data.length > 0) {
             const interval = setInterval(() => {
                 fetchEntities();
-            }, 120000);
+            }, 30000);
             return () => clearInterval(interval);
         } else {
             fetchEntities()
@@ -89,7 +88,7 @@ function ProductStatus() {
     }, [message, responseErrors]);
 
     const fetchEntities = () => {
-        let fetchUrl = `${APP_CONST.API_URL}/marketplaces/?&page=${page}&column=${sortedColumn}&order=${order}&per_page=${entities.per_page}&search_key=${searchKey}`;
+        let fetchUrl = `${APP_CONST.API_URL}/marketplaces/?&page=${page}&column=${pagination.sortedColumn}&order=${pagination.order}&per_page=${entities.per_page}&search_key=${searchKey}`;
         http
             .get(fetchUrl)
             .then((response) => {
@@ -121,7 +120,15 @@ function ProductStatus() {
         return pagesArray;
     }
 
-    const sortByColumn = () => { };
+    const sortByColumn = (column) => {
+        column === pagination.sortedColumn ?
+            pagination.order === 'desc' ?
+                setPagination(prevState => ({ ...prevState, order: 'asc' })) :
+                setPagination(prevState => ({ ...prevState, order: 'desc' })) :
+            setPagination({ sortedColumn: column, order: 'asc' });
+        setPage(1);
+        fetchEntities();
+    };
 
     const showNotification = (message) => {
         let options = {
@@ -185,30 +192,38 @@ function ProductStatus() {
                                                 className='text-center'
                                                 style={{ width: item.width }}
                                                 onClick={
-                                                    item.name = "sku" || item.name === "status" ?
-                                                        () => sortByColumn(item) : undefined
+                                                    item.id === "product_no" || item.name === "status" ?
+                                                        () => sortByColumn(item.id) : undefined
                                                 }
                                             >
                                                 {item.name}
+                                                {item.id === pagination.sortedColumn ?
+                                                    pagination.order === 'asc' ?
+                                                        <i className='fa fa-sort-alpha-down' /> : <i className='fa fa-sort-alpha-up' />
+                                                    : null}
                                             </th>
                                         ))}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {entities.data.map((item, idx) => {
-                                        let total = { status: null, color: '#FFF' };
-
-                                        if (item.status.some(el => el.status === 3) &&
-                                            item.status.every(el => el.status === 3 || el.status === 0)
-                                        ) {
-                                            total.status = 'Success'
-                                            total.color = '#5bd75b';
-                                        } else if (item.status.some(el => el.status === 2)) {
-                                            total.status = 'Failure'
-                                            total.color = '#ff6666';
-                                        } else if (item.status.some(el => el.status === 0 || el.status === 1)) {
-                                            total.status = 'Process'
-                                            total.color = '#66ccff';
+                                        let total = { status: 'New', color: '#fff' };
+                                        
+                                        switch (item.product_status) {
+                                            case 1:
+                                                total.status = 'Process'
+                                                total.color = '#66ccff';
+                                                break;
+                                            case 2:
+                                                total.status = 'Failure'
+                                                total.color = '#ff6666';
+                                                break;
+                                            case 3:
+                                                total.status = 'Success'
+                                                total.color = '#5bd75b';
+                                                break;
+                                            default:
+                                                break;
                                         }
 
                                         return (
@@ -227,7 +242,14 @@ function ProductStatus() {
                                                     <td>{idx + 1}</td>
                                                     <td>{item.product_title}</td>
                                                     <td>{item.product_no}</td>
-                                                    <td style={{ backgroundColor: total.color, color: "#fff" }}>{total.status}</td>
+                                                    <td
+                                                        style={{
+                                                            backgroundColor: total.color,
+                                                            color: total.status === 'New' ? "#000" : "#fff"
+                                                        }}
+                                                    >
+                                                        {total.status}
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <td colSpan="4" style={{ padding: 0 }}>

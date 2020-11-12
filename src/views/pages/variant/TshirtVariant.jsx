@@ -782,7 +782,7 @@ class TshirtVariant extends React.Component {
                           <Input
                             name="url"
                             ref="url"
-                              type="text"
+                            type="text"
                             value={modalTshirt.url}
                             onChange={this.handleChangeSelect}
                           />
@@ -813,6 +813,23 @@ class TshirtVariant extends React.Component {
                       </ModalFooter>
                     </Form>
                   </Modal>
+                </Col>
+                <Col md={6}>
+                  <p className="font-weight-bold" style={{ fontSize: '0.75rem' }}>
+                    <i
+                      className="fas fa-exclamation-triangle"
+                      style={{ color: "#cece14",  fontSize: '0.9rem'}}
+                    ></i>
+                    {` Product Picture: Insert URL Only to SMALL Sizes only.`}<br />
+                    {`Print file: `}
+                    <span>
+                      {`Dark Artwork File - Insert Print URL Only to Black Colour only - Apply to Mens & Womens`}
+                    </span><br />
+                    <span className="ml-5">
+                      {`Light Artwork File - Insert Print URL Only to White Colour only - Apply to Mens & Womens`}
+                    </span><br />
+                    {`Shortcode: [$artwork-dark]; [$artwork-light]`}
+                  </p>
                 </Col>
                 <Col>
                   <div className="div-searchbar-createtshirt">

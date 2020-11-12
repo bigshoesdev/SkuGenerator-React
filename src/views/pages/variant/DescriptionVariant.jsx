@@ -126,6 +126,17 @@ function DescriptionVariant() {
             <Container className="mt--6 description-variant-container" fluid>
                 <Card style={{ minHeight: "700px" }}>
                     <CardBody>
+                        <Row>
+                            <Col md={12}>
+                                <p className="font-weight-bold" style={{ fontSize: '0.9rem' }}>
+                                    <i
+                                        className="fas fa-exclamation-triangle"
+                                        style={{ color: "#cece14", fontSize: '1rem' }}
+                                    ></i>
+                                    <span className="ml-2">{`Shortcodes: [$product_title]; [stickers_width]; [stickers_height]`}</span>
+                                </p>
+                            </Col>
+                        </Row>
                         {source.map(item => (
                             <Row key={item.id}>
                                 <Col md={12} xl={12}>

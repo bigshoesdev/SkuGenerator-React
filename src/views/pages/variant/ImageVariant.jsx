@@ -81,7 +81,7 @@ class ImageVariant extends React.Component {
 
     if (nextProps.responseErrors) {
       this.showNotification(nextProps.responseErrors);
-      if(nextProps.responseErrors != 'There is a server connection Error, Try Later.') {
+      if (nextProps.responseErrors != 'There is a server connection Error, Try Later.') {
         this.props.getVariantImages();
       }
     }
@@ -208,13 +208,25 @@ class ImageVariant extends React.Component {
   render() {
     return (
       <>
-      <div className="rna-wrapper">
+        <div className="rna-wrapper">
           <NotificationAlert ref="notificationAlert" />
-      </div>
+        </div>
         <MainHeader name="Variant Images" parentName="Variant" />
         <Container className="mt--6 image-variant-container" fluid>
           <Card style={{ minHeight: "700px" }}>
             <CardBody>
+              <Row>
+                <Col md={12}>
+                  <p className="font-weight-bold" style={{ fontSize: '0.9rem' }}>
+                    <i
+                      className="fas fa-exclamation-triangle"
+                      style={{ color: "#cece14", fontSize: '1rem' }}
+                    ></i>
+                    <span className="ml-2">{`All URLs has to be from Cloudinary.`}</span><br />
+                    <span className="ml-4">{`Shortcode: [$artwork] (for all other products); [$artwork-front]; [$artwork-back] (for mugs)`}</span>
+                  </p>
+                </Col>
+              </Row>
               {
                 this.getbody()
               }
