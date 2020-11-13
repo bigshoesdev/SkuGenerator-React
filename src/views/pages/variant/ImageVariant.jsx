@@ -223,7 +223,7 @@ class ImageVariant extends React.Component {
                       style={{ color: "#cece14", fontSize: '1rem' }}
                     ></i>
                     <span className="ml-2">{`All URLs has to be from Cloudinary.`}</span><br />
-                    <span className="ml-4">{`Shortcode: [$artwork] (for all other products); [$artwork-front]; [$artwork-back] (for mugs)`}</span>
+                    <span className="ml-4">{`Shortcode: [$artwork] (for all other products); [$artwork_front]; [$artwork_back] (for mugs)`}</span>
                   </p>
                 </Col>
               </Row>

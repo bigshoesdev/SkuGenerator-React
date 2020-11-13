@@ -764,6 +764,37 @@ class ProductCreate extends React.Component {
                               })}
                             </Row>
                           </> : null}
+
+                          {Object.keys(checkResult).includes('AU') ? <>
+                            <Row className='mt-4 ml-1'>
+                              <img
+                                src={require(`assets/img/flag/au.png`)}
+                                style={{ width: '18px', height: '18px' }}
+                              />
+                              <h4 className='ml-2'>{'AU'}</h4>
+                            </Row>
+                            <hr style={{ borderTop: '1px solid rgba(0, 0, 0, 0.3)' }} />
+                            <Row className='mt-2 mb-1'>
+                              {Object.keys(this.state.checkResult['AU']).map(item => {
+                                return (
+                                  <small className='mb-2 ml-3' key={`check-result-au-${item}`}>
+                                    {`${item.toUpperCase()} -`}
+                                    {this.state.checkResult['AU'][item].map(el => (
+                                      <React.Fragment key={`check-result-au-${el.id}`}>
+                                        <a href={el.link} target="blank">
+                                          {` ${el.number} | `}
+                                        </a>
+                                        {el.description.map(d => {
+                                          if (d) return d + " | "
+                                        })}
+                                        {"Registered"}<br />
+                                      </React.Fragment>
+                                    ))}
+                                  </small>
+                                );
+                              })}
+                            </Row>
+                          </> : null}
                         </Col>
                         <Col md={4}>
                           <h4>{"Product Create Instructions"}</h4>

@@ -828,7 +828,7 @@ class TshirtVariant extends React.Component {
                     <span className="ml-5">
                       {`Light Artwork File - Insert Print URL Only to White Colour only - Apply to Mens & Womens`}
                     </span><br />
-                    {`Shortcode: [$artwork-dark]; [$artwork-light]`}
+                    {`Shortcode: [$artwork_dark]; [$artwork_light]`}
                   </p>
                 </Col>
                 <Col>
