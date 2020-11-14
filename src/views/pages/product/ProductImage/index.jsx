@@ -77,10 +77,25 @@ function ProductImage(props) {
     }, []);
 
     useEffect(() => {
-        const isDisabledSubmit = Object.keys(themeUrl).length === 2 &&
-            Object.values(themeUrl).every(el => Boolean(el)) ? false : true;
-        setIsDisabled(isDisabledSubmit);
-    }, [themeUrl]);
+        let isSubmit = false;
+
+        if (Object.keys(themeUrl).length === 2 && Object.values(themeUrl).every(el => Boolean(el))) {
+            if (skipItems.includes('stickers')) {
+                isSubmit = false;
+            } else {
+                if (Object.keys(imageUrl).includes('stickers') && imageUrl['stickers'] &&
+                    Object.keys(imageUrl['stickers']).includes('artwork') && imageUrl['stickers'].artwork && stickersPdf
+                ) {
+                    isSubmit = false;
+                } else {
+                    isSubmit = true;
+                }
+            }
+        } else {
+            isSubmit = true;
+        }
+        setIsDisabled(isSubmit);
+    }, [themeUrl, skipItems, stickersPdf]);
 
     useEffect(() => {
         if (props.isSubmit) {
@@ -396,6 +411,7 @@ function ProductImage(props) {
                                     type='button'
                                     color='info'
                                     onClick={(e) => handleUploadFile(e, 'master')}
+                                    disabled={skipItems.includes('stickers')}
                                 >
                                     {"Stickers PDF"}
                                 </Button>
@@ -405,6 +421,7 @@ function ProductImage(props) {
                                     type='button'
                                     color='info'
                                     onClick={(e) => handleUploadFile(e, 'stickers')}
+                                    disabled={skipItems.includes('stickers')}
                                 >
                                     {"Stickers PNG"}
                                 </Button>

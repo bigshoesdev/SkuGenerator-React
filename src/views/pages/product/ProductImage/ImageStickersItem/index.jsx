@@ -49,7 +49,6 @@ function ImageStickersItem(props) {
                                             type="checkbox"
                                             checked={!props.skipItems.includes(props.variant)}
                                             onChange={(e) => props.onSkipItems(props.variant, !e.target.checked)}
-                                            disabled={!props.imageUrl || !Object.keys(props.imageUrl).includes('artwork') || !props.imageUrl.artwork}
                                         />
                                         <span className="custom-toggle-slider rounded-circle" />
                                     </Label>
