@@ -80,6 +80,10 @@ function ProductStatus() {
     }, [entities]);
 
     useEffect(() => {
+        fetchEntities()
+    }, [page, pagination])
+
+    useEffect(() => {
         if (message !== '') {
             showNotification(message);
         } else if (responseErrors !== '') {

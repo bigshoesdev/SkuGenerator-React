@@ -38,7 +38,7 @@ function ProductImage(props) {
     const [imageUrl, setImageUrl] = useState({});
     const [skuNumber, setSkuNumber] = useState();
     const [masterUrl, setMasterUrl] = useState({});
-    const [skipItems, setSkipItems] = useState(['stickers']);
+    const [skipItems, setSkipItems] = useState([]);
     const [stickersPdf, setStickersPdf] = useState(null);
     const [alert, setAlert] = useState(false);
     const [isSubmitAlert, setIsSubmitAlert] = useState(null);
@@ -145,10 +145,10 @@ function ProductImage(props) {
     }, [props.isSubmit]);
 
     useEffect(() => {
-        if (message !== '') {
+        if (message !== '' && message) {
             props.onSubmit(false);
             showNotification(message);
-
+            
             if (message.includes('Images')) {
                 props.onIsUploadPanel();
             }

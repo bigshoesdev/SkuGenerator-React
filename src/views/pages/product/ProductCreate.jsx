@@ -734,36 +734,39 @@ class ProductCreate extends React.Component {
                             </Row>
                           </> : null}
 
-                          {Object.keys(checkResult).includes('UK') ? <>
-                            <Row className='mt-4 ml-1'>
-                              <img
-                                src={require(`assets/img/flag/uk.png`)}
-                                style={{ width: '18px', height: '18px' }}
-                              />
-                              <h4 className='ml-2'>{'UK'}</h4>
-                            </Row>
-                            <hr style={{ borderTop: '1px solid rgba(0, 0, 0, 0.3)' }} />
-                            <Row className='mt-2 mb-1'>
-                              {Object.keys(this.state.checkResult['UK']).map(item => {
-                                return (
-                                  <small className='mb-2 ml-3' key={`check-result-uk-${item}`}>
-                                    {`${item.toUpperCase()} -`}
-                                    {this.state.checkResult['UK'][item].map(el => (
-                                      <React.Fragment key={`check-result-uk-${el.id}`}>
-                                        <a href={el.link} target="blank">
-                                          {` ${el.number} | `}
-                                        </a>
-                                        {el.description.map(d => {
-                                          if (d) return d + " | "
-                                        })}
-                                        {"Registered"}<br />
-                                      </React.Fragment>
-                                    ))}
-                                  </small>
-                                );
-                              })}
-                            </Row>
-                          </> : null}
+                          {/* {Object.keys(checkResult).includes('UK') ? */}
+                            {/*// <>
+                            //   <Row className='mt-4 ml-1'>
+                            //     <img
+                            //       src={require(`assets/img/flag/uk.png`)}
+                            //       style={{ width: '18px', height: '18px' }}
+                            //     />
+                            //     <h4 className='ml-2'>{'UK'}</h4>
+                            //   </Row>
+                            //   <hr style={{ borderTop: '1px solid rgba(0, 0, 0, 0.3)' }} />
+                            //   <Row className='mt-2 mb-1'>
+                            //     {Object.keys(this.state.checkResult['UK']).map(item => {
+                            //       return (
+                            //         <small className='mb-2 ml-3' key={`check-result-uk-${item}`}>
+                            //           {`${item.toUpperCase()} -`}
+                            //           {this.state.checkResult['UK'][item].map(el => (
+                            //             <React.Fragment key={`check-result-uk-${el.trademark}`}>
+                            //               <a href={el.link} target="blank">
+                            //                 {` ${el.trademark} | `}
+                            //               </a>
+                            //               {el.words}
+                            //               {/* {el.words.map(d => {
+                            //               if (d) return d + " | "
+                            //             })} */}
+                            {/*//               {el.status.charAt(0).toUpperCase() + el.status.slice(1).toUpperCase()}<br />
+                            //             </React.Fragment>
+                            //           ))}
+                            //         </small>
+                            //       );
+                            //     })}
+                            //   </Row>
+                            // </>
+                            // : null}
 
                           {Object.keys(checkResult).includes('AU') ? <>
                             <Row className='mt-4 ml-1'>
@@ -780,21 +783,22 @@ class ProductCreate extends React.Component {
                                   <small className='mb-2 ml-3' key={`check-result-au-${item}`}>
                                     {`${item.toUpperCase()} -`}
                                     {this.state.checkResult['AU'][item].map(el => (
-                                      <React.Fragment key={`check-result-au-${el.id}`}>
+                                      <React.Fragment key={`check-result-au-${el.trademark}`}>
                                         <a href={el.link} target="blank">
-                                          {` ${el.number} | `}
+                                          {` ${el.trademark} | `}
                                         </a>
-                                        {el.description.map(d => {
+                                        {el.words}
+                                        {/* {el.description.map(d => {
                                           if (d) return d + " | "
-                                        })}
-                                        {"Registered"}<br />
+                                        })} */}
+                                       {/* {el.status.charAt(0).toUpperCase() + el.status.slice(1).toUpperCase()}<br />
                                       </React.Fragment>
                                     ))}
                                   </small>
                                 );
                               })}
                             </Row>
-                          </> : null}
+                          </> : null}*/}
                         </Col>
                         <Col md={4}>
                           <h4>{"Product Create Instructions"}</h4>
