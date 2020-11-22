@@ -70,6 +70,7 @@ class ProductCreate extends React.Component {
       kid_weight: 0,
       category: 0,
       keyword: 0,
+      shopify_tags: ''
     },
     product_title: '',
     source: '',
@@ -96,6 +97,7 @@ class ProductCreate extends React.Component {
     kid_weight: 0.2,
     category: 0,
     keyword: 0,
+    shopify_tags: '',
 
     isShowError: false,
     errors: {},
@@ -128,6 +130,7 @@ class ProductCreate extends React.Component {
     this.validator = new ReeValidate({
       product_title: 'required|min:3',
       source: 'required|min:5|max:120',
+      shopify_tags: 'max:120',
       stickers_width: 'required|min_value:0',
       stickers_height: 'required|min_value:0',
       tshirt_weight: 'required|min_value:0',
@@ -328,6 +331,9 @@ class ProductCreate extends React.Component {
     if (name === 'source') {
       this.setState({ source: value });
     }
+    if (name === 'shopify_tags') {
+      this.setState({ shopify_tags: value });
+    }
 
     const { product } = this.state;
     product[name] = value;
@@ -433,6 +439,7 @@ class ProductCreate extends React.Component {
     const { product } = this.state;
     product['product_title'] = this.state.product_title;
     product['source'] = this.state.source;
+    product['shopify_tags'] = this.state.shopify_tags;
     product['tshirt_printmode'] = this.state.tshirt_printmode;
     product['tshirt_image'] = this.state.tshirt_image;
     product['p_tshirt'] = this.state.p_tshirt;
@@ -464,6 +471,7 @@ class ProductCreate extends React.Component {
           product_title,
           keyword,
           source,
+          shopify_tags,
           category,
           p_tshirt,
           tshirt_printmode,
@@ -500,6 +508,7 @@ class ProductCreate extends React.Component {
         this.props.createProduct({
           product_title,
           source,
+          shopify_tags,
           keyword,
           category,
           p_tshirt,
@@ -734,6 +743,37 @@ class ProductCreate extends React.Component {
                             </Row>
                           </> : null}
 
+                          {Object.keys(checkResult).includes('UK') ? <>
+                            <Row className='mt-4 ml-1'>
+                              <img
+                                src={require(`assets/img/flag/uk.png`)}
+                                style={{ width: '18px', height: '18px' }}
+                              />
+                              <h4 className='ml-2'>{'UK'}</h4>
+                            </Row>
+                            <hr style={{ borderTop: '1px solid rgba(0, 0, 0, 0.3)' }} />
+                            <Row className='mt-2 mb-1'>
+                              {Object.keys(this.state.checkResult['UK']).map(item => {
+                                return (
+                                  <small className='mb-2 ml-3' key={`check-result-uk-${item}`}>
+                                    {`${item.toUpperCase()} -`}
+                                    {this.state.checkResult['UK'][item].map(el => (
+                                      <React.Fragment key={`check-result-uk-${el.id}`}>
+                                        <a href={el.link} target="blank">
+                                          {` ${el.number} | `}
+                                        </a>
+                                        {el.description.map(d => {
+                                          if (d) return d + " | "
+                                        })}
+                                        {"Registered"}<br />
+                                      </React.Fragment>
+                                    ))}
+                                  </small>
+                                );
+                              })}
+                            </Row>
+                          </> : null}
+
                           {/* {Object.keys(checkResult).includes('UK') ? */}
                             {/*// <>
                             //   <Row className='mt-4 ml-1'>
@@ -880,6 +920,27 @@ class ProductCreate extends React.Component {
                                 ></Input>
                                 <div className='invalid-feedback ml-2'>
                                   {errors.source}
+                                </div>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col md={12}>
+                              <h4>Shopify Tags</h4>
+                              <hr className='label-hr' />
+                              <FormGroup>
+                                <Input
+                                  type='text'
+                                  name='shopify_tags'
+                                  onBlur={this.handleBlur}
+                                  onChange={this.handleChange}
+                                  invalid={'shopify_tags' in errors}
+                                  value={this.state.shopify_tags}
+                                  className='form-control form-control'
+                                  placeholder='Enter Shopify Tags'
+                                ></Input>
+                                <div className='invalid-feedback ml-2'>
+                                  {errors.shopify_tags}
                                 </div>
                               </FormGroup>
                             </Col>

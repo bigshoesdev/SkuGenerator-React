@@ -44,6 +44,8 @@ const COLUMNS = [
     { id: 'id', name: 'no', width: '5%' },
     { id: 'product_title', name: 'title', width: '20%' },
     { id: 'product_no', name: 'sku', width: '10%' },
+    { id: 'created_at', name: 'Start Time', width: '10%' },
+    { id: 'updated_at', name: 'End Time', width: '10%' },
     { id: 'product_status', name: 'status', width: '10%' },
 ];
 
@@ -196,7 +198,7 @@ function ProductStatus() {
                                                 className='text-center'
                                                 style={{ width: item.width }}
                                                 onClick={
-                                                    item.id === "product_no" || item.name === "status" ?
+                                                    item.id === "product_no" || item.id === "product_status" || item.id === "created_at" || item.id === "updated_at" ?
                                                         () => sortByColumn(item.id) : undefined
                                                 }
                                             >
@@ -212,7 +214,7 @@ function ProductStatus() {
                                 <tbody>
                                     {entities.data.map((item, idx) => {
                                         let total = { status: 'New', color: '#fff' };
-                                        
+
                                         switch (item.product_status) {
                                             case 1:
                                                 total.status = 'Process'
@@ -246,6 +248,8 @@ function ProductStatus() {
                                                     <td>{idx + 1}</td>
                                                     <td>{item.product_title}</td>
                                                     <td>{item.product_no}</td>
+                                                    <td>{item.created_at}</td>
+                                                    <td>{item.updated_at}</td>
                                                     <td
                                                         style={{
                                                             backgroundColor: total.color,
@@ -256,7 +260,7 @@ function ProductStatus() {
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td colSpan="4" style={{ padding: 0 }}>
+                                                    <td colSpan="6" style={{ padding: 0 }}>
                                                         <Collapse
                                                             role="tabpanel"
                                                             isOpen={Object.keys(isOpen).includes(item.id.toString()) ? isOpen[item.id] : false}
