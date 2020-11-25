@@ -938,6 +938,7 @@ class ProductCreate extends React.Component {
                                   value={this.state.shopify_tags}
                                   className='form-control form-control'
                                   placeholder='Enter Shopify Tags'
+                                  required
                                 ></Input>
                                 <div className='invalid-feedback ml-2'>
                                   {errors.shopify_tags}
