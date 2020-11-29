@@ -123,7 +123,7 @@ function ProductUpload(props) {
                             />
                         </Card>
                     </Col>
-                    {/* <Col md={3}>
+                    <Col md={3}>
                         <Card
                             id="ebay"
                             className={
@@ -137,7 +137,7 @@ function ProductUpload(props) {
                                 className="upload-card-image"
                             />
                         </Card>
-                    </Col> */}
+                    </Col>
                     <Col md={3}>
                         <Card
                             id="etsy"
