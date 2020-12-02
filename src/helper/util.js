@@ -14,3 +14,9 @@ export function baseName(str) {
     base = base.substring(0, base.lastIndexOf("."));
   return base;
 }
+
+export function baseSideName(str) {
+  let base = str.toString().split('/').find(item => item.includes('l_artwork:'));
+  base = base.split(':')[1].split(',')[0];
+  return base;
+}

@@ -148,7 +148,7 @@ function ProductImage(props) {
         if (message !== '' && message) {
             props.onSubmit(false);
             showNotification(message);
-            
+
             if (message.includes('Images')) {
                 props.onIsUploadPanel();
             }

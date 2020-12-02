@@ -11,7 +11,7 @@ import {
 } from 'reactstrap';
 
 import APP_CONST from '../../../../../helper/constant';
-import { baseName } from '../../../../../helper/util';
+import { baseSideName, baseName } from '../../../../../helper/util';
 
 
 const INIT_IMAGE_URL = {
@@ -22,35 +22,38 @@ const INIT_IMAGE_URL = {
 function ImageSideDoubleItem(props) {
     const [preview, setPreview] = useState(INIT_IMAGE_URL);
     const [isLight, setIsLight] = useState(true);
+    const [artwork, setArtwork] = useState('');
     const preFile = `${props.skuNumber}-${props.variant}-artwork`;
 
     useEffect(() => {
         if (Object.keys(props.themeUrl).length > 0) {
+            if (Object.keys(props.themeUrl).includes('light') && props.themeUrl['light'] && isLight) {
+                setArtwork(baseName(props.themeUrl['light']));
+            } else if (Object.keys(props.themeUrl).includes('dark') && props.themeUrl['dark'] && !isLight) {
+                setArtwork(baseName(props.themeUrl['dark']));
+            }
+        }
+    }, [props.themeUrl, isLight]);
+
+    useEffect(() => {
+        if (artwork !== '')
             props.source.colorList.filter(el => el.key === 'WH').map(el => {
-                let artwork;
                 let frontUrl = el.front_url;
                 let backUrl = el.back_url;
 
                 Object.keys(INIT_IMAGE_URL).map(item => {
-                    if (Object.keys(props.themeUrl).includes('light') && props.themeUrl['light'] && isLight) {
-                        artwork = baseName(props.themeUrl['light'])
-                    } else if (Object.keys(props.themeUrl).includes('dark') && props.themeUrl['dark'] && !isLight) {
-                        artwork = baseName(props.themeUrl['dark'])
-                    }
-
                     if (!props.imageUrl || !Object.keys(props.imageUrl).includes(item) || !props.imageUrl[item]) {
                         let theme = item === 'front' ? frontUrl : backUrl;
-                        let url = preview[item] ? preview[item].replace(baseName(preview[item]), artwork) : (theme ? theme.replace("[$artwork]", artwork) : '');
+                        let url = preview[item] ? preview[item].replace(baseSideName(preview[item]), artwork) : (theme ? theme.replace("[$artwork]", artwork) : '');
                         setPreview(prevState => ({ ...prevState, [item]: url }));
                     } else if (props.imageUrl && Object.keys(props.imageUrl).includes(item) && props.imageUrl[item]) {
-                        artwork = baseName(props.imageUrl[item]);
-                        let url = preview[item] ? preview[item].replace(baseName(preview[item]), artwork) : '';
+                        let art = baseName(props.imageUrl[item]);
+                        let url = preview[item] ? preview[item].replace(baseSideName(preview[item]), art) : '';
                         setPreview(prevState => ({ ...prevState, [item]: url }));
                     }
                 });
             });
-        }
-    }, [props.themeUrl, isLight, props.imageUrl])
+    }, [props.imageUrl, artwork])
 
     useEffect(() => {
         props.onChecked(isLight)
