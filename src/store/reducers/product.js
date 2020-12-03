@@ -6,6 +6,7 @@ import {
   CREATE_PRODUCT,
   CREATE_PRODUCT_IMAGES,
   UPLOAD_PRODUCT,
+  REUPLOAD_PRODUCT,
   GENERATE_PRODUCT,
   UPLOAD_STICKERS_PDF,
   DELETE_PRODUCT,
@@ -40,6 +41,8 @@ export default function (state = initialState, action) {
     case CREATE_PRODUCT_IMAGES:
       return { ...state, message: action.message, errors: action.errors };
     case UPLOAD_PRODUCT:
+      return { ...state, message: action.message, errors: action.errors };
+    case REUPLOAD_PRODUCT:
       return { ...state, message: action.message, errors: action.errors };
     case GENERATE_PRODUCT:
       return { ...state, message: action.message, errors: action.errors };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useSelector, shallowEqual } from 'react-redux';
+import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import classnames from "classnames";
 import NotificationAlert from 'react-notification-alert';
 
@@ -18,11 +18,14 @@ import {
     Pagination,
     PaginationItem,
     PaginationLink,
+    Badge,
 } from 'reactstrap';
 
 import MainHeader from '../../components/headers/MainHeader';
 import http from "../../../helper/http";
 import APP_CONST from "../../../helper/constant";
+import { toTimeZone } from "../../../helper/util";
+import { reUploadProduct } from "../../../store/actions/product";
 
 
 const STATUS = {
@@ -57,6 +60,7 @@ function ProductStatus() {
     const [isOpenError, setIsOpenError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [pagination, setPagination] = useState({ sortedColumn: 'updated_at', order: 'desc' })
+    const dispatch = useDispatch();
     const alertEl = useRef(null);
     const offset = 5;
 
@@ -248,8 +252,8 @@ function ProductStatus() {
                                                     <td>{idx + 1}</td>
                                                     <td>{item.product_title}</td>
                                                     <td>{item.product_no}</td>
-                                                    <td>{item.created_at}</td>
-                                                    <td>{item.updated_at}</td>
+                                                    <td>{toTimeZone(item.created_at)}</td>
+                                                    <td>{toTimeZone(item.updated_at)}</td>
                                                     <td
                                                         style={{
                                                             backgroundColor: total.color,
@@ -287,24 +291,46 @@ function ProductStatus() {
                                                                                 <React.Fragment key={el.id}>
                                                                                     <td
                                                                                         id={el.id}
-                                                                                        onClick={
-                                                                                            el.status === 2 ? () => {
-                                                                                                setIsOpenError(!isOpenError);
-                                                                                                setErrorMessage(el.error_log);
-                                                                                            } : undefined
-                                                                                        }
                                                                                         style={
-                                                                                            el.status === 2 ?
-                                                                                                { backgroundColor: '#ff6666', color: '#fff' } :
-                                                                                                el.status === 3 ?
-                                                                                                    { backgroundColor: '#5bd75b', color: '#fff' } :
-                                                                                                    el.status === 1 ?
-                                                                                                        { backgroundColor: '#66ccff', color: '#fff' } :
-                                                                                                        { backgroundColor: '#fff' }
-
-                                                                                        }
+                                                                                            el.status === 2 ? {
+                                                                                                backgroundColor: '#ff6666',
+                                                                                                color: '#fff',
+                                                                                                position: 'relative'
+                                                                                            } : el.status === 3 ? {
+                                                                                                backgroundColor: '#5bd75b',
+                                                                                                color: '#fff',
+                                                                                                position: 'relative'
+                                                                                            } : el.status === 1 ? {
+                                                                                                backgroundColor: '#66ccff',
+                                                                                                color: '#fff',
+                                                                                                position: 'relative'
+                                                                                            } : el.status === 0 ? {
+                                                                                                backgroundColor: '#fff',
+                                                                                                position: 'relative'
+                                                                                            } : null}
+                                                                                        onClick={
+                                                                                            el.status === 2 ? (e) => {
+                                                                                                if (e.target.getAttribute('name') !== 'reupload') {
+                                                                                                    setIsOpenError(!isOpenError);
+                                                                                                    setErrorMessage(el.error_log);
+                                                                                                }
+                                                                                            } : undefined}
                                                                                     >
-                                                                                        {STATUS[el.status]}
+                                                                                        <span>{STATUS[el.status]}</span>
+                                                                                        {el.status === 2 ?
+                                                                                            <Badge
+                                                                                                name="reupload"
+                                                                                                color="secondary"
+                                                                                                className="ml-2"
+                                                                                                style={{
+                                                                                                    zIndex: 1000,
+                                                                                                    position: 'absolute',
+                                                                                                    right: '2'
+                                                                                                }}
+                                                                                                onClick={() => dispatch(reUploadProduct(el.id))}
+                                                                                            >
+                                                                                                {`ReUpload`}
+                                                                                            </Badge> : ''}
                                                                                     </td>
                                                                                 </React.Fragment>
                                                                             ))}
@@ -373,7 +399,7 @@ function ProductStatus() {
                                         onClick={() => setPage(entities.page + 1)}
                                     >
                                         <i className="fas fa-angle-right" />
-                                        <span className="sr-only">Next</span>
+                                        <span className="sr-only">{`Next`}</span>
                                     </PaginationLink>
                                 </PaginationItem>
                             </Pagination>

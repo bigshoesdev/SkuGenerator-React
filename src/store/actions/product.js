@@ -11,6 +11,7 @@ import {
   LIST_PRODUCT_IMAGESET,
   UPDATE_PRODUCT_IMAGESET,
   UPLOAD_PRODUCT,
+  REUPLOAD_PRODUCT,
   UPLOAD_STICKERS_PDF,
   GENERATE_PRODUCT,
   CLEAN_PRODUCT
@@ -359,6 +360,36 @@ export function uploadStickersPDF(obj) {
           } else {
             dispatch({
               type: UPLOAD_STICKERS_PDF,
+              errors: "There is a server connection Error, Try Later."
+            });
+          }
+        });
+    })
+  );
+}
+
+export function reUploadProduct(id) {
+  return dispatch => (
+    new Promise((resolve, reject) => {
+      dispatch({ type: CLEAN_PRODUCT });
+      http.post(`${APP_CONST.API_URL}/product/reupload`, { id })
+        .then((res) => {
+          dispatch({
+            type: REUPLOAD_PRODUCT,
+            message: `The Product's master type is re-uploaded to the selected marketplace successfully!`
+          });
+          return resolve();
+        })
+        .catch(err => {
+          if (err.response) {
+            let { errors } = err.response.data;
+            dispatch({
+              type: REUPLOAD_PRODUCT,
+              errors: errorHandler(errors)
+            });
+          } else {
+            dispatch({
+              type: REUPLOAD_PRODUCT,
               errors: "There is a server connection Error, Try Later."
             });
           }

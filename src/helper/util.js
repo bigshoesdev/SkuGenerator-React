@@ -1,3 +1,6 @@
+import moment from "moment-timezone";
+
+
 export function errorHandler(errors) {
   if (errors) {
     errors = Object.values(errors);
@@ -19,4 +22,10 @@ export function baseSideName(str) {
   let base = str.toString().split('/').find(item => item.includes('l_artwork:'));
   base = base.split(':')[1].split(',')[0];
   return base;
+}
+
+export function toTimeZone(time) {
+  var format = 'YYYY/MM/DD HH:mm:ss';
+  var zone = "Australia/Melbourne";
+  return moment.tz(time, "UTC").tz(zone).format(format).toLocaleString();
 }
