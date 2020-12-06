@@ -495,6 +495,7 @@ class ProductCreate extends React.Component {
           hoodie_weight,
           kid_weight,
         } = this.state.product;
+        
         this.setState({ isActive: true, isButtonActive: true, isProductImage: true });
         this.setState((state) => {
           const searchCategories = state.categories;
@@ -533,6 +534,8 @@ class ProductCreate extends React.Component {
           hoodie_weight,
           kid_weight,
         });
+        
+        
       }
     });
   };

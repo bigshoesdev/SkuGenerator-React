@@ -4,7 +4,9 @@ import ProductList from "views/pages/product/ProductList.jsx";
 import ProductCreate from "views/pages/product/ProductCreate.jsx";
 import ProductDetail from "views/pages/product/ProductDetail.jsx";
 import ProductImageSet from "views/pages/product/ProductImageSet.jsx";
-import ProductStatus from "views/pages/product/ProductStatus.jsx";
+import ProductStatus from "views/pages/product/ProductStatus";
+import ProductImage from "views/pages/product/ProductImage";
+import ProductUpload from "views/pages/product/ProductUpload.jsx";
 import KeywordList from "views/pages/keyword/KeywordList.jsx";
 import CategoryList from "views/pages/category";
 import ArtistList from "views/pages/artist/ArtistList.jsx";
@@ -53,29 +55,35 @@ export const routes = [
         name: "Product List",
         component: ProductList,
         layout: "/main",
-      },
-      {
+      }, {
         path: "/product-create",
         name: "Product Create",
         component: ProductCreate,
         layout: "/main",
-      },
-      {
+      }, {
         path: "/product-imageset",
         name: "Product Image Set",
         component: ProductImageSet,
         layout: "/main",
-      },
-      {
+      }, {
         path: "/product-status",
         name: "Product Status",
         component: ProductStatus,
         layout: "/main",
-      },
-      {
+      }, {
         path: "/product-detail/:id",
         name: "Product Detail",
         component: ProductDetail,
+        layout: "/main",
+      }, {
+        path: "/product-image/:id",
+        name: "Product Image",
+        component: ProductImage,
+        layout: "/main",
+      }, {
+        path: "/product-upload/:id",
+        name: "Product Upload",
+        component: ProductUpload,
         layout: "/main",
       },
     ],
@@ -91,56 +99,47 @@ export const routes = [
         name: "Tshirt Variant",
         component: TshirtVariant,
         layout: "/main",
-      },
-      {
+      }, {
         path: "/variant-mugs",
         name: "Mugs Variant",
         component: MugsVariant,
         layout: "/main",
-      },
-      {
+      }, {
         path: "/variant-tote-bags",
         name: "Tote Bags Variant",
         component: ToteBagsVariant,
         layout: "/main",
-      },
-      {
+      }, {
         path: "/variant-cushion-covers",
         name: "Cushion Cover Variant",
         component: CushionCoverVariant,
         layout: "/main",
-      },
-      {
+      }, {
         path: "/variant-hoodies",
         name: "Hoodies Variant",
         component: HoodiesVariant,
         layout: "/main",
-      },
-      {
+      }, {
         path: "/variant-kids",
         name: "Kids Variant",
         component: KidsVariant,
         layout: "/main",
-      },
-      {
+      }, {
         path: "/variant-images",
         name: "Variant Image",
         component: ImageVariant,
         layout: "/main",
-      },
-      {
+      }, {
         path: "/variant-prices",
         name: "Variant Price",
         component: PriceVariant,
         layout: "/main",
-      },
-      {
+      }, {
         path: "/variant-merchant-prices",
         name: "Variant Merchant Price",
         component: PriceMerchantVariant,
         layout: "/main",
-      },
-      {
+      }, {
         path: "/variant-description",
         name: "Variant Description",
         component: DescriptionVariant,
@@ -159,14 +158,12 @@ export const routes = [
         name: "Approved Keywords",
         component: ApprovedWordList,
         layout: "/main",
-      },
-      {
+      }, {
         path: "/trademark-banned",
         name: "Banned Keywords",
         component: BannedWordList,
         layout: "/main",
-      },
-      {
+      }, {
         path: "/trademark-classword",
         name: "Class Words",
         component: TradeMarkClassWordList,
@@ -214,8 +211,7 @@ export const routes = [
         name: "General Setting",
         component: Setting,
         layout: "/main",
-      },
-      {
+      }, {
         path: "/etsy-setting",
         name: "Etsy Setting",
         component: EtsySetting,

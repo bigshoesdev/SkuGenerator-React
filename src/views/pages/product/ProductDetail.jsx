@@ -119,10 +119,12 @@ class ProductDetail extends React.Component {
       activeTabColor: '#dee2e6',
     };
   }
+
   componentDidMount() {
     const { id } = this.props.match.params;
     this.fetchEntities(id);
   }
+
   fetchEntities(id) {
     let fetchUrl = `${APP_CONST.API_URL}/product/detail/?id=${id}`;
     http
@@ -149,7 +151,7 @@ class ProductDetail extends React.Component {
           product,
         });
       })
-      .catch((e) => {});
+      .catch((e) => { });
   }
 
   columnHead(value) {
@@ -441,6 +443,7 @@ class ProductDetail extends React.Component {
         return null;
     }
   }
+  
   render() {
     const self = this;
     return (

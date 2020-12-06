@@ -368,11 +368,11 @@ export function uploadStickersPDF(obj) {
   );
 }
 
-export function reUploadProduct(id) {
+export function reUploadProduct(obj) {
   return dispatch => (
     new Promise((resolve, reject) => {
       dispatch({ type: CLEAN_PRODUCT });
-      http.post(`${APP_CONST.API_URL}/product/reupload`, { id })
+      http.post(`${APP_CONST.API_URL}/product/reupload`, obj)
         .then((res) => {
           dispatch({
             type: REUPLOAD_PRODUCT,

@@ -118,7 +118,10 @@ class Sidebar extends React.Component {
           </NavItem>
         );
       }
-      if(prop.name != 'Product Detail'){
+      if (prop.name != 'Product Detail' &&
+        prop.name != 'Product Image' &&
+        prop.name != 'Product Upload'
+      ) {
         return (
           <NavItem
             className={this.activeRoute(prop.layout + prop.path)}
@@ -162,27 +165,28 @@ class Sidebar extends React.Component {
       <div className="scrollbar-inner">
         <div className="sidenav-header d-flex align-items-center">
           {logo ? (
-            <NavbarBrand {...navbarBrandProps} style={{paddingTop: '50px', marginLeft:'-5px'}}>
-            <div >
-              <h1 style={{ alignItems: 'center', justifyContent: 'center', fontWeight: 'Bold', fontSize:'1.3em', color: '#11cdef',textAlign:'center'}}>
-                <img src={require("assets/img/logo.png")}></img>
-              </h1>
-            </div>
-          </NavbarBrand>
+            <NavbarBrand {...navbarBrandProps} style={{ paddingTop: '50px', marginLeft: '-5px' }}>
+              <div >
+                <h1 style={{ alignItems: 'center', justifyContent: 'center', fontWeight: 'Bold', fontSize: '1.3em', color: '#11cdef', textAlign: 'center' }}>
+                  <img src={require("assets/img/logo.png")}></img>
+                </h1>
+              </div>
+            </NavbarBrand>
           ) : null}
-          
+
           <div className="ml-auto">
             <div
               className={classnames("sidenav-toggler d-none d-xl-block", {
                 active: this.props.sidenavOpen
               })}
               onClick={this.props.toggleSidenav}
-              style={{padding: '1rem'}}
+              style={{ padding: '1rem' }}
             >
               <div className="sidenav-toggler-inner" style={{
                 position: 'absolute',
                 padding: '0px',
-                marginLeft: '-23px'}}>
+                marginLeft: '-23px'
+              }}>
                 <i className="sidenav-toggler-line" />
                 <i className="sidenav-toggler-line" />
                 <i className="sidenav-toggler-line" />
