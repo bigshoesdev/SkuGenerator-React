@@ -20,7 +20,7 @@ import AdminLayout from "views/layouts/Admin.jsx";
 import AuthLayout from "views/layouts/Auth.jsx";
 import { authCheck } from "./store/actions/auth";
 import store from "./store";
-import ProductDetail from "views/pages/product/ProductDetail.jsx";
+import ProductDetail from "views/pages/product/product-detail";
 
 store.dispatch(authCheck());
 

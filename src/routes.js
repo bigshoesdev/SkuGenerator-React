@@ -1,31 +1,43 @@
+// auth pages
 import Login from "views/pages/auth/Login.jsx";
 import Register from "views/pages/auth/Register.jsx";
-import ProductList from "views/pages/product/ProductList.jsx";
-import ProductCreate from "views/pages/product/ProductCreate.jsx";
-import ProductDetail from "views/pages/product/ProductDetail.jsx";
-import ProductImageSet from "views/pages/product/ProductImageSet.jsx";
-import ProductStatus from "views/pages/product/ProductStatus";
-import ProductImage from "views/pages/product/ProductImage";
-import ProductUpload from "views/pages/product/ProductUpload.jsx";
-import KeywordList from "views/pages/keyword/KeywordList.jsx";
+// product pages
+import ProductList from "views/pages/product/product-list";
+import ProductCreate from "views/pages/product/product-create";
+import ProductDetail from "views/pages/product/product-detail";
+import ProductImageSet from "views/pages/product/product-image-set";
+import ProductStatus from "views/pages/product/product-status";
+import ProductImage from "views/pages/product/product-image";
+import ProductUpload from "views/pages/product/product-upload";
+// stock pages
+import StockOnHand from "views/pages/stock/stock-on-hand";
+import StockReOrder from "views/pages/stock/stock-reorder";
+// variant pages
+import TshirtVariant from "views/pages/variant/tshirt-variant";
+import MugsVariant from "views/pages/variant/mugs-variant";
+import ToteBagsVariant from "views/pages/variant/tote-bags-variant";
+import HoodiesVariant from "views/pages/variant/hoodies-variant";
+import KidsVariant from "views/pages/variant/kids-variant";
+import CushionCoverVariant from "views/pages/variant/cushion-cover-variant";
+import ImageVariant from "views/pages/variant/image-variant";
+import PriceVariant from "views/pages/variant/price-variant";
+import PriceMerchantVariant from "views/pages/variant/price-merchant-variant";
+import DescriptionVariant from "./views/pages/variant/description-variant";
+// keyword page
+import KeywordList from "views/pages/keyword";
+// category page
 import CategoryList from "views/pages/category";
-import ArtistList from "views/pages/artist/ArtistList.jsx";
+// artist page
+import ArtistList from "views/pages/artist";
+// trademark pages
+import ApprovedWordList from "./views/pages/trademark/approved-word-list";
+import BannedWordList from "./views/pages/trademark/banned-word-list";
+import TradeMarkClassWordList from "./views/pages/trademark/trademark-classword-list";
+// performance page
+import Performance from "./views/pages/performance";
+// setting pages
 import Setting from "views/pages/setting/setting";
 import EtsySetting from "views/pages/setting/etsy";
-import TshirtVariant from "views/pages/variant/TshirtVariant.jsx";
-import MugsVariant from "views/pages/variant/MugsVariant.jsx";
-import ToteBagsVariant from "views/pages/variant/ToteBagsVariant.jsx";
-import HoodiesVariant from "views/pages/variant/HoodiesVariant.jsx";
-import KidsVariant from "views/pages/variant/KidsVariant.jsx";
-import CushionCoverVariant from "views/pages/variant/CushionCoverVariant.jsx";
-import ImageVariant from "views/pages/variant/ImageVariant.jsx";
-import PriceVariant from "views/pages/variant/PriceVariant.jsx";
-import PriceMerchantVariant from "views/pages/variant/PriceMerchantVariant.jsx";
-import DescriptionVariant from "./views/pages/variant/DescriptionVariant";
-import ApprovedWordList from "./views/pages/trademark/ApprovedWordList";
-import BannedWordList from "./views/pages/trademark/BannedWordList";
-import TradeMarkClassWordList from "./views/pages/trademark/TradeMarkClassWordList";
-import Performance from "./views/pages/performance/Performance.jsx";
 
 
 export const authRoutes = [
@@ -84,6 +96,25 @@ export const routes = [
         path: "/product-upload/:id",
         name: "Product Upload",
         component: ProductUpload,
+        layout: "/main",
+      },
+    ],
+  },
+  {
+    collapse: true,
+    name: "Stock",
+    icon: "ni ni-collection text-primary",
+    state: "stockCollapse",
+    views: [
+      {
+        path: "/stock-on-hand",
+        name: "Stock On Hand",
+        component: StockOnHand,
+        layout: "/main",
+      }, {
+        path: "/stock-reorder",
+        name: "Stock Reorder",
+        component: StockReOrder,
         layout: "/main",
       },
     ],
