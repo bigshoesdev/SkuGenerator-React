@@ -94,7 +94,7 @@ class ProductList extends React.Component {
       isDownloadData: [],
       columnsAllCheck: [],
       productListId: '',
-      checkedItems: {},
+      checkedItems: [],
       genOption: 'image_only',
     };
     this.onSubmitExport = this.onSubmitExport.bind(this);
@@ -387,24 +387,27 @@ class ProductList extends React.Component {
   handleChecked = (event) => {
     const { id, name } = event.target;
     var checked = document.getElementById(id).checked;
-    this.setState((prevState) => {
-      return { checkedItems: { ...prevState.checkedItems, [name]: checked } }
-    });
+    if (checked) {
+      this.setState((prevState) => {
+        return { checkedItems: [...prevState.checkedItems, name] }
+      });
+    } else if (this.state.checkedItems.includes(name)) {
+      this.setState((prevState) => {
+        return { checkedItems: prevState.checkedItems.filter(item => item !== name) }
+      });
+
+    }
   }
 
   onSubmitGenerator = (event) => {
     event.preventDefault();
-    let products = [];
-    
-    Object.keys(this.state.checkedItems).map(item => {
-      if (this.state.checkedItems[item]) {
-        products.push(item);
-      }
-    });
-    this.props.productGenerate({ products, option: this.state.genOption });
 
+    this.props.productGenerate({
+      products: this.state.checkedItems,
+      option: this.state.genOption
+    });
     this.setState({
-      checkedItems: {},
+      checkedItems: [],
       isGenerateModal: false,
       genOption: 'image_only'
     });
@@ -427,9 +430,7 @@ class ProductList extends React.Component {
                         name={product.id}
                         className="custom-control-input"
                         type="checkbox"
-                        checked={Object.keys(self.state.checkedItems).includes(product.id.toString()) ?
-                          self.state.checkedItems[product.id.toString()] : false
-                        }
+                        checked={self.state.checkedItems.includes(product.id.toString())}
                         onChange={this.handleChecked}
                       />
                       <label
@@ -654,7 +655,14 @@ class ProductList extends React.Component {
   }
 
   render() {
-    let { responseErrors, isDeleteModal, isGenerateModal } = this.state;
+    let {
+      responseErrors,
+      isDeleteModal,
+      isGenerateModal,
+      checkedItems,
+      isDownloadData
+    } = this.state;
+
     return (
       <>
         <div className='rna-wrapper'>
@@ -793,8 +801,9 @@ class ProductList extends React.Component {
                       className='btn-productList'
                       color='primary'
                       onClick={() => this.setState({ isGenerateModal: true })}
+                      disabled={checkedItems.length === 0 || isDownloadData.length > 0}
                     >
-                      {`Generator`}
+                      {`Regenerate Files`}
                     </Button>
                   </form>
                 </Col>

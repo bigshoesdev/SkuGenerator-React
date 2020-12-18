@@ -29,3 +29,7 @@ export function toTimeZone(time) {
   var zone = "Australia/Melbourne";
   return moment.tz(time, "UTC").tz(zone).format(format).toLocaleString();
 }
+
+export function getName(value) {
+  return value.split('_').map(el => el.charAt(0).toUpperCase() + el.slice(1)).join(' ');
+}

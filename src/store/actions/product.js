@@ -13,7 +13,9 @@ import {
   UPLOAD_PRODUCT,
   REUPLOAD_PRODUCT,
   UPLOAD_STICKERS_PDF,
+  UPDATE_STOCK,
   GENERATE_PRODUCT,
+  UPDATE_ORDER_REPORT,
   CLEAN_PRODUCT
 } from './types';
 
@@ -372,11 +374,12 @@ export function reUploadProduct(obj) {
   return dispatch => (
     new Promise((resolve, reject) => {
       dispatch({ type: CLEAN_PRODUCT });
+
       http.post(`${APP_CONST.API_URL}/product/reupload`, obj)
         .then((res) => {
           dispatch({
             type: REUPLOAD_PRODUCT,
-            message: `The Product's master type is re-uploaded to the selected marketplace successfully!`
+            message: `The stock report is updated.`
           });
           return resolve();
         })
@@ -390,6 +393,68 @@ export function reUploadProduct(obj) {
           } else {
             dispatch({
               type: REUPLOAD_PRODUCT,
+              errors: "There is a server connection Error, Try Later."
+            });
+          }
+        });
+    })
+  );
+}
+
+export function updateOrderReport() {
+  return dispatch => (
+    new Promise((resolve, reject) => {
+      dispatch({ type: CLEAN_PRODUCT });
+
+      http.get(`${APP_CONST.API_URL}/product/order/update-report`)
+        .then((res) => {
+          dispatch({
+            type: UPDATE_ORDER_REPORT,
+            message: `The Product's master type is re-uploaded to the selected marketplace successfully!`
+          });
+          return resolve();
+        })
+        .catch(err => {
+          if (err.response) {
+            let { errors } = err.response.data;
+            dispatch({
+              type: UPDATE_ORDER_REPORT,
+              errors: errorHandler(errors)
+            });
+          } else {
+            dispatch({
+              type: UPDATE_ORDER_REPORT,
+              errors: "There is a server connection Error, Try Later."
+            });
+          }
+        });
+    })
+  );
+}
+
+export function updateStock(obj) {
+  return dispatch => (
+    new Promise((resolve, reject) => {
+      dispatch({ type: CLEAN_PRODUCT });
+
+      http.post(`${APP_CONST.API_URL}/product/update-stock`, obj)
+        .then((res) => {
+          dispatch({
+            type: UPDATE_STOCK,
+            message: `Your stock on-hand updated successfully!`
+          });
+          return resolve();
+        })
+        .catch(err => {
+          if (err.response) {
+            let { errors } = err.response.data;
+            dispatch({
+              type: UPDATE_STOCK,
+              errors: errorHandler(errors)
+            });
+          } else {
+            dispatch({
+              type: UPDATE_STOCK,
               errors: "There is a server connection Error, Try Later."
             });
           }

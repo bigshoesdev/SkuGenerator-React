@@ -19,6 +19,10 @@ const APP_CONST = {
     { key: 'F', name: 'Womens' }
   ],
   THEME: ['L', 'D'],
+  BAN_COLORS: {
+    M: ['PK', 'NV', 'SA'],
+    F: ['YL', 'OR','NV', 'SA']
+  }
 };
 
 export default APP_CONST;

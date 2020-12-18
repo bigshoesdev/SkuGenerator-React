@@ -9,7 +9,9 @@ import {
   REUPLOAD_PRODUCT,
   GENERATE_PRODUCT,
   UPLOAD_STICKERS_PDF,
+  UPDATE_STOCK,
   DELETE_PRODUCT,
+  UPDATE_ORDER_REPORT,
   CLEAN_PRODUCT,
 } from '../actions/types';
 
@@ -47,6 +49,10 @@ export default function (state = initialState, action) {
     case GENERATE_PRODUCT:
       return { ...state, message: action.message, errors: action.errors };
     case UPLOAD_STICKERS_PDF:
+      return { ...state, message: action.message, errors: action.errors };
+    case UPDATE_STOCK:
+      return { ...state, message: action.message, errors: action.errors };
+    case UPDATE_ORDER_REPORT:
       return { ...state, message: action.message, errors: action.errors };
     case DELETE_PRODUCT:
       return { ...state, message: action.message };
