@@ -25,7 +25,7 @@ import MainHeader from '../../../components/headers/MainHeader';
 import http from '../../../../helper/http';
 import APP_CONST from '../../../../helper/constant';
 import { getName } from '../../../../helper/util';
-import { updateStock } from "../../../../store/actions/product";
+import { updateStock, updateOrderReport } from "../../../../store/actions/product";
 
 function StockOnHand() {
     const [source, setSource] = useState({});
@@ -149,7 +149,7 @@ function StockOnHand() {
                         <Button
                             color="secondary"
                             type="button"
-                            onClick={() => setIsOpen(!isOpen)}
+                            onClick={() => { setIsOpen(!isOpen); dispatch(updateOrderReport()) }}
                         >
                             {`Cancel`}
                         </Button>
