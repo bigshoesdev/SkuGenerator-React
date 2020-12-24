@@ -35,6 +35,9 @@ import BannedWordList from "./views/pages/trademark/banned-word-list";
 import TradeMarkClassWordList from "./views/pages/trademark/trademark-classword-list";
 // performance page
 import Performance from "./views/pages/performance";
+// sales pages
+import Customer from "./views/pages/sales/customer";
+import OrderReport from "./views/pages/sales/order-report";
 // setting pages
 import Setting from "views/pages/setting/setting";
 import EtsySetting from "views/pages/setting/etsy";
@@ -115,6 +118,25 @@ export const routes = [
         path: "/stock-reorder",
         name: "Stock Reorder",
         component: StockReOrder,
+        layout: "/main",
+      },
+    ],
+  },
+  {
+    collapse: true,
+    name: "Sales",
+    icon: "ni ni-cart text-primary",
+    state: "salesCollapse",
+    views: [
+      {
+        path: "/sales/consumer",
+        name: "Customer",
+        component: Customer,
+        layout: "/main",
+      }, {
+        path: "/sales/order-report",
+        name: "Sales Report",
+        component: OrderReport,
         layout: "/main",
       },
     ],
