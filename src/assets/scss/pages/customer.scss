@@ -1,0 +1,20 @@
+.customer-container {
+
+    .card {
+        min-height: 700px;
+    }
+
+    .card .table td:not(.td-action),
+    .card .table th {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .card .table td,
+    .card .table th {
+        padding: 0.7rem;
+        font-size: 0.75rem;
+        cursor: pointer;
+    }
+}
