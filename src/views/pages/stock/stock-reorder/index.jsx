@@ -7,7 +7,6 @@ import {
     Card,
     CardHeader,
     CardBody,
-    Button,
     Row,
     Col,
     UncontrolledDropdown,
@@ -15,27 +14,18 @@ import {
     DropdownMenu,
     DropdownItem,
     Table,
-    Modal,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
 } from 'reactstrap';
 
 import MainHeader from '../../../components/headers/MainHeader';
 import http from '../../../../helper/http';
 import APP_CONST from '../../../../helper/constant';
 import { getName } from '../../../../helper/util';
-import { updateStock, updateOrderReport } from "../../../../store/actions/product";
 
 function StockReOrder() {
     const [source, setSource] = useState({});
-    const [value, setValue] = useState(0);
-    const [isEdit, setIsEdit] = useState("");
-    const [isOpen, setIsOpen] = useState(false);
     const [selected, setSelected] = useState("tshirts");
     const [gender, setGender] = useState("M");
     const [masters, setMasters] = useState([]);
-    const dispatch = useDispatch();
     const alertEl = useRef(null);
 
     const message = useSelector(
@@ -78,25 +68,6 @@ function StockReOrder() {
         }
     }, [message, responseErrors]);
 
-    const handleBlur = () => {
-        if (isEdit !== '' && value !== 0) {
-            let data = source.data.map(item => {
-                if (isEdit === item.id) {
-                    item.qty = value;
-                }
-                return item
-            });
-
-            setSource({
-                colors: source.colors,
-                sizes: source.sizes,
-                gender: source.gender,
-                data,
-            });
-            setValue(0);
-        }
-    }
-
     const showNotification = (message) => {
         let options = {
             place: 'tr',
@@ -123,41 +94,9 @@ function StockReOrder() {
             </div>
             <MainHeader name='Stock on Hand' parentName='Stock Management' />
             <Container className='mt--6 stock-on-hand-container' fluid>
-                <Modal
-                    isOpen={isOpen}
-                    toggle={() => setIsOpen(!isOpen)}
-                >
-                    <ModalHeader>{`Confirm`}</ModalHeader>
-                    <ModalBody>
-                        {`Are you sure?`}
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button
-                            color="danger"
-                            type="button"
-                            onClick={() => {
-                                setIsOpen(!isOpen);
-                                dispatch(updateStock({
-                                    gender,
-                                    master: selected,
-                                    data: source.data
-                                }))
-                            }}
-                        >
-                            {`Confirm`}
-                        </Button>
-                        <Button
-                            color="secondary"
-                            type="button"
-                            onClick={() => { setIsOpen(!isOpen); dispatch(updateOrderReport()) }}
-                        >
-                            {`Cancel`}
-                        </Button>
-                    </ModalFooter>
-                </Modal>
-                <Card className="p-3">
+               <Card className="p-3">
                     <CardHeader>
-                        <h1>{`Stock On-Hand`}</h1>
+                        <h1>{`Stock Re-Order`}</h1>
                     </CardHeader>
                     <CardBody>
                         <Row>
@@ -205,16 +144,6 @@ function StockReOrder() {
                                     </DropdownMenu>
                                 </UncontrolledDropdown>
                             </Col>
-                            <Col md={3} xl={3}>
-                                <Button
-                                    color="primary"
-                                    type="button"
-                                    onClick={() => setIsOpen(true)}
-                                    disabled={Object.keys(source).length === 0}
-                                >
-                                    {`Confirm`}
-                                </Button>
-                            </Col>
                             <Col key={`tbl-${selected}-${gender}`} md={12} xl={12} className="mt-4">
                                 <Table
                                     hover
@@ -248,17 +177,8 @@ function StockReOrder() {
                                                                                 key={item.id}
                                                                                 id={item.id}
                                                                                 className='text-center'
-                                                                                contentEditable={isEdit === item.id}
-                                                                                onInput={(e) => setValue(e.target.innerText)}
-                                                                                onClick={() => setIsEdit(item.id)}
-                                                                                onBlur={handleBlur}
-                                                                                suppressContentEditableWarning={true}
-                                                                                style={{
-                                                                                    border: isEdit === item.id ?
-                                                                                        '2px solid' : '1px solid rgb(233, 236, 239)'
-                                                                                }}
                                                                             >
-                                                                                {item.qty}
+                                                                                {item.qty < 0 ? item.qty : 0}
                                                                             </td>
                                                                         );
                                                                     }
