@@ -42,7 +42,6 @@ import OrderReport from "./views/pages/sales/order-report";
 import Setting from "views/pages/setting/setting";
 import EtsySetting from "views/pages/setting/etsy";
 
-
 export const authRoutes = [
   {
     path: "/login",
