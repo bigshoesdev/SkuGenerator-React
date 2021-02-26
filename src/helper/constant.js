@@ -7,6 +7,7 @@ const APP_CONST = {
   /** Cloudinary Constants */
   CLOUD_NAME: 'umbrellaink',
   UPLOAD_PRESET: 'v2wd9hdn',
+  
   COLOR_LIST: {
     BK: '#000', WH: '#fff', RD: '#FF0000',
     GR: '#808080', GN: '#008000', PR: '#6a0dad',
